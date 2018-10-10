@@ -1,0 +1,35 @@
+{
+	"status": "success",
+	"data": [
+		{
+            "name": "薛丁山1",
+            "is_checked":true,
+            "code": "18011122210"
+        },
+        {
+            "name": "薛丁山2",
+            "is_checked":false,
+            "code": "18011122311"
+        },
+        {
+            "name": "薛丁山3",
+            "is_checked":true,
+            "code": "18010264212"
+        },
+        {
+            "name": "薛丁山4",
+            "is_checked":true,
+            "code": "18011122210"
+        },
+        {
+            "name": "薛丁山5",
+            "is_checked":false,
+            "code": "18011122311"
+        },
+        {
+            "name": "薛丁山6",
+            "is_checked":true,
+            "code": "18010264212"
+        }
+	]
+}

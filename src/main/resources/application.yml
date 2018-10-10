@@ -1,0 +1,94 @@
+server:
+  port: 8081
+  undertow:
+    io-threads: 4
+    worker-threads: 32
+    buffer-size: 2048
+    direct-buffers: true
+
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+#    static-path-pattern: /**
+
+#  jpa:
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: update
+#    database: postgresql
+#  thymeleaf:
+#    cache: false
+#    encoding: utf-8
+#    mode: HTML5
+
+druid:
+  type: com.alibaba.druid.pool.DruidDataSource
+  postgresdefault:
+    dirver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://192.168.99.138:5432/vtpl
+    username: postgres
+    password: 'lqkj!@#456'
+  postgresgis:
+    dirver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://218.198.127.230:5432/qinggongye
+    username: postgres
+    password: postgres
+  postgres-eas:
+    dirver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://218.198.127.230:5432/CMCCI
+    username: postgres
+    password: postgres
+#  datasource:
+#    type: com.zaxxer.hikari.HikariDataSource
+#    sql-script-encoding: utf-8
+#    driver-class-name: org.postgresql.Driver
+#    url: jdbc:postgresql://192.168.4.234:5432/gnsc
+#    username: postgres
+#    password: postgres
+#    hikari:
+#      pool-name: gns
+#      connection-test-query: SELECT 1
+#      minimum-idle: 5
+#      maximum-pool-size: 20
+#      idle-timeout: 60000
+#      max-lifetime: 1800000
+#      connection-timeout: 30000
+#      read-only: false
+#  resources:
+#    static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+
+
+#mybatis:
+#  configuration:
+#    cache-enabled: true
+#    lazy-loading-enabled: true
+#    multiple-result-sets-enabled: true
+#    map-underscore-to-camel-case: false
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  type-handlers-package: com.you07.util.datatype
+
+pagehelper:
+  params: count=countSql
+  reasonable: true
+  support-methods-arguments: true
+  helper-dialect: PostgreSQL
+mapper:
+  mappers: BaseDao
+  not-empty: false
+logging:
+  config: classpath:log4j2.xml
+  level:
+    com.you07.vtp.dao: debug
+    com.you07.eas.dao: debug
+    com.you07.map.dap: debug
+
+school-info:
+  school-id: 10462
+  school-name: '中原工学院'
+  lq-api-url: 'http://wisdomclass.you07.com/gns/'
+
