@@ -1,0 +1,53 @@
+server:
+  port: 8081
+  undertow:
+    io-threads: 4
+    worker-threads: 32
+    buffer-size: 2048
+    direct-buffers: true
+
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+
+druid:
+  type: com.alibaba.druid.pool.DruidDataSource
+  postgresdefault:
+    dirver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/jyvtc_vtpl
+    username: postgres
+    password: postgres
+  postgresgis:
+    dirver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/jyvtc
+    username: postgres
+    password: postgres
+  postgres-eas:
+    dirver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/jyvtc_cmcci
+    username: postgres
+    password: postgres
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  type-handlers-package: com.you07.util.datatype
+
+pagehelper:
+  params: count=countSql
+  reasonable: true
+  support-methods-arguments: true
+  helper-dialect: PostgreSQL
+mapper:
+  mappers: BaseDao
+  not-empty: false
+logging:
+  config: classpath:log4j2.xml
+  level:
+    com.you07.vtp.dao: debug
+    com.you07.eas.dao: debug
+    com.you07.map.dap: debug
+
+

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 设置log4j2的自身log级别为warn -->
+<!-- OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+<Configuration status="OFF">
+    <Properties>
+        <Property name="filePath">logs</Property>
+    </Properties>
+    <Appenders>
+        <!-- 输出控制台日志的配置 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY"/>
+            <!-- 输出日志的格式 -->
+            <PatternLayout pattern="[%d{HH:mm:ss.SSS}] %-5level %l %msg%n"/>
+
+        </Console>
+        <!-- 打印出所有的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档 -->
+        <RollingRandomAccessFile name="log" fileName="${filePath}/vtpl.log" immediateFlush="false"
+                                 filePattern="${filePath}/$${date:yyyy-MM}/%d{yyyy-MM-dd}-%i.mes.log.gz">
+            <!--<PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] %-5level %msg%xEx%n"/>-->
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss z}] %-5level [%class{36} %l] - %msg%xEx%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="6" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="64 MB"/>
+            </Policies>
+            <Filters>
+                <!-- 只记录info warn error级别信息 -->
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+                <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <!-- 指定每天的最大压缩包个数，默认7个，超过了会覆盖之前的 -->
+            <DefaultRolloverStrategy max="64"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+
+    <Loggers>
+        <AsyncRoot level="info" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="log"/>
+        </AsyncRoot>
+    </Loggers>
+</Configuration>
