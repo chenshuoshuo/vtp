@@ -63,6 +63,10 @@ public class LocationHistory {
      * 校内/校外，1校内，2校外
      */
     private Integer inSchool;
+    /**
+     * 停留时间
+     */
+    private String detainedTime;
 
     public String getUserid() {
         return userid;
@@ -174,5 +178,13 @@ public class LocationHistory {
 
     public void setInSchool(Integer inSchool) {
         this.inSchool = inSchool;
+    }
+
+    public String getDetainedTime() {
+        return detainedTime;
+    }
+
+    public void setDetainedTime(String detainedTime) {
+        this.detainedTime = detainedTime;
     }
 }

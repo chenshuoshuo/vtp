@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.graphhopper.routing.util.TraversalMode.NODE_BASED;
@@ -70,6 +71,9 @@ public class LocationController {
 
     private static Map<String, GraphHopperStorage> GRAPH_HOPPER_STROAGE_MAP = new HashMap<>();
     private static Map<String, LocationIndex> LOCATION_INDEX_MAP = new HashMap<>();
+    private static SimpleDateFormat SDF = new SimpleDateFormat("HH:mm");
+    private static Double FORWARD_ANGEL_MIN = 15D;
+    private static Double FORWARD_ANGEL_MAX = 165D;
 
 
     @ApiOperation("根据用户查询位置")
@@ -217,100 +221,50 @@ public class LocationController {
         try {
             if(hasPrivilege(userid,  managerId)){
                 List<LocationHistory> list = locationHitoryService.selectTrack(userid, startTime, endTime, inSchool, campusId);
-//            if(LINES == null){
-//                List<MapRoutePolyline> mapRoutePolylineList = mapRoutePolylineService.selectAll();
-//                Geometry[] geometries = new Geometry[mapRoutePolylineList.size()];
-//                for(int i = 0; i < mapRoutePolylineList.size(); i++){
-//                    geometries[i] = mapRoutePolylineList.get(i).getGeom();
-//                }
-//
-//                GeometryFactory geometryFactory=new GeometryFactory();
-//                LINES = geometryFactory.createGeometryCollection(geometries);
-//            }
 
                 ArrayList<Double[]> arrayList = new ArrayList<>();
-//            for(LocationHistory locationHistory : list){
-//                PointPairDistance pointPairDistance = new PointPairDistance();
-//                DistanceToPoint.computeDistance(LINES,new Coordinate(locationHistory.getLng(),locationHistory.getLat()),pointPairDistance);
-//                Coordinate coordinate = pointPairDistance.getCoordinate(0);
-//
-//                Double[] doubleArray = new Double[]{coordinate.x, coordinate.y};
-//                Double[] doubleArray = new Double[]{locationHistory.getLng(),locationHistory.getLat()};
-//                arrayList.add(doubleArray);
-//            }
+                List<LocationHistory> locationHistoryList = new ArrayList<>();
+
+                locationHistoryList.add(list.get(0));
 
                 for(int i = 1; i < list.size(); i++){
-
-                    LocationHistory startLocation = list.get(i - 1);
+                    LocationHistory startLocation = locationHistoryList.get(locationHistoryList.size() - 1);
                     LocationHistory endLocation = list.get(i);
 
                     if(!startLocation.getLng().equals(endLocation.getLng()) || !startLocation.getLat().equals(endLocation.getLat())
                             || !startLocation.getFloorid().equals(endLocation.getFloorid())){
-                        String startLng = startLocation.getLng().toString();
-                        String startLat = startLocation.getLat().toString();
-                        String startFloorId = "0";
-                        if(startLocation.getInDoor() == 1){
-                            startFloorId = String.valueOf(Integer.parseInt(startLocation.getFloorid().substring(4)) - 9);
-                        }
 
-
-                        String endLng = endLocation.getLng().toString();
-                        String endLat = endLocation.getLat().toString();
-                        String endFloorId = "0";
-                        if(endLocation.getInDoor() == 1){
-                            endFloorId = String.valueOf(Integer.parseInt(endLocation.getFloorid().substring(4)) - 9);
-                        }
-
-                        String[] startLoc = {startLat, startLng, "0"};
-                        String[] endLoc = {endLat, endLng, "0"};
-//                    String[] startLoc = {list.get(i - 1).getLng().toString(), list.get(i - 1).getLat().toString(), list.get(i - 1).getFloorid()};
-//                    String[] endLoc = {list.get(i).getLng().toString(), list.get(i).getLat().toString(), list.get(i).getFloorid()};
-                        List<Routing> routings = findRoutePath(campusId.toString(), startLoc, endLoc);
+                        List<Routing> routings = findRoutePath(campusId.toString(), startLocation.getLat(), startLocation.getLng(), endLocation.getLat(), endLocation.getLng());
 
                         if(routings != null && routings.size() > 0){
                             for(int j = 0; j < routings.size(); j++){
-                                arrayList.addAll( routings.get(j).getPointList());
+                                if(routings.get(j).getPointList().size() > 1){
+                                    arrayList.addAll( routings.get(j).getPointList());
+                                    locationHistoryList.add(endLocation);
+                                }
+
                             }
                         }
-//                        else{
-//                            arrayList.add(new Double[] {list.get(i - 1).getLng(), list.get(i - 1).getLat()});
-//                            arrayList.add(new Double[] {list.get(i).getLng(), list.get(i).getLat()});
-//                        }
+
                     }
                 }
-                ArrayList<Double[]> forwardList = new ArrayList<>();
-                ArrayList<Double[]> backwardList = new ArrayList<>();
-                Double[] edgeStart, edgeEnd;
-                edgeStart = edgeEnd = new Double[2];
 
-                for(int k = 0; k < arrayList.size(); k++){
-                    Double[] point = arrayList.get(k);
-                    if(forwardList.size() == 0 || forwardList.get(forwardList.size() - 1).equals(point)){
-                        if(forwardList.size() == 0){
-                            edgeStart = point;
-                            forwardList.add(point);
-                        } else if(forwardList.size() == 1){
-                            edgeEnd = point;
-                            forwardList.add(point);
-                        } else{
-                            if(isForward(edgeStart[0], edgeStart[1], edgeEnd[0], edgeEnd[1], point[0], point[1])){
-                                forwardList.add(point);
-                                edgeStart = edgeEnd;
-                                edgeEnd = point;
-                            } else {
-                                backwardList.add(edgeEnd);
-                                backwardList.add(point);
-                            }
-                        }
+                ArrayList<Double[]> trackList = new ArrayList<>();
+                trackList.add(arrayList.get(0));
+                for(int k = 1; k < arrayList.size(); k++){
+                    Double[] lastPoint = arrayList.get(k - 1);
+                    Double[] thisPoint = arrayList.get(k);
+
+                    if(!Arrays.equals(lastPoint, thisPoint)){
+                        trackList.add(thisPoint);
                     }
                 }
 
                 if(list.size() > 0){
-                    messageListBean.setData(list);
+                    messageListBean.setData(locationHistoryList);
                     messageListBean.setStatus(true);
                     messageListBean.setCode(200);
-                    messageListBean.addPropertie("track", forwardList.toArray());
-                    messageListBean.addPropertie("backwardList", backwardList.toArray());
+                    messageListBean.addPropertie("track", trackList.toArray());
                     messageListBean.setMessage("获取成功");
                 } else{
                     messageListBean.setStatus(false);
@@ -390,16 +344,17 @@ public class LocationController {
     /**
      * 路径规划
      * @param mapid
-     * @param startLoc
-     * @param endLoc
      * @return
      */
     private List<Routing> findRoutePath(String mapid,
-                                        String[] startLoc,
-                                        String[] endLoc) {
+                                        Double startLat,
+                                        Double startLng,
+                                        Double endLat,
+                                        Double endLng) {
         GraphHopperStorage graph = null;
         LocationIndex index = null;
-
+        String[] startLoc = {startLat.toString(), startLng.toString(), "0"};
+        String[] endLoc = {endLat.toString(), endLng.toString(), "0"};
 
         String realPath = getRootPath() + "/routing";
         if(GRAPH_HOPPER_STROAGE_MAP.containsKey(mapid)){
@@ -548,10 +503,13 @@ public class LocationController {
         Double anglePrev = Angle.angle(new Coordinate(edgeEndLng, edgeEndLat), new Coordinate(edgeStartLng, edgeStartLat));
         Double angleNext = Angle.angle(new Coordinate(edgeEndLng, edgeEndLat), new Coordinate(nextEdgeEndLng, nextEdgeEndLat));
 
-        Double angle = Angle.diff(angleNext, anglePrev);
-        System.out.println(angle);
-        return true;
-
+        Double angle = Angle.toDegrees(Angle.diff(angleNext, anglePrev));
+        System.out.println(edgeStartLng + "," + edgeStartLat + ";" + edgeEndLng + "," + edgeEndLat + ";" + nextEdgeEndLng + "," + nextEdgeEndLat + ";" + angle);
+        if(angle < FORWARD_ANGEL_MIN || angle > FORWARD_ANGEL_MAX){
+            return false;
+        } else{
+            return true;
+        }
     }
 
 
