@@ -16,17 +16,17 @@ druid:
   type: com.alibaba.druid.pool.DruidDataSource
   postgresdefault:
     dirver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/jyvtc_vtpl
+    url: jdbc:postgresql://localhost:5432/vtpl
     username: postgres
     password: postgres
   postgresgis:
     dirver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/jyvtc
+    url: jdbc:postgresql://localhost:5432/qinggongye
     username: postgres
     password: postgres
   postgres-eas:
     dirver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/jyvtc_cmcci
+    url: jdbc:postgresql://localhost:5432/CMCCI
     username: postgres
     password: postgres
 
