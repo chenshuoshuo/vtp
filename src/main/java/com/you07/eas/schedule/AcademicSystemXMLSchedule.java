@@ -42,7 +42,7 @@ public class AcademicSystemXMLSchedule{
 	/**
 	 * 启动任务
 	 */
-	@Scheduled(cron = "0 3 * * * ?")
+	@Scheduled(cron = "0 0 3 * * ?")
 	public void startJob(){
 		System.out.println("start create Academic System XML");
 

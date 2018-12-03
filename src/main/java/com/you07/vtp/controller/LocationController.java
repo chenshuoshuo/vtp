@@ -222,45 +222,47 @@ public class LocationController {
             if(hasPrivilege(userid,  managerId)){
                 List<LocationHistory> list = locationHitoryService.selectTrack(userid, startTime, endTime, inSchool, campusId);
 
-                ArrayList<Double[]> arrayList = new ArrayList<>();
-                List<LocationHistory> locationHistoryList = new ArrayList<>();
+                if(list.size() > 0){
+                    ArrayList<Double[]> arrayList = new ArrayList<>();
+                    List<LocationHistory> locationHistoryList = new ArrayList<>();
 
-                locationHistoryList.add(list.get(0));
+                    locationHistoryList.add(list.get(0));
 
-                for(int i = 1; i < list.size(); i++){
-                    LocationHistory startLocation = locationHistoryList.get(locationHistoryList.size() - 1);
-                    LocationHistory endLocation = list.get(i);
+                    for(int i = 1; i < list.size(); i++){
+                        LocationHistory startLocation = locationHistoryList.get(locationHistoryList.size() - 1);
+                        LocationHistory endLocation = list.get(i);
 
-                    if(!startLocation.getLng().equals(endLocation.getLng()) || !startLocation.getLat().equals(endLocation.getLat())
-                            || !startLocation.getFloorid().equals(endLocation.getFloorid())){
+                        if(!startLocation.getLng().equals(endLocation.getLng()) || !startLocation.getLat().equals(endLocation.getLat())
+                                || !startLocation.getFloorid().equals(endLocation.getFloorid())){
 
-                        List<Routing> routings = findRoutePath(campusId.toString(), startLocation.getLat(), startLocation.getLng(), endLocation.getLat(), endLocation.getLng());
+                            List<Routing> routings = findRoutePath(campusId.toString(), startLocation.getLat(), startLocation.getLng(), endLocation.getLat(), endLocation.getLng());
 
-                        if(routings != null && routings.size() > 0){
-                            for(int j = 0; j < routings.size(); j++){
-                                if(routings.get(j).getPointList().size() > 1){
-                                    arrayList.addAll( routings.get(j).getPointList());
-                                    locationHistoryList.add(endLocation);
+                            if(routings != null && routings.size() > 0){
+                                for(int j = 0; j < routings.size(); j++){
+                                    if(routings.get(j).getPointList().size() > 1){
+                                        arrayList.addAll( routings.get(j).getPointList());
+                                        locationHistoryList.add(endLocation);
+                                    }
+
                                 }
+                            }
 
+                        }
+                    }
+
+                    ArrayList<Double[]> trackList = new ArrayList<>();
+                    if(arrayList.size() > 0){
+                        trackList.add(arrayList.get(0));
+                        for(int k = 1; k < arrayList.size(); k++){
+                            Double[] lastPoint = arrayList.get(k - 1);
+                            Double[] thisPoint = arrayList.get(k);
+
+                            if(!Arrays.equals(lastPoint, thisPoint)){
+                                trackList.add(thisPoint);
                             }
                         }
-
                     }
-                }
 
-                ArrayList<Double[]> trackList = new ArrayList<>();
-                trackList.add(arrayList.get(0));
-                for(int k = 1; k < arrayList.size(); k++){
-                    Double[] lastPoint = arrayList.get(k - 1);
-                    Double[] thisPoint = arrayList.get(k);
-
-                    if(!Arrays.equals(lastPoint, thisPoint)){
-                        trackList.add(thisPoint);
-                    }
-                }
-
-                if(list.size() > 0){
                     messageListBean.setData(locationHistoryList);
                     messageListBean.setStatus(true);
                     messageListBean.setCode(200);
