@@ -16,19 +16,19 @@ druid:
   type: com.alibaba.druid.pool.DruidDataSource
   postgresdefault:
     dirver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/vtpl
+    url: jdbc:postgresql://211.149.222.25:5432/yanshi_vtpl
     username: postgres
-    password: postgres
+    password: lqkj!@#456
   postgresgis:
     dirver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/qinggongye
+    url: jdbc:postgresql://211.149.222.25:5432/yanshi_scu_gis
     username: postgres
-    password: postgres
+    password: lqkj!@#456
   postgres-eas:
     dirver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/CMCCI
+    url: jdbc:postgresql://211.149.222.25:5432/yanshi_CMCCI
     username: postgres
-    password: postgres
+    password: lqkj!@#456
 
 mybatis:
   configuration:
