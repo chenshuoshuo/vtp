@@ -2,29 +2,21 @@ package com.you07.config;
 
 import com.you07.util.CutHtml;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-@WebFilter(filterName = "cleanXSSAndSQL", urlPatterns = "/**")
-public class MyWebFilter implements Filter {
+public class MyWebFilter implements HandlerInterceptor {
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-
-    }
-
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest req = (HttpServletRequest) servletRequest;
-
-        System.out.println(req.getRequestURL());
+    public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
+        System.out.println(httpServletRequest.getRequestURL());
         //Xss/SQL注入过滤
-        Map<String, String[]> paramMap = req.getParameterMap();
+        Map<String, String[]> paramMap = httpServletRequest.getParameterMap();
         Set<String> keySet = paramMap.keySet();
         for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
             String key = (String) iterator.next();
@@ -38,11 +30,17 @@ public class MyWebFilter implements Filter {
             }
         }
 
-        System.out.println("url:"+req.getRequestURL());
+        System.out.println("url:"+httpServletRequest.getRequestURL());
+        return false;
     }
 
     @Override
-    public void destroy() {
+    public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
+
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) throws Exception {
 
     }
 }
