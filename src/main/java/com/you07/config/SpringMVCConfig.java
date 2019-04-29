@@ -8,6 +8,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 public class SpringMVCConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new MyWebFilter());
+        registry.addInterceptor(new MyWebFilter())
+                .addPathPatterns("/**")
+                .excludePathPatterns("/**/*.css",
+                        "/**/*.js",
+                        "/**/*.png",
+                        "/**/*.jpg",
+                        "/**/*.jpeg",
+                        "/*.html",
+                        "/**/*.html",
+                        "/swagger-resources/**");
     }
 }
