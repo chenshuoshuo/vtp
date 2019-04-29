@@ -114,6 +114,19 @@ public class LocationHitoryService {
 
     /**
      * 根据时间范围
+     * 查询用户轨迹
+     * @param startTime
+     * @param endTime
+     * @param inSchool
+     * @return
+     * @throws ParseException
+     */
+    public List<LocationHistory> selectTrackWithTimeZone(String startTime, String endTime, Integer inSchool, Integer campusId) throws ParseException {
+        return locationHistoryDao.selectTrackWithTimeZone(getTableName(startTime, endTime), startTime, endTime, inSchool, campusId);
+    }
+
+    /**
+     * 根据时间范围
      * 获取检索数据表的表名
      * @param startTime
      * @param endTime

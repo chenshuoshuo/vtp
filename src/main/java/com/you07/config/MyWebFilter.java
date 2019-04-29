@@ -2,6 +2,7 @@ package com.you07.config;
 
 import com.you07.util.CutHtml;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -11,6 +12,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+@Component
 public class MyWebFilter implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
@@ -29,9 +31,9 @@ public class MyWebFilter implements HandlerInterceptor {
                 }
             }
         }
-
+        Map<String, String[]> a = httpServletRequest.getParameterMap();
         System.out.println("url:"+httpServletRequest.getRequestURL());
-        return false;
+        return true;
     }
 
     @Override

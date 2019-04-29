@@ -267,4 +267,27 @@ public interface LocationHistoryDao {
                                                         @Param("endTime") String endTime,
                                                         @Param("inSchool") Integer inSchool,
                                                         @Param("campusId") Integer campusId);
+
+    /**
+     * 根据时间范围查询轨迹信息
+     * @param tableName
+     * @param startTime
+     * @param endTime
+     * @param inSchool
+     * @param campusId
+     * @return
+     */
+    @Select({
+            "select * from ${tableName} where substr(floorid, 0, 5) = '${campusId}'",
+            "and location_time > to_timestamp(#{startTime},'yyyy-mm-dd hh24:mi:ss')",
+            "and location_time < to_timestamp(#{endTime},'yyyy-mm-dd hh24:mi:ss')",
+            "and lng is not null",
+            "and in_school = #{inSchool}",
+            "order by location_time"
+    })
+    List<LocationHistory> selectTrackWithTimeZone(@Param("tableName") String tableName,
+                                                        @Param("startTime") String startTime,
+                                                        @Param("endTime") String endTime,
+                                                        @Param("inSchool") Integer inSchool,
+                                                        @Param("campusId") Integer campusId);
 }
