@@ -2,9 +2,14 @@ package com.you07.vtp.third;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.you07.util.message.MessageBean;
 import com.you07.util.message.MessageListBean;
 import com.you07.util.route.Routing;
 import com.you07.vtp.model.LocationHistory;
+import com.you07.vtp.model.LocationTrackManager;
 import com.you07.vtp.service.LocationHitoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -38,21 +43,31 @@ public class ThirdLocationController {
     public String locations(@ApiParam(name="startTime",value="开始时间，格式：'yyyy-MM-dd HH:mm:ss'",required=true) @RequestParam(name = "startTime",required = true) String startTime,
                             @ApiParam(name="endTime",value="结束时间，格式：'yyyy-MM-dd HH:mm:ss'",required=true) @RequestParam(name = "endTime", required = true, defaultValue = "") String endTime,
                             @ApiParam(name="inSchool",value="校内校外，1校内，2校外",required=true) @RequestParam(name = "inSchool",required = true) Integer inSchool,
-                            @ApiParam(name="campusId",value="校区ID",required=true) @RequestParam(name = "campusId",required = true) Integer campusId){
-        MessageListBean<LocationHistory> messageListBean = new MessageListBean<LocationHistory>();
+                            @ApiParam(name="campusId",value="校区ID",required=true) @RequestParam(name = "campusId",required = true) Integer campusId,
+                            @ApiParam(name="page",value="页码",required=true) @RequestParam(name = "page", required = true) Integer page,
+                            @ApiParam(name="pageSize",value="每页数据条数",required=true) @RequestParam(name = "pageSize", required = true) Integer pageSize){
+        MessageBean<PageInfo<LocationHistory>> messageBean = new MessageBean<>();
         try {
-                List<LocationHistory> list = locationHitoryService.selectTrackWithTimeZone(startTime, endTime, inSchool, campusId);
-                messageListBean.setData(list);
-                messageListBean.setStatus(true);
-                messageListBean.setCode(200);
-                messageListBean.setMessage("获取成功");
+            Page<LocationHistory> pageBean = PageHelper.startPage(page, pageSize);
+            List<LocationHistory> list = locationHitoryService.selectTrackWithTimeZone(startTime, endTime, inSchool, campusId);
+            PageInfo<LocationHistory> pageInfo = new PageInfo<>(pageBean);
+            if(pageInfo.getList().size() > 0){
+                messageBean.setData(pageInfo);
+                messageBean.setStatus(true);
+                messageBean.setCode(200);
+                messageBean.setMessage("获取成功");
+            } else{
+                messageBean.setStatus(false);
+                messageBean.setCode(10002);
+                messageBean.setMessage("没有查询到数据");
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            messageListBean.setStatus(false);
-            messageListBean.setCode(10001);
-            messageListBean.setMessage("接口错误");
+            messageBean.setStatus(false);
+            messageBean.setCode(10001);
+            messageBean.setMessage("接口错误");
         }
-        return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
+        return JSON.toJSONString(messageBean, SerializerFeature.DisableCircularReferenceDetect);
     }
 
 }
