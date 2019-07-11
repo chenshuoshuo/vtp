@@ -21,14 +21,14 @@ druid:
     password: lqkj!@#456
   postgresgis:
     dirver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://211.149.222.25:5432/yanshi_scu_gis
+    url: jdbc:postgresql://202.196.16.81:5407/hngydx
     username: postgres
-    password: lqkj!@#456
+    password: Lqkj!@#456
   postgres-eas:
     dirver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://211.149.222.25:5432/yanshi_CMCCI
+    url: jdbc:postgresql://202.196.16.81:5407/CMCCI
     username: postgres
-    password: lqkj!@#456
+    password: Lqkj!@#456
 mybatis:
   configuration:
     map-underscore-to-camel-case: true

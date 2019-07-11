@@ -34,7 +34,22 @@ public class LocationLatestService {
         LocationLatest ll = locationLatestDao.selectByPrimaryKey(locationLatest.getUserid());
 
         locationLatestDao.invalidMac(locationLatest.getAccountMac());
-
+        if(locationLatest.getInSchool()==null && locationLatest.getFloorid()!=null){
+            //判断经纬度是否在校内
+            String zoneId = locationLatest.getFloorid().trim().substring(0,4);
+            MapZone mapZone = mapZoneService.query2ZoneId(zoneId);
+            Polygon polygon = JTS.toGeometry(new Envelope(mapZone.getLeftBottomLon(), mapZone.getLeftBottomLat(), mapZone.getRightTopLon(), mapZone.getRightTopLat()),
+                    geometryFactory);
+            Coordinate coordinate = new Coordinate(locationLatest.getLng(),locationLatest.getLat());
+            Point point = geometryFactory.createPoint(coordinate);
+            Geometry geometry = geometryFactory.createGeometry(polygon);
+            boolean contains = geometry.contains(point);
+            if(contains){
+                locationLatest.setInSchool(1);
+            }else {
+                locationLatest.setInSchool(2);
+            }
+        }
         if(ll == null){
             String realname, gender, orgCode, orgName;
             realname = gender = orgCode = orgName = "";
@@ -49,22 +64,6 @@ public class LocationLatestService {
                     orgCode = tea.getDepartmentInfo().getXsbmdm();
                     orgName = tea.getDepartmentInfo().getXsbmmc();
                 }
-                if(locationLatest.getInSchool()==null && locationLatest.getFloorid()!=null){
-                    //判断经纬度是否在校内
-                    String zoneId = locationLatest.getFloorid().trim().substring(0,4);
-                    MapZone mapZone = mapZoneService.query2ZoneId(zoneId);
-                    Polygon polygon = JTS.toGeometry(new Envelope(mapZone.getLeftBottomLon(), mapZone.getLeftBottomLat(), mapZone.getRightTopLon(), mapZone.getRightTopLat()),
-                            geometryFactory);
-                    Coordinate coordinate = new Coordinate(locationLatest.getLng(),locationLatest.getLat());
-                    Point point = geometryFactory.createPoint(coordinate);
-                    Geometry geometry = geometryFactory.createGeometry(polygon);
-                    boolean contains = geometry.contains(point);
-                    if(contains){
-                        locationLatest.setInSchool(1);
-                    }else {
-                        locationLatest.setInSchool(2);
-                    }
-                }
                 locationLatest.setGender(gender);
                 locationLatest.setRealname(realname);
                 locationLatest.setOrgCode(orgCode);
@@ -75,19 +74,15 @@ public class LocationLatestService {
             } else {
                 return 0;
             }
+        }else {
+            ll.setInSchool(locationLatest.getInSchool());
+            ll.setFloorid(locationLatest.getFloorid());
+            ll.setInDoor(locationLatest.getInDoor());
+            ll.setLat(locationLatest.getLat());
+            ll.setLng(locationLatest.getLng());
+            ll.setLocationTime(new Date());
+            return locationLatestDao.updateByPrimaryKeySelective(ll);
         }
-        locationLatest.setLocationTime(new Date());
-        return locationLatestDao.updateByPrimaryKeySelective(locationLatest);
     }
 
-
-    public static void main(String[] args) {
-        Polygon polygon = JTS.toGeometry(new Envelope(113.535712, 34.827623, 113.551726, 34.836861),
-                geometryFactory);
-        Coordinate coordinate = new Coordinate(104.5576062,30.8208133);
-        Point point = geometryFactory.createPoint(coordinate);
-        Geometry geometry = geometryFactory.createGeometry(polygon);
-        boolean contains = geometry.contains(point);
-        System.out.println(contains);
-    }
 }
