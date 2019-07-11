@@ -86,7 +86,7 @@ public class LocationLatest {
     /**
      * 校内/校外，1校内，2校外
      */
-    @ApiModelProperty(value = "校内/校外，1校内，2校外", name = "inSchool", dataType = "Integer", example = "1", required = true)
+    @ApiModelProperty(value = "校内/校外，1校内，2校外", name = "inSchool", dataType = "Integer", example = "1", required = false)
     private Integer inSchool;
 
     public String getUserid() {

@@ -5,8 +5,8 @@
 
 	<groupId>com.you07</groupId>
 	<artifactId>vtp</artifactId>
-	<version>1.0-RELEASED</version>
-	<packaging>war</packaging>
+	<version>1.1-RELEASED</version>
+	<packaging>jar</packaging>
 
 	<name>vtp</name>
 	<description>Visual Track Platform</description>
@@ -306,6 +306,28 @@
 			<groupId>com.graphhopper</groupId>
 			<artifactId>graphhopper-core</artifactId>
 			<version>0.8.2</version>
+		</dependency>
+
+		<!--空间函数-->
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-geojson</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-epsg-hsql</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-shapefile</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-api</artifactId>
+			<version>${geotools.version}</version>
 		</dependency>
 	</dependencies>
 

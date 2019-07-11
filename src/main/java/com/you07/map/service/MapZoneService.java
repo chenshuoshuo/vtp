@@ -19,4 +19,17 @@ public class MapZoneService {
         return mapZoneDao.queryWithMapType("2d");
     }
 
+    /**
+     * @Author wells
+     * @Description //TODO 根据地图zoneid获取地图信息
+     * @Date 16:59 2019/6/28
+     * @Param [zoneid]
+     * @return java.util.List<com.you07.map.model.MapZone>
+     **/
+    @DataSourceConnection(DataBaseContextHolder.DataBaseType.POSTGRESGIS)
+    public MapZone query2ZoneId(String zoneid){
+        return mapZoneDao.queryWithId(zoneid);
+    }
+
+
 }

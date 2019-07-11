@@ -29,7 +29,6 @@ druid:
     url: jdbc:postgresql://211.149.222.25:5432/yanshi_CMCCI
     username: postgres
     password: lqkj!@#456
-
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
