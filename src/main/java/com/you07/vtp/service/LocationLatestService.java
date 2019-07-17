@@ -38,7 +38,7 @@ public class LocationLatestService {
             //判断经纬度是否在校内
             String zoneId = locationLatest.getFloorid().trim().substring(0,4);
             MapZone mapZone = mapZoneService.query2ZoneId(zoneId);
-            Polygon polygon = JTS.toGeometry(new Envelope(mapZone.getLeftBottomLon(), mapZone.getLeftBottomLat(), mapZone.getRightTopLon(), mapZone.getRightTopLat()),
+            Polygon polygon = JTS.toGeometry(new Envelope(mapZone.getLeftBottomLon(), mapZone.getRightTopLon(), mapZone.getLeftBottomLat(), mapZone.getRightTopLat()),
                     geometryFactory);
             Coordinate coordinate = new Coordinate(locationLatest.getLng(),locationLatest.getLat());
             Point point = geometryFactory.createPoint(coordinate);
@@ -80,6 +80,7 @@ public class LocationLatestService {
             ll.setInDoor(locationLatest.getInDoor());
             ll.setLat(locationLatest.getLat());
             ll.setLng(locationLatest.getLng());
+            ll.setAccountMac(locationLatest.getAccountMac());
             ll.setLocationTime(new Date());
             return locationLatestDao.updateByPrimaryKeySelective(ll);
         }

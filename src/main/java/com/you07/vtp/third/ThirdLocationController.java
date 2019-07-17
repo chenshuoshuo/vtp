@@ -43,13 +43,13 @@ public class ThirdLocationController {
     public String locations(@ApiParam(name="startTime",value="开始时间，格式：'yyyy-MM-dd HH:mm:ss'",required=true) @RequestParam(name = "startTime",required = true) String startTime,
                             @ApiParam(name="endTime",value="结束时间，格式：'yyyy-MM-dd HH:mm:ss'",required=true) @RequestParam(name = "endTime", required = true, defaultValue = "") String endTime,
                             @ApiParam(name="inSchool",value="校内校外，1校内，2校外",required=true) @RequestParam(name = "inSchool",required = true) Integer inSchool,
-                            @ApiParam(name="campusId",value="校区ID",required=true) @RequestParam(name = "campusId",required = true) Integer campusId,
+                            @ApiParam(name="zoneId",value="校区ID",required=true) @RequestParam(name = "zoneId",required = true) Integer zoneId,
                             @ApiParam(name="page",value="页码",required=true) @RequestParam(name = "page", required = true) Integer page,
                             @ApiParam(name="pageSize",value="每页数据条数",required=true) @RequestParam(name = "pageSize", required = true) Integer pageSize){
         MessageBean<PageInfo<LocationHistory>> messageBean = new MessageBean<>();
         try {
             Page<LocationHistory> pageBean = PageHelper.startPage(page, pageSize);
-            List<LocationHistory> list = locationHitoryService.selectTrackWithTimeZone(startTime, endTime, inSchool, campusId);
+            List<LocationHistory> list = locationHitoryService.selectTrackWithTimeZone(startTime, endTime, inSchool, zoneId);
             PageInfo<LocationHistory> pageInfo = new PageInfo<>(pageBean);
             if(pageInfo.getList().size() > 0){
                 messageBean.setData(pageInfo);
