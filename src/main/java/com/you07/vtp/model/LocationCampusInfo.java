@@ -36,26 +36,10 @@ public class LocationCampusInfo {
      */
     @ApiModelProperty(value = "校区LOGO", name = "campusLogo", dataType = "String", example = "http://XXX.COM/XX.PNG", required = false)
     private String campusLogo;
-    /**
-     * 左下经度
-     */
+
     @ApiModelProperty(hidden = true)
-    private Double leftDownLng;
-    /**
-     * 左下纬度
-     */
-    @ApiModelProperty(hidden = true)
-    private Double leftDownLat;
-    /**
-     * 右上经度
-     */
-    @ApiModelProperty(hidden = true)
-    private Double rightTopLng;
-    /**
-     * 右上纬度
-     */
-    @ApiModelProperty(hidden = true)
-    private Double rightTopLat;
+    private String coordinates;
+
     /**
      * 是否默认，1是，0否
      */
@@ -114,36 +98,12 @@ public class LocationCampusInfo {
         this.campusLogo = campusLogo;
     }
 
-    public Double getLeftDownLng() {
-        return leftDownLng;
+    public String getCoordinates() {
+        return coordinates;
     }
 
-    public void setLeftDownLng(Double leftDownLng) {
-        this.leftDownLng = leftDownLng;
-    }
-
-    public Double getLeftDownLat() {
-        return leftDownLat;
-    }
-
-    public void setLeftDownLat(Double leftDownLat) {
-        this.leftDownLat = leftDownLat;
-    }
-
-    public Double getRightTopLng() {
-        return rightTopLng;
-    }
-
-    public void setRightTopLng(Double rightTopLng) {
-        this.rightTopLng = rightTopLng;
-    }
-
-    public Double getRightTopLat() {
-        return rightTopLat;
-    }
-
-    public void setRightTopLat(Double rightTopLat) {
-        this.rightTopLat = rightTopLat;
+    public void setCoordinates(String coordinates) {
+        this.coordinates = coordinates;
     }
 
     public Integer getIsDefault() {

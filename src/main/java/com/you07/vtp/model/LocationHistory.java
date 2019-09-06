@@ -64,6 +64,11 @@ public class LocationHistory {
      */
     private Integer inSchool;
     /**
+     * 校区ID
+     */
+    private String zoneId;
+
+    /**
      * 停留时间
      */
     private String detainedTime;
@@ -186,5 +191,13 @@ public class LocationHistory {
 
     public void setDetainedTime(String detainedTime) {
         this.detainedTime = detainedTime;
+    }
+
+    public String getZoneId() {
+        return zoneId;
+    }
+
+    public void setZoneId(String zoneId) {
+        this.zoneId = zoneId;
     }
 }

@@ -1,14 +1,23 @@
 package com.you07.vtp.service;
 
+import com.alibaba.fastjson.JSONArray;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.you07.util.RestTemplateUtil;
 import com.you07.vtp.dao.LocationCampusInfoDao;
 import com.you07.vtp.model.LocationCampusInfo;
+import com.you07.vtp.vo.MapZoneVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class LocationCampusInfoService {
+
+    @Value("${oauth.serverMapUrl}")
+    private String mapApiUrl;
+
     @Autowired
     private LocationCampusInfoDao locationCampusInfoDao;
 
@@ -34,6 +43,53 @@ public class LocationCampusInfoService {
 
     public int update(LocationCampusInfo locationCampusInfo){
         return locationCampusInfoDao.updateByPrimaryKeySelective(locationCampusInfo);
+    }
+
+    public LocationCampusInfo queryById(String zoneId){
+        return locationCampusInfoDao.selectByPrimaryKey(Integer.parseInt(zoneId));
+    }
+
+    /**
+     * egan
+     * 从cmgis读取校区信息并存入校区表
+     * @date 2019/9/5 15:53
+     * @param
+     **/
+    public void initCampus(){
+
+
+        List<MapZoneVO> zoneList = RestTemplateUtil.getJSONObjectForCmGis(mapApiUrl+"/map/v3/zone/list/2")
+                .getJSONArray("data").toJavaList(MapZoneVO.class);
+
+        for (MapZoneVO z : zoneList) {
+            String id = z.getId();
+            MapZoneVO mapZoneVO = RestTemplateUtil.getJSONObjectForCmGis(mapApiUrl + "/map/v2/zone/" + id)
+                    .getObject("data", MapZoneVO.class);
+
+            LocationCampusInfo locationCampusInfo = new LocationCampusInfo();
+            locationCampusInfo.setCampusId(Integer.parseInt(mapZoneVO.getId()));
+            locationCampusInfo.setCampusName(mapZoneVO.getName());
+            locationCampusInfo.setCoordinates(convertCoordinateToStr(mapZoneVO.getPolygonBBox().getCoordinates()));
+            locationCampusInfo.setIsDefault(0);
+            locationCampusInfo.setIsDisplay(1);
+
+//            System.out.println(locationCampusInfo);
+            this.add(locationCampusInfo);
+        }
+
+    }
+
+    public String convertCoordinateToStr(List<List<String>> coordinates){
+        StringBuilder str = new StringBuilder();
+        for (List<String> cl : coordinates){
+            for(String c : cl){
+                c = c.replace("]", "").replace("[", "").replace(" ", "");
+                    str.append(" ");
+                str.append(c);
+            }
+
+        }
+        return str.toString().substring(1);
     }
 
 }
