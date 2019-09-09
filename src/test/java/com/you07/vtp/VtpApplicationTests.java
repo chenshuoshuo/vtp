@@ -1,5 +1,6 @@
 package com.you07.vtp;
 
+import com.you07.util.RestTemplateUtil;
 import com.you07.vtp.dao.LocationLatestDao;
 import com.you07.vtp.model.LocationLatest;
 import com.you07.vtp.service.LocationLatestService;
@@ -25,6 +26,7 @@ public class VtpApplicationTests {
 
 	@Test
 	public void contextLoads() {
+//		RestTemplateUtil.getJSONObjectForCmGis()
 //		locationCampusInfoService.initCampus();
 		LocationLatest locationLatest = locationLatestDao.selectByPrimaryKey("2017223030056");
 		locationLatestService.saveLocation(locationLatest);

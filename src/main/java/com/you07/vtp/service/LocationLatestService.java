@@ -40,13 +40,7 @@ public class LocationLatestService {
         if (locationLatest.getInSchool() == null && zoneId != null) {
             //判断经纬度是否在校内
             LocationCampusInfo campus = locationCampusInfoService.queryById(zoneId);
-//            MapZone mapZone = mapZoneService.query2ZoneId(zoneId);
-//            Polygon polygon = JTS.toGeometry(new Envelope(mapZone.getLeftBottomLon(), mapZone.getLeftBottomLat(), mapZone.getRightTopLon(), mapZone.getRightTopLat()),
-//                    geometryFactory);
             Coordinate coordinate = new Coordinate(locationLatest.getLng(), locationLatest.getLat());
-//            Point point = geometryFactory.createPoint(coordinate);
-//            Geometry geometry = geometryFactory.createGeometry(polygon);
-//            boolean contains = geometry.contains(point);
             List<Coordinate> polygon = CoordinateUtil.convertStrToList(campus.getCoordinates());
 
             if (CoordinateUtil.isInPolygon(coordinate, polygon)) {

@@ -25,7 +25,7 @@ public class LocationSystemConfig {
     private String systemName;
     @ApiModelProperty(value = "系统LOGO", name = "systemLogo", dataType = "String", example = "http://xxx.com/xx.png", required = false)
     private String systemLogo;
-    @ApiModelProperty(value = "GIS2.0接口地址", name = "lqMapGisUrl", dataType = "String", example = "http://xxx.com/lqmap", required = false)
+    @ApiModelProperty(value = "GIS3.0接口地址", name = "lqMapGisUrl", dataType = "String", example = "http://xxx.com/lqmap", required = false)
     private String lqMapGisUrl;
     @ApiModelProperty(value = "高德地图API-KEY", name = "amapKey", dataType = "String", example = "WERW.SWEFR-WER", required = false)
     private String amapKey;
@@ -53,6 +53,10 @@ public class LocationSystemConfig {
     private String contact;
     @ApiModelProperty(hidden = true)
     private Date updateTime;
+    @ApiModelProperty(value = "GIS地图token", example = "ZnJlZToxMjM0NTY=")
+    private String gisMapToken;
+    @ApiModelProperty(value = "CMIPS-M接口", example = "https://testgis:you07:com/cmips-server")
+    private String ipsApi;
 
     public Integer getConfigId() {
         return configId;
@@ -188,5 +192,21 @@ public class LocationSystemConfig {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getGisMapToken() {
+        return gisMapToken;
+    }
+
+    public void setGisMapToken(String gisMapToken) {
+        this.gisMapToken = gisMapToken;
+    }
+
+    public String getIpsApi() {
+        return ipsApi;
+    }
+
+    public void setIpsApi(String ipsApi) {
+        this.ipsApi = ipsApi;
     }
 }
