@@ -64,13 +64,14 @@ public class LocationHistory {
      */
     private Integer inSchool;
     /**
-     * 停留时间
-     */
-    private String detainedTime;
-    /**
      * 校区ID
      */
     private String zoneId;
+
+    /**
+     * 停留时间
+     */
+    private String detainedTime;
 
     public String getUserid() {
         return userid;

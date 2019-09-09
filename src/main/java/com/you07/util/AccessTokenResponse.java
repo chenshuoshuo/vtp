@@ -1,4 +1,4 @@
-package com.you07.util.HttpUtil;
+package com.you07.util;
 
 /**
  * @author egan

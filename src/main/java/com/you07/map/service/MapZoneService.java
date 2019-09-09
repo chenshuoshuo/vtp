@@ -1,5 +1,6 @@
 package com.you07.map.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.you07.config.datasource.DataBaseContextHolder;
 import com.you07.config.datasource.annotation.DataSourceConnection;
 import com.you07.map.dao.MapZoneDao;

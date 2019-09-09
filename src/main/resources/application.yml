@@ -16,9 +16,9 @@ druid:
   type: com.alibaba.druid.pool.DruidDataSource
   postgresdefault:
     dirver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://211.149.222.25:5432/yanshi_vtpl
+    url: jdbc:postgresql://192.168.4.241:5432/vtpl_plus
     username: postgres
-    password: lqkj!@#456
+    password: lqkj007
   postgresgis:
     dirver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://202.196.16.81:5407/hngydx
@@ -50,12 +50,15 @@ logging:
     com.you07.map.dap: debug
 #请求认证的接口地址
 oauth:
+  client-id: cmccr-guest
+  client-secret: cmccr-guest
+  grant-type: client_credentials
   token: https://testgis.you07.com/cmccr-server/oauth/token
-  #Client-Id
-  username: free
-  password: 123456
-  #获得师生身份信息的接口地址
-  serverEasUrl: https://testgis.you07.com/cmips-server
-  #获取地图信息的接口
-  serverMapUrl: https://testgis.you07.com/cmgis-server
+#  #Client-Id
+#  username: free
+#  password: 123456
+#  #获得师生身份信息的接口地址
+#  serverEasUrl: https://testgis:you07:com/cmips-server
+#  #获取地图信息的接口
+#  serverMapUrl: https://testgis.you07.com/cmgis-server
 

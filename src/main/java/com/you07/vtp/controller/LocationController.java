@@ -344,7 +344,7 @@ public class LocationController {
     }
 
     /**
-     * 路径规划
+     * 路径规划（弃用，由cmgis提供）
      * @param mapid
      * @return
      */

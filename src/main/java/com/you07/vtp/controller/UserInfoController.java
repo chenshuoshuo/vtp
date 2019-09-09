@@ -44,9 +44,7 @@ public class UserInfoController {
     @ResponseBody
     public String detail(@ApiParam(name="userid",value="用户ID",required=false) @RequestParam(name = "userid", required = true) String userid){
         MessageBean<UserInfo> messageBean = new MessageBean<UserInfo>(null);
-
         try {
-
             LocationTrackManager locationTrackManager = locationTrackManagerService.get(userid);
             StudentInfo studentInfo = studentInfoService.get(userid);
             TeacherInfo teacherInfo = teacherInfoService.get(userid);
