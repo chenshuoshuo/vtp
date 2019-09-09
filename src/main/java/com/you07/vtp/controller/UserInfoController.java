@@ -48,8 +48,8 @@ public class UserInfoController {
         try {
 
             LocationTrackManager locationTrackManager = locationTrackManagerService.get(userid);
-            TeacherInfo teacherInfo = teacherInfoService.get(userid);
             StudentInfo studentInfo = studentInfoService.get(userid);
+            TeacherInfo teacherInfo = teacherInfoService.get(userid);
             Integer isManager =  0;
             if(locationTrackManager != null || teacherInfo != null || studentInfo != null){
                 String username, orgName;
@@ -60,10 +60,10 @@ public class UserInfoController {
                     isManager = locationTrackManager.getIsManager();
                 } else if(teacherInfo != null){
                     username = teacherInfo.getName();
-                    orgName = teacherInfo.getDepartmentInfo().getXsbmmc();
+                    orgName = teacherInfo.getOrgName();
                 } else{
                     username = studentInfo.getName();
-                    orgName = studentInfo.getClassInfo().getClassname();
+                    orgName = studentInfo.getOrgName();
                 }
 
                 UserInfo userInfo = new UserInfo();
@@ -98,11 +98,9 @@ public class UserInfoController {
     @ResponseBody
     public String search(@ApiParam(name="keyword",value="学工号/姓名",required=false) @RequestParam(name = "keyword", required = true) String keyword){
         MessageListBean<UserInfo> messageListBean = new MessageListBean<UserInfo>(null);
-
         try {
-
-            List<TeacherInfo> teacherInfoList = teacherInfoService.searchWithCodeName(keyword);
             List<StudentInfo> studentInfoList = studentInfoService.searchWithCodeName(keyword);
+            List<TeacherInfo> teacherInfoList = teacherInfoService.searchWithCodeName(keyword);
 
             if(teacherInfoList.size() > 0 || studentInfoList.size() > 0){
                 List<UserInfo> userInfoList = new ArrayList<>();

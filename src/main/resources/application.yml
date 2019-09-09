@@ -48,5 +48,14 @@ logging:
     com.you07.vtp.dao: debug
     com.you07.eas.dao: debug
     com.you07.map.dap: debug
-
+#请求认证的接口地址
+oauth:
+  token: https://testgis.you07.com/cmccr-server/oauth/token
+  #Client-Id
+  username: free
+  password: 123456
+  #获得师生身份信息的接口地址
+  serverEasUrl: https://testgis.you07.com/cmips-server
+  #获取地图信息的接口
+  serverMapUrl: https://testgis.you07.com/cmgis-server
 
