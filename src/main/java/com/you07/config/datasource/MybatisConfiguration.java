@@ -30,10 +30,6 @@ public class MybatisConfiguration extends MybatisAutoConfiguration {
 
     @Resource(name = "postgresDefaultDataSource")
     private DataSource postgresDefaultDataSource;
-    @Resource(name = "postgresGisDataSource")
-    private DataSource postgresGisDataSource;
-    @Resource(name = "postgresEasDataSource")
-    private DataSource postgresEasDataSource;
 
 
     public MybatisConfiguration(MybatisProperties properties, ObjectProvider<Interceptor[]> interceptorsProvider,
@@ -59,8 +55,6 @@ public class MybatisConfiguration extends MybatisAutoConfiguration {
         DynamicRoutingDataSource proxy = new DynamicRoutingDataSource();
         Map<Object,Object> targetDataResources = new HashMap<>();
         targetDataResources.put(DataBaseContextHolder.DataBaseType.POSTGRESDEFAULT,postgresDefaultDataSource);
-        targetDataResources.put(DataBaseContextHolder.DataBaseType.POSTGRESGIS,postgresGisDataSource);
-        targetDataResources.put(DataBaseContextHolder.DataBaseType.POSTGRESEAS,postgresEasDataSource);
         //设置默认数据源
         proxy.setDefaultTargetDataSource(postgresDefaultDataSource);
         proxy.setTargetDataSources(targetDataResources);
