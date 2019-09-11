@@ -2,31 +2,17 @@ package com.you07.vtp.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.graphhopper.routing.AStar;
-import com.graphhopper.routing.Path;
-import com.graphhopper.routing.weighting.ShortestWeighting;
-import com.graphhopper.routing.weighting.Weighting;
 import com.graphhopper.storage.GraphHopperStorage;
 import com.graphhopper.storage.index.LocationIndex;
-import com.graphhopper.storage.index.QueryResult;
-import com.graphhopper.util.EdgeIterator;
-import com.graphhopper.util.InstructionList;
-import com.graphhopper.util.Translation;
-import com.graphhopper.util.TranslationMap;
 import com.vividsolutions.jts.algorithm.Angle;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geomgraph.Edge;
 import com.you07.eas.model.StudentInfo;
 import com.you07.eas.model.TeacherInfo;
 import com.you07.eas.service.StudentInfoService;
 import com.you07.eas.service.TeacherInfoService;
-import com.you07.map.model.NavigationInfo;
-import com.you07.map.service.MapRouteDataService;
 import com.you07.util.message.MessageBean;
 import com.you07.util.message.MessageListBean;
-import com.you07.util.route.FloorEdgeFilter;
-import com.you07.util.route.GraphHopperHelper;
 import com.you07.util.route.Routing;
 import com.you07.vtp.model.LocationHistory;
 import com.you07.vtp.model.LocationTrackManager;
@@ -35,15 +21,12 @@ import com.you07.vtp.service.LocationTrackManagerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-
-import static com.graphhopper.routing.util.TraversalMode.NODE_BASED;
 
 /**
  * 位置、轨迹查询接口
@@ -62,8 +45,6 @@ public class LocationController {
     private StudentInfoService studentInfoService;
     @Autowired
     private LocationTrackManagerService locationTrackManagerService;
-    @Autowired
-    private MapRouteDataService mapRouteDataService;
     @Autowired
     private TeacherInfoService teacherInfoService;
 
@@ -344,7 +325,7 @@ public class LocationController {
     }
 
     /**
-     * 路径规划（弃用，由cmgis提供）
+     * 路径规划（修改，由cmgis提供）
      * @param mapid
      * @return
      */
@@ -353,90 +334,7 @@ public class LocationController {
                                         Double startLng,
                                         Double endLat,
                                         Double endLng) {
-        GraphHopperStorage graph = null;
-        LocationIndex index = null;
-        String[] startLoc = {startLat.toString(), startLng.toString(), "0"};
-        String[] endLoc = {endLat.toString(), endLng.toString(), "0"};
-
-        String realPath = getRootPath() + "/routing";
-        if(GRAPH_HOPPER_STROAGE_MAP.containsKey(mapid)){
-            graph = GRAPH_HOPPER_STROAGE_MAP.get(mapid);
-        } else{
-            NavigationInfo navigationInfo = mapRouteDataService.getRouteData(mapid);
-
-            graph = GraphHopperHelper
-                    .createGraph(realPath, navigationInfo, mapid, "foot");
-
-            GRAPH_HOPPER_STROAGE_MAP.put(mapid, graph);
-        }
-
-        if(LOCATION_INDEX_MAP.containsKey(mapid)){
-            index = LOCATION_INDEX_MAP.get(mapid);
-        } else{
-            index = GraphHopperHelper.createTree(realPath, graph, mapid);
-
-            LOCATION_INDEX_MAP.put(mapid, index);
-        }
-
-
-        double[] StartLatLon = new double[]{Double.parseDouble(startLoc[0])
-                , Double.parseDouble(startLoc[1]), Double.parseDouble(startLoc[2])};
-        double[] EndLatLon = new double[]{Double.parseDouble(endLoc[0])
-                , Double.parseDouble(endLoc[1]), Double.parseDouble(endLoc[2])};
-
-        QueryResult startIndex = index.findClosest(StartLatLon[0], StartLatLon[1],
-                new FloorEdgeFilter((int) StartLatLon[2], mapid));
-        QueryResult endIndex = index.findClosest(EndLatLon[0], EndLatLon[1],
-                new FloorEdgeFilter((int) EndLatLon[2], mapid));
-
-        Weighting weighting = null;
-
-        weighting = new ShortestWeighting(GraphHopperHelper.footEncoder);
-        AStar aStar = new AStar(graph, weighting, NODE_BASED);
-
-        if (startIndex.getClosestNode() == -1 || endIndex.getClosestNode() == -1) {
-            return null;
-        }
-
-        Path path = aStar.calcPath(startIndex.getClosestNode(), endIndex.getClosestNode());
-        final TranslationMap trMap = new TranslationMap().doImport();
-        final Translation tr = trMap.getWithFallBack(Locale.SIMPLIFIED_CHINESE);
-
-        InstructionList instructions = path.calcInstructions(tr);
-
-        Map<String, String> nameToFloorMap = GraphHopperHelper.getMapToNameAndFloor().get(mapid);
-
-        List<Routing> routings = new ArrayList<Routing>();
-
-        for (int i = 0; i < instructions.size(); i++) {
-            Routing routing = new Routing();
-            if (instructions.size() - 1 == i) {
-                routing.setPointList(instructions.get(i).getPoints().toGeoJson());
-            } else {
-                routing.setPointList(path.calcEdges().get(i).fetchWayGeometry(3).toGeoJson());
-            }
-
-            routing.setDistance(instructions.get(i).getDistance());
-            routing.setSign(instructions.get(i).getSign());
-            routing.setTime(instructions.get(i).getTime());
-
-            String name = instructions.get(i).getName();
-
-            if (StringUtils.isNotBlank(name)) {
-                try {
-                    Integer.parseInt(name.substring(5, 6));
-
-                    routing.setName(name);
-                } catch (Exception e) {
-                    routing.setName(nameToFloorMap.get(name));
-                }
-            } else {
-                routing.setName("");
-            }
-
-            routings.add(routing);
-        }
-        return routings;
+        return null;
     }
 
     /**

@@ -5,13 +5,10 @@ import com.you07.eas.model.StudentInfo;
 import com.you07.eas.model.TeacherInfo;
 import com.you07.eas.service.StudentInfoService;
 import com.you07.eas.service.TeacherInfoService;
-import com.you07.map.model.MapZone;
-import com.you07.map.service.MapZoneService;
 import com.you07.util.CoordinateUtil;
 import com.you07.vtp.dao.LocationLatestDao;
 import com.you07.vtp.model.LocationCampusInfo;
 import com.you07.vtp.model.LocationLatest;
-import org.geotools.geometry.jts.JTS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

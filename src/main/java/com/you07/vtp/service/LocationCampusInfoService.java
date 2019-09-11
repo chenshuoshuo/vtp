@@ -15,8 +15,6 @@ import java.util.List;
 @Service
 public class LocationCampusInfoService {
 
-    @Value("${oauth.serverMapUrl}")
-    private String mapApiUrl;
 
     @Autowired
     private LocationCampusInfoDao locationCampusInfoDao;
@@ -58,12 +56,12 @@ public class LocationCampusInfoService {
     public void initCampus(){
 
 
-        List<MapZoneVO> zoneList = RestTemplateUtil.getJSONObjectForCmGis(mapApiUrl+"/map/v3/zone/list/2")
+        List<MapZoneVO> zoneList = RestTemplateUtil.getJSONObjectForCmGis("/map/v3/zone/list/2")
                 .getJSONArray("data").toJavaList(MapZoneVO.class);
 
         for (MapZoneVO z : zoneList) {
             String id = z.getId();
-            MapZoneVO mapZoneVO = RestTemplateUtil.getJSONObjectForCmGis(mapApiUrl + "/map/v2/zone/" + id)
+            MapZoneVO mapZoneVO = RestTemplateUtil.getJSONObjectForCmGis( "/map/v2/zone/" + id)
                     .getObject("data", MapZoneVO.class);
 
             LocationCampusInfo locationCampusInfo = new LocationCampusInfo();
