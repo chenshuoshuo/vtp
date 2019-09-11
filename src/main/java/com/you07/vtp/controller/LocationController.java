@@ -42,11 +42,11 @@ public class LocationController {
     @Autowired
     private LocationHitoryService locationHitoryService;
     @Autowired
-    private StudentInfoService studentInfoService;
-    @Autowired
     private LocationTrackManagerService locationTrackManagerService;
     @Autowired
     private TeacherInfoService teacherInfoService;
+    @Autowired
+    private StudentInfoService studentInfoService;
 
     private static GeometryCollection LINES = null;
 

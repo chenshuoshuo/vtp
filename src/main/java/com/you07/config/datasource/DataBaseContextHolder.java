@@ -10,7 +10,7 @@ public class DataBaseContextHolder {
     private static final ThreadLocal<DataBaseType> contextHolder = new ThreadLocal<>();
 
     public enum DataBaseType {
-        POSTGRESDEFAULT,POSTGRESGIS,POSTGRESEAS
+        POSTGRESDEFAULT
     }
 
     /**

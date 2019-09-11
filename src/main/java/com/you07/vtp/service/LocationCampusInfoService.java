@@ -16,6 +16,7 @@ import java.util.List;
 public class LocationCampusInfoService {
 
 
+
     @Autowired
     private LocationCampusInfoDao locationCampusInfoDao;
 
