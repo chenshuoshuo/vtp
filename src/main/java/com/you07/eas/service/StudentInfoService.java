@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.you07.config.datasource.DataBaseContextHolder;
 import com.you07.config.datasource.annotation.DataSourceConnection;
-import com.you07.eas.dao.StudentInfoDao;
 import com.you07.eas.model.Result;
 import com.you07.eas.model.StudentInfo;
 import com.you07.eas.model.TeacherInfo;
@@ -21,18 +20,6 @@ import java.util.Map;
 
 @Service
 public class StudentInfoService {
-    @Autowired
-    private StudentInfoDao studentInfoDao;
-
-    @DataSourceConnection(DataBaseContextHolder.DataBaseType.POSTGRESEAS)
-    public List<StudentInfo> listAll(){
-        return studentInfoDao.listAll();
-    }
-
- /*   @DataSourceConnection(DataBaseContextHolder.DataBaseType.POSTGRESEAS)
-    public StudentInfo get(String studentNo){
-        return studentInfoDao.loadByStudentNo(studentNo);
-    }*/
     public StudentInfo get(String studentNo){
         JSONObject jsonObject = null;
         jsonObject = RestTemplateUtil.getJSONObjectForCmIps("/os/studentInfo/get/"+studentNo);
@@ -58,23 +45,6 @@ public class StudentInfoService {
         studentInfo.setOrgName(academyName);
         return studentInfo;
     }
-
-    @DataSourceConnection(DataBaseContextHolder.DataBaseType.POSTGRESEAS)
-    public List<StudentInfo> loadWithClassCodes(String classCodes){
-        classCodes = "'" + classCodes.replaceAll(",", "','") + "'";
-
-        return studentInfoDao.loadWithClassCodes(classCodes);
-    }
-
-    @DataSourceConnection(DataBaseContextHolder.DataBaseType.POSTGRESEAS)
-    public List<StudentInfo> queryWithClass(String classCode){
-        return studentInfoDao.queryWithClassCode(classCode);
-    }
-
-    /*@DataSourceConnection(DataBaseContextHolder.DataBaseType.POSTGRESEAS)
-    public List<StudentInfo> searchWithCodeName(String keyword){
-        return studentInfoDao.searchWithCodeName(keyword);
-    }*/
 
     public List<StudentInfo> searchWithCodeName(String keyword){
         JSONObject jsonObject = null;
@@ -109,8 +79,11 @@ public class StudentInfoService {
         return studentInfoList;
     }
 
-    @DataSourceConnection(DataBaseContextHolder.DataBaseType.POSTGRESEAS)
     public List<StudentInfo> selectWithPrivilegeOrgCodes(String keyWord, String privilegeOrgCodes){
-        return studentInfoDao.selectWithPrivilegeOrgCodes(keyWord,"'" + privilegeOrgCodes + "'", DateUtil.getDefaultInstance().getSchoolYear());
+        return null;
+    }
+
+    public List<StudentInfo> loadWithClassCodes(String classCode) {
+        return null;
     }
 }
