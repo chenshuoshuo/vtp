@@ -12,6 +12,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -88,7 +89,9 @@ public class RestTemplateUtil {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new StringHttpMessageConverter(Charset.forName("utf-8")));
         if (interceptor != null) {
-            restTemplate.setInterceptors(Collections.singletonList(interceptor));
+            restTemplate.setInterceptors(Collections.<ClientHttpRequestInterceptor>singletonList(interceptor));
+
+
         }
         JSONObject responseJson = restTemplate.getForEntity(url, JSONObject.class).getBody();
         return responseJson;
