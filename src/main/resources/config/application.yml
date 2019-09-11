@@ -1,11 +1,18 @@
 server:
   port: 8081
-  undertow:
-    io-threads: 4
-    worker-threads: 32
-    buffer-size: 2048
-    direct-buffers: true
-
+  servlet:
+    context-path: /vtp
+  error:
+    #错误是否包含异常信息
+    include-exception: true
+    compression:
+      #是否启用gzip压缩
+      enabled: true
+  tomcat:
+    max-connections: 1000
+    max-threads: 200
+    min-spare-threads: 10
+    max-swallow-size: 1000MB
 spring:
   mvc:
     view:
@@ -30,7 +37,7 @@ pagehelper:
   support-methods-arguments: true
   helper-dialect: PostgreSQL
 mapper:
-  mappers: BaseDao
+  mappers: com.you07.common.BaseDao
   not-empty: false
 logging:
   config: classpath:log4j2.xml
