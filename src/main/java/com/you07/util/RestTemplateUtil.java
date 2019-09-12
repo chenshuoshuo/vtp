@@ -48,8 +48,9 @@ public class RestTemplateUtil {
     /**
      * egan
      * 向cmips发送请求
-     * @date 2019/9/9 10:38
+     *
      * @param uri 相对路径
+     * @date 2019/9/9 10:38
      **/
     public static JSONObject getJSONObjectForCmIps(String uri) {
         // 获取默认的请求客户端
@@ -76,8 +77,9 @@ public class RestTemplateUtil {
     /**
      * egan
      * 向cmgis发送请求
-     * @date 2019/9/9 10:38
+     *
      * @param uri 相对路径
+     * @date 2019/9/9 10:38
      **/
     public static JSONObject getJSONObjectForCmGis(String uri) {
         LocationSystemConfig systemConfig = systemConfigDao.loadDefault();
@@ -85,13 +87,20 @@ public class RestTemplateUtil {
         return sendRequest(systemConfig.getLqMapGisUrl() + uri, interceptor);
     }
 
+    public static JSONObject postJSONObjectFormCmGis(String uri, String postData) {
+        LocationSystemConfig systemConfig = systemConfigDao.loadDefault();
+        RestTemplateInterceptor interceptor = new RestTemplateInterceptor(systemConfig.getGisMapToken(), "Basic");
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new StringHttpMessageConverter(Charset.forName("utf-8")));
+        restTemplate.setInterceptors(Collections.<ClientHttpRequestInterceptor>singletonList(interceptor));
+        return restTemplate.postForEntity(uri, postData, JSONObject.class).getBody();
+    }
+
     private static JSONObject sendRequest(String url, RestTemplateInterceptor interceptor) {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new StringHttpMessageConverter(Charset.forName("utf-8")));
         if (interceptor != null) {
             restTemplate.setInterceptors(Collections.<ClientHttpRequestInterceptor>singletonList(interceptor));
-
-
         }
         JSONObject responseJson = restTemplate.getForEntity(url, JSONObject.class).getBody();
         return responseJson;

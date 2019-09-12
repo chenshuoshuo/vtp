@@ -1,6 +1,7 @@
 package com.you07.vtp;
 
 import com.you07.util.RestTemplateUtil;
+import com.you07.vtp.controller.LocationController;
 import com.you07.vtp.dao.LocationLatestDao;
 import com.you07.vtp.model.LocationLatest;
 import com.you07.vtp.service.LocationLatestService;
@@ -24,12 +25,13 @@ public class VtpApplicationTests {
 	@Resource
 	private LocationLatestDao locationLatestDao;
 
+	@Autowired
+	private LocationController locationController;
+
 	@Test
 	public void contextLoads() {
-//		RestTemplateUtil.getJSONObjectForCmGis()
-//		locationCampusInfoService.initCampus();
-		LocationLatest locationLatest = locationLatestDao.selectByPrimaryKey("2017223030056");
-		locationLatestService.saveLocation(locationLatest);
+		String str = locationController.loadTrack("zx240016", "2019-06-29:00:00:00", null, null, null, null);
+		System.out.println(str);
 	}
 
 }
