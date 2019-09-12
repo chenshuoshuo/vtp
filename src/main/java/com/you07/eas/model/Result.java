@@ -1,5 +1,7 @@
 package com.you07.eas.model;
 
+import java.util.List;
+
 public class Result<T> {
     private Boolean status;
     private Integer code;
