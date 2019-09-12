@@ -254,7 +254,7 @@ public interface LocationHistoryDao {
      * @return
      */
     @Select({
-            "select * from ${tableName} where userid = #{userid} and substr(floorid, 0, 5) = '${campusId}'",
+            "select * from ${tableName} where userid = #{userid} and zone_id = '${campusId}'",
             "and location_time > to_timestamp(#{startTime},'yyyy-mm-dd hh24:mi:ss')",
             "and location_time < to_timestamp(#{endTime},'yyyy-mm-dd hh24:mi:ss')",
             "and lng is not null",
@@ -278,7 +278,7 @@ public interface LocationHistoryDao {
      * @return
      */
     @Select({
-            "select * from ${tableName} where substr(floorid, 0, 5) = '${campusId}'",
+            "select * from ${tableName} where zone_id = '${campusId}'",
             "and location_time > to_timestamp(#{startTime},'yyyy-mm-dd hh24:mi:ss')",
             "and location_time < to_timestamp(#{endTime},'yyyy-mm-dd hh24:mi:ss')",
             "and lng is not null",

@@ -2,8 +2,8 @@ package com.you07.config.datasource;
 
 import com.alibaba.druid.support.http.WebStatFilter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,32 +34,6 @@ public class DataSourceConfiguration {
     }
 
 
-
-    @Bean(name = "postgresGisDataSource")
-    @ConfigurationProperties(prefix = "druid.postgresgis")
-    public DataSource postgresGisDataSource() {
-        DataSource postgresGisDataSource = DataSourceBuilder.create().type(dataSourceType).build();
-        System.out.println("=============postgresgis" + postgresGisDataSource);
-        return postgresGisDataSource;
-    }
-
-
-    @Bean(name = "postgresEasDataSource")
-    @ConfigurationProperties(prefix = "druid.postgres-eas")
-    public DataSource postgresEasDataSource() {
-        DataSource postgresEasDataSource = DataSourceBuilder.create().type(dataSourceType).build();
-        System.out.println("=============postgresEas" + postgresEasDataSource);
-        return postgresEasDataSource;
-    }
-
-
-//    @Bean(name = "mysqlSlaveOneDataSource")
-//    @ConfigurationProperties(prefix = "druid.mysqlslaveone")
-//    public DataSource mysqlSlaveDataSource() {
-//        DataSource mysqlSlaveDataSource = DataSourceBuilder.create().type(dataSourceType).build();
-//        System.out.println("=============msyqlSlave" + mysqlSlaveDataSource);
-//        return mysqlSlaveDataSource;
-//    }
 
 
     @Bean

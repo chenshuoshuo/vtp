@@ -87,13 +87,14 @@ public class RestTemplateUtil {
         return sendRequest(systemConfig.getLqMapGisUrl() + uri, interceptor);
     }
 
-    public static JSONObject postJSONObjectFormCmGis(String uri, String postData) {
+    public static JSONObject postJSONObjectFormCmGis(String uri, Object postData) {
         LocationSystemConfig systemConfig = systemConfigDao.loadDefault();
         RestTemplateInterceptor interceptor = new RestTemplateInterceptor(systemConfig.getGisMapToken(), "Basic");
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new StringHttpMessageConverter(Charset.forName("utf-8")));
         restTemplate.setInterceptors(Collections.<ClientHttpRequestInterceptor>singletonList(interceptor));
-        return restTemplate.postForEntity(uri, postData, JSONObject.class).getBody();
+        JSONObject jsonObject =  restTemplate.postForEntity(systemConfig.getLqMapGisUrl() + uri, postData, JSONObject.class).getBody();
+        return jsonObject;
     }
 
     private static JSONObject sendRequest(String url, RestTemplateInterceptor interceptor) {

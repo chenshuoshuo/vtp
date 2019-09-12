@@ -30,7 +30,7 @@ public class VtpApplicationTests {
 
 	@Test
 	public void contextLoads() {
-		String str = locationController.loadTrack("zx240016", "2019-06-29:00:00:00", null, null, null, null);
+		String str = locationController.loadTrack("zx240016", "2019-06-29 00:00:00", "2019-06-30 23:00:00", 1, 24, null);
 		System.out.println(str);
 	}
 

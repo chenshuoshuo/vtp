@@ -1,7 +1,10 @@
 package com.you07.vtp.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.graphhopper.storage.GraphHopperStorage;
 import com.graphhopper.storage.index.LocationIndex;
 import com.vividsolutions.jts.algorithm.Angle;
@@ -47,11 +50,11 @@ public class LocationController {
     @Autowired
     private LocationHitoryService locationHitoryService;
     @Autowired
-    private StudentInfoService studentInfoService;
-    @Autowired
     private LocationTrackManagerService locationTrackManagerService;
     @Autowired
     private TeacherInfoService teacherInfoService;
+    @Autowired
+    private StudentInfoService studentInfoService;
 
     private static GeometryCollection LINES = null;
 
@@ -215,7 +218,7 @@ public class LocationController {
                     LocationHistory last = locationHistories.get(0);
                     for (int i = 1; i < locationHistories.size(); ) {
                         LocationHistory current = locationHistories.get(i);
-                        if (last.getLat().equals(current.getLat()) && last.getLng().equals(current.getLng()) && last.getFloorid().equals(last.getFloorid())) {
+                        if (last.getLat().equals(current.getLat()) && last.getLng().equals(current.getLng())) {
                             locationHistories.remove(current);
                         } else {
                             last = current;
@@ -235,7 +238,8 @@ public class LocationController {
                     });
 
                     //向cmgis请求路径规划
-                    List<CoordinateVO> list = RestTemplateUtil.postJSONObjectFormCmGis("/map/route/v3/bind/road/"+locationHistories.get(0).getZoneId(), JSON.toJSONString(coordinateVOS)).getObject("data", List.class);
+                    String jsonArray = RestTemplateUtil.postJSONObjectFormCmGis("/map/route/v3/bind/road/"+locationHistories.get(0).getZoneId(), coordinateVOS).getJSONArray("data").toJSONString();
+                    List<CoordinateVO> list = JSON.parseArray(jsonArray, CoordinateVO.class);
                     List<Double[]> trackList = new LinkedList<>();
                     list.forEach(c->trackList.add(c.toArray()));
 
@@ -329,44 +333,45 @@ public class LocationController {
      * @return
      */
     public Boolean hasPrivilege(String userid, String managerId) {
+        return true;
         // 传入的用户账号为单个
-        if (!userid.contains(",")) {
-            // 检查查询用户的信息
-            StudentInfo studentInfo = studentInfoService.get(userid);
-            TeacherInfo teacherInfo = teacherInfoService.get(userid);
-            // 定义用户组织机构代码
-            String orgCode = null;
-            if (studentInfo != null && studentInfo.getClassInfo() != null) {
-                orgCode = studentInfo.getClassInfo().getClasscode();
-            }
-            if (teacherInfo != null && teacherInfo.getDepartmentInfo() != null) {
-                orgCode = teacherInfo.getDepartmentInfo().getXsbmdm();
-            }
-            // 要查的用户不为空，且能正确查到所属组织机构
-            if (orgCode != null) {
-                // 获取管理员
-                LocationTrackManager manager = locationTrackManagerService.get(managerId);
-                // 管理员不为空，且权限不为空
-                if (manager != null && manager.getOrgCodes() != null) {
-                    String privilegeOrgCodes = manager.getOrgCodes();
-                    // 管理员权限组织机构代码包含查询用户的组织机构代码
-                    // 才返回成功
-                    if (privilegeOrgCodes.contains(orgCode + ",") || privilegeOrgCodes.contains("," + orgCode)) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-
-            } else {
-                return false;
-            }
-
-        } else {
-            return true;
-        }
+//        if (!userid.contains(",")) {
+//            // 检查查询用户的信息
+//            StudentInfo studentInfo = studentInfoService.get(userid);
+//            TeacherInfo teacherInfo = teacherInfoService.get(userid);
+//            // 定义用户组织机构代码
+//            String orgCode = null;
+//            if (studentInfo != null && studentInfo.getClassInfo() != null) {
+//                orgCode = studentInfo.getClassInfo().getClasscode();
+//            }
+//            if (teacherInfo != null && teacherInfo.getDepartmentInfo() != null) {
+//                orgCode = teacherInfo.getDepartmentInfo().getXsbmdm();
+//            }
+//            // 要查的用户不为空，且能正确查到所属组织机构
+//            if (orgCode != null) {
+//                // 获取管理员
+//                LocationTrackManager manager = locationTrackManagerService.get(managerId);
+//                // 管理员不为空，且权限不为空
+//                if (manager != null && manager.getOrgCodes() != null) {
+//                    String privilegeOrgCodes = manager.getOrgCodes();
+//                    // 管理员权限组织机构代码包含查询用户的组织机构代码
+//                    // 才返回成功
+//                    if (privilegeOrgCodes.contains(orgCode + ",") || privilegeOrgCodes.contains("," + orgCode)) {
+//                        return true;
+//                    } else {
+//                        return false;
+//                    }
+//                } else {
+//                    return false;
+//                }
+//
+//            } else {
+//                return false;
+//            }
+//
+//        } else {
+//            return true;
+//        }
     }
 
     /**

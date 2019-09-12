@@ -10,14 +10,13 @@ public class CoordinateVO {
     private Double lat;
     private Double lon;
 
-    public CoordinateVO(Double lat, Double lon) {
-        this.lat = lat;
-        this.lon = lon;
+    public CoordinateVO() {
+
     }
 
     public CoordinateVO(double[] latlon) {
         lat = latlon[0];
-        lat = latlon[1];
+        lon = latlon[1];
     }
 
     public Double getLat() {

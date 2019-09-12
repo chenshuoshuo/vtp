@@ -3,6 +3,7 @@ package com.you07.eas.model;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 
 /**
@@ -68,6 +69,15 @@ public class StudentInfo{
 	 */
 	@Column(name = "jg")
 	private String jg;
+	/***
+	 * 组织码
+	 **/
+	private String orgCode;
+
+	/***
+	 * 组织码
+	 **/
+	private String orgName;
 
 	public String getStudentno() {
 		return studentno;
@@ -155,5 +165,21 @@ public class StudentInfo{
 
 	public void setJg(String jg) {
 		this.jg = jg;
+	}
+	@Transient
+	public String getOrgCode() {
+		return orgCode;
+	}
+
+	public void setOrgCode(String orgCode) {
+		this.orgCode = orgCode;
+	}
+	@Transient
+	public String getOrgName() {
+		return orgName;
+	}
+
+	public void setOrgName(String orgName) {
+		this.orgName = orgName;
 	}
 }
