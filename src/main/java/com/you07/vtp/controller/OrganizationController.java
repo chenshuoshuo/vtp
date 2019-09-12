@@ -125,8 +125,8 @@ public class OrganizationController {
         MessageListBean<ClassInfo> messageListBean = new MessageListBean<ClassInfo>();
         try {
             LocationTrackManager manager = locationTrackManagerService.get(managerId);
-
-            List<ClassInfo> list = classInfoService.selectWithPrivilegeOrgCodes(keyWord, manager.getOrgCodes().replaceAll(",", "','"));
+            String orgCodes = manager.getOrgCodes();
+            List<ClassInfo> list = classInfoService.selectWithPrivilegeOrgCodes(keyWord, orgCodes);
             if(list.size() > 0){
                 messageListBean.setData(list);
                 messageListBean.setStatus(true);
@@ -155,8 +155,8 @@ public class OrganizationController {
         MessageListBean<StudentInfo> messageListBean = new MessageListBean<StudentInfo>();
         try {
             LocationTrackManager manager = locationTrackManagerService.get(managerId);
-
-            List<StudentInfo> list = studentInfoService.selectWithPrivilegeOrgCodes(keyWord, manager.getOrgCodes().replaceAll(",", "','"));
+            String orgCodes = manager.getOrgCodes().replaceAll(",", "','");
+            List<StudentInfo> list = studentInfoService.selectWithPrivilegeOrgCodes(keyWord, orgCodes);
             if(list.size() > 0){
                 messageListBean.setData(list);
                 messageListBean.setStatus(true);
