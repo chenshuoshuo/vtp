@@ -27,13 +27,11 @@ public class RestTemplateInterceptor implements ClientHttpRequestInterceptor {
     public RestTemplateInterceptor(String accessToken, String type) {
         this.accessToken = accessToken;
         this.type = type;
-        System.out.println(accessToken);
     }
 
     public RestTemplateInterceptor(AccessTokenResponse tokenResponse) {
         //第一个字母大写
         accessToken = new String(tokenResponse.getToken_type().substring(0, 1)).toUpperCase() + tokenResponse.getToken_type().substring(1) + " " + tokenResponse.getAccess_token();
-        System.out.println(accessToken);
     }
 
     @Override

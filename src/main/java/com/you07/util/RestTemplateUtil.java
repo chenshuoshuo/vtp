@@ -58,7 +58,7 @@ public class RestTemplateUtil {
     public static JSONObject getJSONObjectForCmIps(String uri) {
         // 获取默认的请求客户端
         //判断token是否过期
-        if (tokenResponse.getAccess_token() == null || (System.currentTimeMillis() - tokenResponse.getTokenTime() >= (Long.valueOf(tokenResponse.getExpires_in())*216000)))
+        if (tokenResponse.getAccess_token() == null || (System.currentTimeMillis() - tokenResponse.getTokenTime() >= (Long.valueOf(tokenResponse.getExpires_in())*1000)))
         {
             //拿token
             try {

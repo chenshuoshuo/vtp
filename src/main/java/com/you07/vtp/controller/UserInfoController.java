@@ -60,7 +60,7 @@ public class UserInfoController {
                     username = teacherInfo.getName();
                     orgName = teacherInfo.getOrgName();
                 } else{
-                    username = studentInfo.getName();
+                    username = studentInfo.getRealName();
                     orgName = studentInfo.getOrgName();
                 }
 
@@ -91,7 +91,7 @@ public class UserInfoController {
         return JSON.toJSONString(messageBean);
     }
 
-    @ApiOperation("搜索用户信息")
+    /*@ApiOperation("搜索用户信息")
     @PostMapping("/search")
     @ResponseBody
     public String search(@ApiParam(name="keyword",value="学工号/姓名",required=false) @RequestParam(name = "keyword", required = true) String keyword){
@@ -123,7 +123,7 @@ public class UserInfoController {
                     if(studentInfo.getClassInfo() != null){
                         userInfo.setOrgName(studentInfo.getClassInfo().getClassname());
                     }
-                    userInfo.setUsername(studentInfo.getName());
+                    userInfo.setUsername(studentInfo.getRealName());
                     userInfo.setUserType("学生");
 
                     userInfoList.add(userInfo);
@@ -147,5 +147,5 @@ public class UserInfoController {
         }
 
         return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
-    }
+    }*/
 }

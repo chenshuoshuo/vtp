@@ -16,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class StudentInfoService {
@@ -44,7 +41,7 @@ public class StudentInfoService {
             jsonObject3 = RestTemplateUtil.getJSONObjectForCmIps("/os/academy/get/" + academyCode);
             String academyName = jsonObject3.getJSONObject("data").getString("academyName");
             studentInfo.setGender(gender);
-            studentInfo.setName(name);
+            studentInfo.setRealName(name);
             studentInfo.setOrgCode(academyCode);
             studentInfo.setOrgName(academyName);
             return studentInfo;
@@ -53,13 +50,41 @@ public class StudentInfoService {
         }
     }
 
-    public List<StudentInfo> searchWithCodeName(String keyword) {
+    /*public List<StudentInfo> searchWithCodeName(String keyword) {
         JSONObject jsonObject = null;
         jsonObject = RestTemplateUtil.getJSONObjectForCmIps("/os/studentInfo/search?keyWord=" + keyword);
+        JSONArray jsonArray = jsonObject.getJSONArray("data");
+        List<StudentInfo> studentInfoList1 = jsonArray.toJavaList(StudentInfo.class);
         List<StudentInfo> studentInfoList = new ArrayList<>();
-        Result<List<StudentInfo>> listResult = jsonObject.toJavaObject(Result.class);
-        List<StudentInfo> studentInfoList1 = listResult.getData();
-        for (int i = 0; i < studentInfoList1.size(); i++) {
+        *//*Result<List<StudentInfo>> listResult = jsonObject.toJavaObject(Result.class);
+        List<StudentInfo> studentInfoList1 = listResult.getData();*//*
+        for(StudentInfo s : studentInfoList1){
+            //根据班级号得到机构信息
+            *//*String classCode = s.getClassCode();
+            JSONObject jsonObject1 = null;
+            jsonObject1 = RestTemplateUtil.getJSONObjectForCmIps("/os/classInfo/get/" + classCode);
+            String majorCode = jsonObject1.getJSONObject("data").getString("majorCode");
+            String className = jsonObject1.getJSONObject("data").getString("className");
+            String grade = jsonObject1.getJSONObject("data").getString("grade");
+            ClassInfo classInfo = new ClassInfo();
+            classInfo.setGrade(grade);
+            classInfo.setClassname(className);
+            classInfo.setClasscode(classCode);
+            s.setClassInfo(classInfo);
+            //根据专业编号得到院系编号
+            JSONObject jsonObject2 = null;
+            jsonObject2 = RestTemplateUtil.getJSONObjectForCmIps("/os/major/get/" + majorCode);
+            String academyCode = jsonObject2.getJSONObject("data").getString("academyCode");
+            //根据院系编号得到院系名
+            JSONObject jsonObject3 = null;
+            jsonObject3 = RestTemplateUtil.getJSONObjectForCmIps("/os/academy/get/" + academyCode);
+            String academyName = jsonObject3.getJSONObject("data").getString("academyName");
+            s.setOrgCode(academyCode);
+            s.setOrgName(academyName);*//*
+            studentInfoList.add(s);
+        }
+
+        *//*for (int i = 0; i < studentInfoList1.size(); i++) {
             StudentInfo studentInfo1 = new StudentInfo();
             Map<String, Object> map = new LinkedHashMap<>();
             map = (Map<String, Object>) studentInfoList1.get(i);
@@ -90,9 +115,9 @@ public class StudentInfoService {
             studentInfo1.setOrgCode(academyCode);
             studentInfo1.setOrgName(academyName);
             studentInfoList.add(studentInfo1);
-        }
+        }*//*
         return studentInfoList;
-    }
+    }*/
 
     public List<StudentInfo> selectWithPrivilegeOrgCodes(String keyWord, String privilegeOrgCodes) {
         String[] strings = privilegeOrgCodes.split(",");
@@ -115,7 +140,7 @@ public class StudentInfoService {
             StudentInfo studentInfo = new StudentInfo();
             List<String> rulerList = (List<String>) studentInfoList1.get(i);
             studentInfo.setStudentno(rulerList.get(0));
-            studentInfo.setName(rulerList.get(2));
+            studentInfo.setRealName(rulerList.get(2));
             studentInfo.setGender(rulerList.get(3));
             //通过班级编码拿到班级信息
             String classCode1 = rulerList.get(1);
@@ -155,7 +180,7 @@ public class StudentInfoService {
             StudentInfo studentInfo = new StudentInfo();
             List<String> rulerList = (List<String>) studentInfoList1.get(i);
             studentInfo.setStudentno(rulerList.get(0));
-            studentInfo.setName(rulerList.get(2));
+            studentInfo.setRealName(rulerList.get(2));
             studentInfo.setGender(rulerList.get(3));
             //通过班级编码拿到班级信息
             String classCode1 = rulerList.get(1);
