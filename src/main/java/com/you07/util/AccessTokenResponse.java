@@ -1,5 +1,7 @@
 package com.you07.util;
 
+import java.util.Date;
+
 /**
  * @author egan
  * @date 2019/9/4 17:26
@@ -18,6 +20,8 @@ public class AccessTokenResponse {
     private String jti;
 
     private String scope;
+
+    private Long tokenTime;
 
     public String getExpires_in() {
         return expires_in;
@@ -66,4 +70,13 @@ public class AccessTokenResponse {
     public void setToken_type(String token_type) {
         this.token_type = token_type;
     }
+
+    public Long getTokenTime() {
+        return tokenTime;
+    }
+
+    public void setTokenTime(Long tokenTime) {
+        this.tokenTime = tokenTime;
+    }
+
 }

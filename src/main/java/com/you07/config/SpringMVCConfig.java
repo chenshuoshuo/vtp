@@ -33,6 +33,7 @@ public class SpringMVCConfig extends WebMvcConfigurerAdapter {
 
     /**
      * 跨域配置
+     *
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
