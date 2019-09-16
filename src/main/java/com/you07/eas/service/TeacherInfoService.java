@@ -46,6 +46,7 @@ public class TeacherInfoService {
             TeacherInfo teacherInfo = new TeacherInfo();
             Map<String, Object> map = new LinkedHashMap<>();
             map = (Map<String, Object>) teacherInfos.get(i);
+            teacherInfo.setTeachercode((String) map.get("staffNumber"));
             teacherInfo.setName((String) map.get("realName"));
             teacherInfo.setGender((String) map.get("gender"));
             teacherInfo.setOrgCode((String) map.get("organizationCode"));

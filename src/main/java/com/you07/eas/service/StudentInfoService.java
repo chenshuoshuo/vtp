@@ -63,6 +63,7 @@ public class StudentInfoService {
             StudentInfo studentInfo1 = new StudentInfo();
             Map<String, Object> map = new LinkedHashMap<>();
             map = (Map<String, Object>) studentInfoList1.get(i);
+            studentInfo1.setStudentno((String) map.get("studentNo"));
             studentInfo1.setName((String) map.get("realName"));
             studentInfo1.setGender((String) map.get("gender"));
             String classCode = (String) map.get("classCode");
@@ -71,6 +72,13 @@ public class StudentInfoService {
             JSONObject jsonObject1 = null;
             jsonObject1 = RestTemplateUtil.getJSONObjectForCmIps("/os/classInfo/get/" + classCode);
             String majorCode = jsonObject1.getJSONObject("data").getString("majorCode");
+            String className = jsonObject1.getJSONObject("data").getString("className");
+            String grade = jsonObject1.getJSONObject("data").getString("grade");
+            ClassInfo classInfo = new ClassInfo();
+            classInfo.setGrade(grade);
+            classInfo.setClassname(className);
+            classInfo.setClasscode(classCode);
+            studentInfo1.setClassInfo(classInfo);
             //根据专业编号得到院系编号
             JSONObject jsonObject2 = null;
             jsonObject2 = RestTemplateUtil.getJSONObjectForCmIps("/os/major/get/" + majorCode);

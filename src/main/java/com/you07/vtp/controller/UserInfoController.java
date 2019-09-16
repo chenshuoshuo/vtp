@@ -108,7 +108,7 @@ public class UserInfoController {
                     userInfo.setUserId(teacherInfo.getTeachercode());
                     userInfo.setAvatar("");
                     if(teacherInfo.getDepartmentInfo() != null){
-                        userInfo.setOrgName(teacherInfo.getDepartmentInfo().getXsbmmc());
+                        userInfo.setOrgName(teacherInfo.getOrgName());
                     }
                     userInfo.setUsername(teacherInfo.getName());
                     userInfo.setUserType("教职工");
