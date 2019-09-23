@@ -12,13 +12,10 @@ import javax.persistence.Transient;
  * @version 1.0
  * @since 2018-8-6 09:39:01
  */
-@Table(name = "eas_studentinfo")
 public class StudentInfo{
 	/**
 	 * 学号
 	 */
-	@Id
-	@Column(name = "studentno")
 	private String studentno;
 	/**
 	 * 班级信息
@@ -27,47 +24,38 @@ public class StudentInfo{
 	/**
 	 * 姓名
 	 */
-	@Column(name = "name")
-	private String name;
+	private String realName;
 	/**
 	 * 性别
 	 */
-	@Column(name = "gender")
 	private String gender;
 	/**
 	 * 生日
 	 */
-	@Column(name = "birth")
 	private String birth;
 	/**
 	 * 年级
 	 */
-	@Column(name = "nj")
 	private String nj;
 	/**
 	 * 微信号
 	 */
-	@Column(name = "wechat")
 	private String wechat;
 	/**
 	 * 手机号
 	 */
-	@Column(name = "tel")
 	private String tel;
 	/**
 	 * 身份证号
 	 */
-	@Column(name = "sfzh")
 	private String sfzh;
 	/**
 	 * 考生号
 	 */
-	@Column(name = "ksh")
 	private String ksh;
 	/**
 	 * 籍贯
 	 */
-	@Column(name = "jg")
 	private String jg;
 	/***
 	 * 组织码
@@ -78,6 +66,10 @@ public class StudentInfo{
 	 * 组织码
 	 **/
 	private String orgName;
+	/**
+	 * 班级编号
+	 */
+	private String classCode;
 
 	public String getStudentno() {
 		return studentno;
@@ -95,12 +87,12 @@ public class StudentInfo{
 		this.classInfo = classInfo;
 	}
 
-	public String getName() {
-		return name;
+	public String getRealName() {
+		return realName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setRealName(String realName) {
+		this.realName = realName;
 	}
 
 	public String getGender() {
@@ -181,5 +173,13 @@ public class StudentInfo{
 
 	public void setOrgName(String orgName) {
 		this.orgName = orgName;
+	}
+
+	public String getClassCode() {
+		return classCode;
+	}
+
+	public void setClassCode(String classCode) {
+		this.classCode = classCode;
 	}
 }

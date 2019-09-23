@@ -51,7 +51,7 @@ public class LocationLatestService {
             realname = gender = orgCode = orgName = "";
             if (stu != null || tea != null) {
                 if (stu != null) {
-                    realname = stu.getName();
+                    realname = stu.getRealName();
                     orgCode = stu.getClassInfo().getClasscode();
                     orgName = stu.getClassInfo().getClassname();
                 }

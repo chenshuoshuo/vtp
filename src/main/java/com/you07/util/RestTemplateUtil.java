@@ -1,6 +1,7 @@
 package com.you07.util;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.you07.config.RestTemplateInterceptor;
 import com.you07.vtp.dao.LocationSystemConfigDao;
@@ -20,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collections;
+import java.util.Date;
 
 /**
  * @author wells
@@ -39,6 +41,7 @@ public class RestTemplateUtil {
     private static String clientId;
     private static String clientSecret;
     private static String grantType;
+    private static AccessTokenResponse tokenResponse = new AccessTokenResponse();
 
     @Autowired
     public RestTemplateUtil(LocationSystemConfigDao systemConfigDao) {
@@ -54,21 +57,27 @@ public class RestTemplateUtil {
      **/
     public static JSONObject getJSONObjectForCmIps(String uri) {
         // 获取默认的请求客户端
-        AccessTokenResponse tokenResponse;
-        try {
-            CloseableHttpClient client = HttpClients.createDefault();
+        //判断token是否过期
+        if (tokenResponse.getAccess_token() == null || (System.currentTimeMillis() - tokenResponse.getTokenTime() >= (Long.valueOf(tokenResponse.getExpires_in())*1000)))
+        {
+            //拿token
+            try {
+                CloseableHttpClient client = HttpClients.createDefault();
 //         通过HttpPost来发送post请求
-            HttpPost httpPostMethod = new HttpPost(tokenUrl + "?grant_type=" + grantType + "&client_id=" + clientId + "&client_secret=" + clientSecret);
-            CloseableHttpResponse response = client.execute(httpPostMethod);
-            String str = EntityUtils.toString(response.getEntity(), "UTF-8");
-            response.close();
-            tokenResponse = objectMapper.readValue(str, AccessTokenResponse.class);
+                HttpPost httpPostMethod = new HttpPost(tokenUrl + "?grant_type=" + grantType + "&client_id=" + clientId + "&client_secret=" + clientSecret);
+                CloseableHttpResponse response = client.execute(httpPostMethod);
+                String str = EntityUtils.toString(response.getEntity(), "UTF-8");
+                response.close();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+                tokenResponse = objectMapper.readValue(str, AccessTokenResponse.class);
+                //记录获得Token的时间
+                tokenResponse.setTokenTime(System.currentTimeMillis());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
-
         LocationSystemConfig systemConfig = systemConfigDao.loadDefault();
         RestTemplateInterceptor interceptor = new RestTemplateInterceptor(tokenResponse.getAccess_token(), "Bearer");
         return sendRequest(systemConfig.getIpsApi() + uri, interceptor);
