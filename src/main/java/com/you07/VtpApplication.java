@@ -44,8 +44,7 @@ public class VtpApplication implements ApplicationListener<ApplicationEvent> {
 				locationSystemConfig.setUpdateTime(new Date());
 				locationSystemConfigService.add(locationSystemConfig);
 
-				//初始化校区
-				locationCampusInfoService.initCampus();
+
 
 			}
 		}

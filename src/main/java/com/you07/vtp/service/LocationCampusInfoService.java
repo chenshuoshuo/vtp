@@ -54,7 +54,7 @@ public class LocationCampusInfoService {
      * @date 2019/9/5 15:53
      * @param
      **/
-    public void initCampus(){
+    public void refreshCampus(){
 
 
         List<MapZoneVO> zoneList = RestTemplateUtil.getJSONObjectForCmGis("/map/v3/zone/list/2")
@@ -65,15 +65,19 @@ public class LocationCampusInfoService {
             MapZoneVO mapZoneVO = RestTemplateUtil.getJSONObjectForCmGis( "/map/v2/zone/" + id)
                     .getObject("data", MapZoneVO.class);
 
-            LocationCampusInfo locationCampusInfo = new LocationCampusInfo();
-            locationCampusInfo.setCampusId(Integer.parseInt(mapZoneVO.getId()));
-            locationCampusInfo.setCampusName(mapZoneVO.getName());
-            locationCampusInfo.setCoordinates(convertCoordinateToStr(mapZoneVO.getPolygonBBox().getCoordinates()));
-            locationCampusInfo.setIsDefault(0);
-            locationCampusInfo.setIsDisplay(1);
+
 
 //            System.out.println(locationCampusInfo);
-            this.add(locationCampusInfo);
+            LocationCampusInfo locationCampusInfo = this.queryById(mapZoneVO.getId());
+            if(locationCampusInfo == null) {
+                locationCampusInfo = new LocationCampusInfo();
+                locationCampusInfo.setCampusId(Integer.parseInt(mapZoneVO.getId()));
+                locationCampusInfo.setIsDefault(0);
+                locationCampusInfo.setIsDisplay(1);
+            }
+            locationCampusInfo.setCampusName(mapZoneVO.getName());
+            locationCampusInfo.setCoordinates(convertCoordinateToStr(mapZoneVO.getPolygonBBox().getCoordinates()));
+            this.update(locationCampusInfo);
         }
 
     }
