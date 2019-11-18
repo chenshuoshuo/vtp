@@ -57,7 +57,7 @@ public class StudentInfoService {
         List<StudentInfo> studentInfoList = new ArrayList<>();
         Result<List<StudentInfo>> listResult = jsonObject.toJavaObject(Result.class);
         List<StudentInfo> studentInfoListFromDate = listResult.getData();
-        for(StudentInfo s : studentInfoListFromDate){
+        /*for(StudentInfo s : studentInfoListFromDate){
             //根据班级号得到机构信息
             String classCode = s.getClassCode();
             JSONObject jsonObjectClass = null;
@@ -81,7 +81,7 @@ public class StudentInfoService {
             s.setOrgCode(academyCode);
             s.setOrgName(academyName);
             studentInfoList.add(s);
-        }
+        }*/
 
         for (int i = 0; i < studentInfoListFromDate.size(); i++) {
             StudentInfo studentInfo = new StudentInfo();

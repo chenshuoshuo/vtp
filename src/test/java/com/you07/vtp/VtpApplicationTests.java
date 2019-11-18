@@ -19,19 +19,5 @@ import javax.annotation.Resource;
 @WebAppConfiguration
 public class VtpApplicationTests {
 
-	@Autowired
-	private LocationLatestService locationLatestService;
-
-	@Resource
-	private LocationLatestDao locationLatestDao;
-
-	@Autowired
-	private LocationController locationController;
-
-	@Test
-	public void contextLoads() {
-		String str = locationController.loadTrack("zx240016", "2019-06-29 00:00:00", "2019-06-30 23:00:00", 1, 24, null);
-		System.out.println(str);
-	}
 
 }
