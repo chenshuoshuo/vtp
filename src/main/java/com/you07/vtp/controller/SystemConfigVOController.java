@@ -19,13 +19,14 @@ import java.util.List;
 
 /**
  * 系统配置接口
- * @version 1.0
+ *
  * @author RY
+ * @version 1.0
  */
 
 @RestController
 @CrossOrigin
-@Api(value="系统配置 controller",tags={"系统配置接口"})
+@Api(value = "系统配置 controller", tags = {"系统配置接口"})
 @RequestMapping("/systemConfig")
 public class SystemConfigVOController {
 
@@ -37,7 +38,7 @@ public class SystemConfigVOController {
     @ApiOperation("获取产品配置信息")
     @GetMapping("/loadProductConfig")
     @ResponseBody
-    public String loadProductConfig(){
+    public String loadProductConfig() {
         MessageBean<SystemConfigVO> messageBean = new MessageBean<SystemConfigVO>(null);
 
         try {
@@ -59,10 +60,31 @@ public class SystemConfigVOController {
         return JSON.toJSONString(messageBean);
     }
 
+    @ApiOperation("刷新校区列表（重新拉取校区）")
+    @GetMapping("refresh")
+    @ResponseBody
+    public String refresh() {
+        MessageBean messageBean = new MessageBean<>(null);
+        try {
+            //初始化校区
+            locationCampusInfoService.refreshCampus();
+            messageBean.setStatus(true);
+            messageBean.setCode(200);
+            messageBean.setMessage("刷新成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            messageBean.setStatus(false);
+            messageBean.setCode(10001);
+            messageBean.setMessage("刷新失败");
+        }
+
+        return JSON.toJSONString(messageBean);
+    }
+
     @ApiOperation("保存地图配置信息")
     @PutMapping("/saveMapConfig")
     @ResponseBody
-    public String saveMapConfig(@ApiParam(name="locationSystemConfig",value="产品配置信息对象",required=true) @RequestBody LocationSystemConfig locationSystemConfig){
+    public String saveMapConfig(@ApiParam(name = "locationSystemConfig", value = "产品配置信息对象", required = true) @RequestBody LocationSystemConfig locationSystemConfig) {
         MessageBean<LocationSystemConfig> messageBean = new MessageBean<LocationSystemConfig>(null);
 
         try {
@@ -85,11 +107,11 @@ public class SystemConfigVOController {
     @ApiOperation("保存校区配置信息")
     @PutMapping("/saveCampusConfig")
     @ResponseBody
-    public String saveCampusConfig(@ApiParam(name="campusInfoList",value="校区信息列表",required=true) @RequestBody List<LocationCampusInfo> campusInfoList){
+    public String saveCampusConfig(@ApiParam(name = "campusInfoList", value = "校区信息列表", required = true) @RequestBody List<LocationCampusInfo> campusInfoList) {
         MessageListBean<LocationCampusInfo> messageListBean = new MessageListBean<LocationCampusInfo>(null);
 
         try {
-            for(LocationCampusInfo locationSystemConfig : campusInfoList){
+            for (LocationCampusInfo locationSystemConfig : campusInfoList) {
                 locationCampusInfoService.update(locationSystemConfig);
             }
             messageListBean.setData(locationCampusInfoService.queryAll());
@@ -109,7 +131,7 @@ public class SystemConfigVOController {
     @ApiOperation("获取综合配置信息")
     @GetMapping("/loadGeneralConfig")
     @ResponseBody
-    public String loadGeneralConfig(){
+    public String loadGeneralConfig() {
         MessageBean<LocationSystemConfig> messageBean = new MessageBean<LocationSystemConfig>(null);
 
         try {
@@ -132,7 +154,7 @@ public class SystemConfigVOController {
     @ApiOperation("保存综合配置信息")
     @PutMapping("/saveGeneralConfig")
     @ResponseBody
-    public String saveGeneralConfig(@ApiParam(name="locationSystemConfig",value="产品配置信息对象",required=true) @RequestBody LocationSystemConfig locationSystemConfig){
+    public String saveGeneralConfig(@ApiParam(name = "locationSystemConfig", value = "产品配置信息对象", required = true) @RequestBody LocationSystemConfig locationSystemConfig) {
         MessageBean<LocationSystemConfig> messageBean = new MessageBean<LocationSystemConfig>(null);
 
         try {
