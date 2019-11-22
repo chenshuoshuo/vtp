@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class LocationCampusInfoService {
@@ -60,24 +62,30 @@ public class LocationCampusInfoService {
         List<MapZoneVO> zoneList = RestTemplateUtil.getJSONObjectForCmGis("/map/v3/zone/list/2")
                 .getJSONArray("data").toJavaList(MapZoneVO.class);
 
+
         for (MapZoneVO z : zoneList) {
             String id = z.getId();
             MapZoneVO mapZoneVO = RestTemplateUtil.getJSONObjectForCmGis( "/map/v2/zone/" + id)
                     .getObject("data", MapZoneVO.class);
 
 
-
 //            System.out.println(locationCampusInfo);
+            boolean isUpdate = true;
             LocationCampusInfo locationCampusInfo = this.queryById(mapZoneVO.getId());
             if(locationCampusInfo == null) {
                 locationCampusInfo = new LocationCampusInfo();
                 locationCampusInfo.setCampusId(Integer.parseInt(mapZoneVO.getId()));
                 locationCampusInfo.setIsDefault(0);
                 locationCampusInfo.setIsDisplay(1);
+                isUpdate = false;
             }
             locationCampusInfo.setCampusName(mapZoneVO.getName());
             locationCampusInfo.setCoordinates(convertCoordinateToStr(mapZoneVO.getPolygonBBox().getCoordinates()));
-            this.update(locationCampusInfo);
+            if(isUpdate){
+                this.update(locationCampusInfo);
+            }else {
+                locationCampusInfoDao.insert(locationCampusInfo);
+            }
         }
 
     }
