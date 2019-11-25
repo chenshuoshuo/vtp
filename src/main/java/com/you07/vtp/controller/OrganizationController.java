@@ -6,6 +6,7 @@ import com.you07.eas.model.ClassInfo;
 import com.you07.eas.model.StudentInfo;
 import com.you07.eas.service.ClassInfoService;
 import com.you07.eas.service.StudentInfoService;
+import com.you07.util.VTPFileUtil;
 import com.you07.util.message.MessageListBean;
 import com.you07.vtp.model.LocationCampusInfo;
 import com.you07.vtp.model.LocationHistory;
@@ -72,7 +73,7 @@ public class OrganizationController {
      */
     private String getUserByFile(String usercode) throws FileNotFoundException {
         StringBuffer temp = new StringBuffer();
-        File file = new File(getRootPath()
+        File file = new File(VTPFileUtil.getRootPath()
                 + "user-xml" + System.getProperty("file.separator")
                 +  usercode + ".xml");
         if(!file.exists()){
@@ -184,11 +185,11 @@ public class OrganizationController {
      */
     private String getPrivilegeByFile(String usercode) throws FileNotFoundException {
         StringBuffer temp = new StringBuffer();
-        File file = new File(getRootPath()
+        File file = new File(VTPFileUtil.getRootPath()
                 + "privilege-xml" + System.getProperty("file.separator")
                 +  usercode + ".xml");
         if(!file.exists()){
-            file = new File(getRootPath()
+            file = new File(VTPFileUtil.getRootPath()
                     + "privilege-xml" + System.getProperty("file.separator")
                     +  "all.xml");
         }

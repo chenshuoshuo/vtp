@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.you07.util.VTPFileUtil;
 import com.you07.util.message.MessageBean;
 import com.you07.vtp.model.LocationTrackManager;
 import com.you07.vtp.service.LocationTrackManagerService;
@@ -17,6 +18,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.system.ApplicationHome;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
@@ -255,17 +257,17 @@ public class LocationTrackManagerController {
         }
 
         // 用户文件生成
-        File userXML = new File(getRootPath()
+        File userXML = new File(VTPFileUtil.getRootPath()
                 + "user-xml" + System.getProperty("file.separator")
                 +  locationTrackManager.getUserid() + ".xml");
         if(!userXML.exists()){
-            userXML = new File(getRootPath()
+            userXML = new File(VTPFileUtil.getRootPath()
                     + "user-xml" + System.getProperty("file.separator")
                     +  locationTrackManager.getUserid() + ".xml");
         }
 
         // 满用户文件读取
-        File allUserXML = new File(getRootPath()
+        File allUserXML = new File(VTPFileUtil.getRootPath()
                 + "user-xml" + System.getProperty("file.separator")
                 +  "asXML.xml");
 
@@ -313,17 +315,17 @@ public class LocationTrackManagerController {
         writer.write(document);
 
         // 权限文件生成
-        File privilegeXML = new File(getRootPath()
+        File privilegeXML = new File(VTPFileUtil.getRootPath()
                 + "privilege-xml" + System.getProperty("file.separator")
                 +  locationTrackManager.getUserid() + ".xml");
         if(!privilegeXML.exists()){
-            privilegeXML = new File(getRootPath()
+            privilegeXML = new File(VTPFileUtil.getRootPath()
                     + "privilege-xml" + System.getProperty("file.separator")
                     +  locationTrackManager.getUserid() + ".xml");
         }
 
         // 满权限文件读取
-        File allPrivilegeXML = new File(getRootPath()
+        File allPrivilegeXML = new File(VTPFileUtil.getRootPath()
                 + "privilege-xml" + System.getProperty("file.separator")
                 +  "all.xml");
 
@@ -366,8 +368,5 @@ public class LocationTrackManagerController {
 
     }
 
-    public String getRootPath() throws FileNotFoundException {
-        return ClassUtils.getDefaultClassLoader().getResource("").getPath();
-    }
 
 }
