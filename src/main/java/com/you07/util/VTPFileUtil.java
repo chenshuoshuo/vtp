@@ -16,7 +16,7 @@ public class VTPFileUtil {
     public static String getRootPath() throws FileNotFoundException {
         ApplicationHome home = new ApplicationHome(VtpApplication.class);
         File jarFile = home.getSource();
-        return jarFile.getParent()+"\\";
+        return jarFile.getParent()+System.getProperty("file.separator");
     }
 
 
