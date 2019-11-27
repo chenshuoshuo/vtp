@@ -42,12 +42,12 @@ public class UserInfoController {
     @ApiOperation("获取用户信息")
     @GetMapping("/detail")
     @ResponseBody
-    public String detail(@ApiParam(name="userid",value="用户ID",required=false) @RequestParam(name = "userid", required = true) String userid){
+    public String detail(@ApiParam(name="userCode",value="用户名",required=false) @RequestParam(name = "userCode", required = true) String userCode){
         MessageBean<UserInfo> messageBean = new MessageBean<UserInfo>(null);
         try {
-            LocationTrackManager locationTrackManager = locationTrackManagerService.get(userid);
-            StudentInfo studentInfo = studentInfoService.get(userid);
-            TeacherInfo teacherInfo = teacherInfoService.get(userid);
+            LocationTrackManager locationTrackManager = locationTrackManagerService.get(userCode);
+            StudentInfo studentInfo = studentInfoService.get(userCode);
+            TeacherInfo teacherInfo = teacherInfoService.get(userCode);
             Integer isManager =  0;
             if(locationTrackManager != null || teacherInfo != null || studentInfo != null){
                 String username, orgName;
@@ -65,7 +65,7 @@ public class UserInfoController {
                 }
 
                 UserInfo userInfo = new UserInfo();
-                userInfo.setUserId(userid);
+                userInfo.setUserId(userCode);
                 userInfo.setAvatar("");
                 userInfo.setOrgName(orgName);
                 userInfo.setUsername(username);
