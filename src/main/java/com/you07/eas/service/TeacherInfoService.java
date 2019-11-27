@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class TeacherInfoService {
@@ -37,20 +39,35 @@ public class TeacherInfoService {
         }
     }
 
-    public List<TeacherInfo> searchWithCodeName(String keyword) throws IOException {
+    public List<TeacherInfo> searchWithCodeName(String keyword, String page, String pageSize) throws IOException {
         JSONObject jsonObject = null;
-        jsonObject = RestTemplateUtil.getJSONObjectForCmIps("/os/teachingStaff/search?keyWord="+keyword);
+        String pattern = "^[0-9]\\d*$";
+        Pattern patternSecond = Pattern.compile(pattern);
+        Matcher matcher = patternSecond.matcher(keyword);
+        boolean matches = matcher.matches();
+        String staffNumber = null;
+        String realName = null;
+        if (matches == true && keyword != null) {
+            staffNumber = keyword;
+        } else {
+            realName = keyword;
+        }
+        StringBuilder sb = new StringBuilder("/os/teachingStaff/pageQuery?page=" + page + "&pageSize="+ pageSize);
+        if (staffNumber != null) {
+            sb.append("&staffNumber=" + staffNumber);
+        }
+        else if (realName != null) {
+            sb.append("&realName=" + realName);
+        }
+        jsonObject = RestTemplateUtil.getJSONObjectForCmIps(sb.toString());
         JSONArray jsonArray = jsonObject.getJSONArray("data");
         List<TeacherInfo> teacherInfoList = new ArrayList<>();
-        Result<List<TeacherInfo>> listResult = jsonObject.toJavaObject(Result.class);
-        List<TeacherInfo> teacherInfos = listResult.getData();
-        /*for (TeacherInfo t : teacherInfos) {
-            teacherInfoList.add(t);
-        }*/
-        for(int i = 0; i < teacherInfos.size(); i++) {
+        Map<String, Object> objectMap = (Map<String, Object>) jsonObject.get("data");
+        List<Object> objectList = (List<Object>) objectMap.get("content");
+        for(int i = 0; i < objectList.size(); i++) {
             TeacherInfo teacherInfo = new TeacherInfo();
             Map<String, Object> map = new LinkedHashMap<>();
-            map = (Map<String, Object>) teacherInfos.get(i);
+            map = (Map<String, Object>) objectList.get(i);
             teacherInfo.setTeachercode((String) map.get("staffNumber"));
             teacherInfo.setName((String) map.get("realName"));
             teacherInfo.setGender((String) map.get("gender"));

@@ -94,11 +94,13 @@ public class UserInfoController {
     @ApiOperation("搜索用户信息")
     @PostMapping("/search")
     @ResponseBody
-    public String search(@ApiParam(name="keyword",value="学工号/姓名",required=false) @RequestParam(name = "keyword", required = true) String keyword){
+    public String search(@ApiParam(name="keyword",value="学工号/姓名",required=false) @RequestParam(name = "keyword", required = true) String keyword,
+                         @ApiParam(name = "page", value = "当前页", required = true) @RequestParam("page") String page,
+                         @ApiParam(name = "pageSize", value = "每页显示条数", required = true) @RequestParam("pageSize") String pageSize){
         MessageListBean<UserInfo> messageListBean = new MessageListBean<UserInfo>(null);
         try {
-            List<StudentInfo> studentInfoList = studentInfoService.searchWithCodeName(keyword);
-            List<TeacherInfo> teacherInfoList = teacherInfoService.searchWithCodeName(keyword);
+            List<StudentInfo> studentInfoList = studentInfoService.searchWithCodeName(keyword, page, pageSize);
+            List<TeacherInfo> teacherInfoList = teacherInfoService.searchWithCodeName(keyword, page, pageSize);
 
             if(teacherInfoList.size() > 0 || studentInfoList.size() > 0){
                 List<UserInfo> userInfoList = new ArrayList<>();

@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class StudentInfoService {
@@ -50,43 +52,34 @@ public class StudentInfoService {
         }
     }
 
-    public List<StudentInfo> searchWithCodeName(String keyword) {
+    public List<StudentInfo> searchWithCodeName(String keyword, String page, String pageSize) {
         JSONObject jsonObject = null;
-        jsonObject = RestTemplateUtil.getJSONObjectForCmIps("/os/studentInfo/search?keyWord=" + keyword);
-        JSONArray jsonArray = jsonObject.getJSONArray("data");
+        String pattern = "^[0-9]\\d*$";
+        Pattern patternSecond = Pattern.compile(pattern);
+        Matcher matcher = patternSecond.matcher(keyword);
+        boolean matches = matcher.matches();
+        String studentNo = null;
+        String realName = null;
+        if (matches == true && keyword != null) {
+            studentNo = keyword;
+        } else {
+            realName = keyword;
+        }
+        StringBuilder sb = new StringBuilder("/os/studentInfo/pageQuery?page=" + page + "&pageSize="+ pageSize);
+        if (studentNo != null) {
+            sb.append("&studentNo=" + studentNo);
+        }
+        else if (realName != null) {
+            sb.append("&realName=" + realName);
+        }
+        jsonObject = RestTemplateUtil.getJSONObjectForCmIps(sb.toString());
+        Map<String, Object> objectMap = (Map<String, Object>) jsonObject.get("data");
+        List<Object> objectList = (List<Object>) objectMap.get("content");
         List<StudentInfo> studentInfoList = new ArrayList<>();
-        Result<List<StudentInfo>> listResult = jsonObject.toJavaObject(Result.class);
-        List<StudentInfo> studentInfoListFromDate = listResult.getData();
-        /*for(StudentInfo s : studentInfoListFromDate){
-            //根据班级号得到机构信息
-            String classCode = s.getClassCode();
-            JSONObject jsonObjectClass = null;
-            jsonObjectClass = RestTemplateUtil.getJSONObjectForCmIps("/os/classInfo/get/" + classCode);
-            String majorCode = jsonObjectClass.getJSONObject("data").getString("majorCode");
-            String className = jsonObjectClass.getJSONObject("data").getString("className");
-            String grade = jsonObjectClass.getJSONObject("data").getString("grade");
-            ClassInfo classInfo = new ClassInfo();
-            classInfo.setGrade(grade);
-            classInfo.setClassname(className);
-            classInfo.setClasscode(classCode);
-            s.setClassInfo(classInfo);
-            //根据专业编号得到院系编号
-            JSONObject jsonObjectMajor = null;
-            jsonObjectMajor = RestTemplateUtil.getJSONObjectForCmIps("/os/major/get/" + majorCode);
-            String academyCode = jsonObjectMajor.getJSONObject("data").getString("academyCode");
-            //根据院系编号得到院系名
-            JSONObject jsonObjectAcade = null;
-            jsonObjectAcade = RestTemplateUtil.getJSONObjectForCmIps("/os/academy/get/" + academyCode);
-            String academyName = jsonObjectAcade.getJSONObject("data").getString("academyName");
-            s.setOrgCode(academyCode);
-            s.setOrgName(academyName);
-            studentInfoList.add(s);
-        }*/
-
-        for (int i = 0; i < studentInfoListFromDate.size(); i++) {
+        for (int i = 0; i < objectList.size(); i++) {
             StudentInfo studentInfo = new StudentInfo();
             Map<String, Object> map = new LinkedHashMap<>();
-            map = (Map<String, Object>) studentInfoListFromDate.get(i);
+            map = (Map<String, Object>) objectList.get(i);
             studentInfo.setStudentno((String) map.get("studentNo"));
             studentInfo.setRealName((String) map.get("realName"));
             studentInfo.setGender((String) map.get("gender"));
