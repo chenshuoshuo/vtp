@@ -60,7 +60,6 @@ public class TeacherInfoService {
             sb.append("&realName=" + realName);
         }
         jsonObject = RestTemplateUtil.getJSONObjectForCmIps(sb.toString());
-        JSONArray jsonArray = jsonObject.getJSONArray("data");
         List<TeacherInfo> teacherInfoList = new ArrayList<>();
         Map<String, Object> objectMap = (Map<String, Object>) jsonObject.get("data");
         List<Object> objectList = (List<Object>) objectMap.get("content");
