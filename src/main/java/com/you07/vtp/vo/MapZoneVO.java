@@ -11,7 +11,7 @@ public class MapZoneVO {
 
     private String name;
 
-    private PolygonBBox polygonBBox;
+    private String center;
 
     public String getId() {
         return id;
@@ -29,11 +29,11 @@ public class MapZoneVO {
         this.name = name;
     }
 
-    public PolygonBBox getPolygonBBox() {
-        return polygonBBox;
+    public String getCenter() {
+        return center;
     }
 
-    public void setPolygonBBox(PolygonBBox polygonBBox) {
-        this.polygonBBox = polygonBBox;
+    public void setCenter(String center) {
+        this.center = center;
     }
 }

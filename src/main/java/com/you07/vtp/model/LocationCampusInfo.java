@@ -11,7 +11,6 @@ import javax.persistence.Table;
  * @author RY
  * @since 2018-8-8 17:04:37
  */
-
 @Table(name = "location_campus_info")
 public class LocationCampusInfo {
     /**

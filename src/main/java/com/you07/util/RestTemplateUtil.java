@@ -102,7 +102,9 @@ public class RestTemplateUtil {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new StringHttpMessageConverter(Charset.forName("utf-8")));
         restTemplate.setInterceptors(Collections.<ClientHttpRequestInterceptor>singletonList(interceptor));
-        JSONObject jsonObject =  restTemplate.postForEntity(systemConfig.getLqMapGisUrl() + uri, postData, JSONObject.class).getBody();
+        String url = systemConfig.getLqMapGisUrl() + uri;
+        System.out.println(url + "\n" + JSONObject.toJSONString(postData));
+        JSONObject jsonObject =  restTemplate.postForEntity(url, postData, JSONObject.class).getBody();
         return jsonObject;
     }
 
@@ -112,6 +114,7 @@ public class RestTemplateUtil {
         if (interceptor != null) {
             restTemplate.setInterceptors(Collections.<ClientHttpRequestInterceptor>singletonList(interceptor));
         }
+        System.out.println(url);
         JSONObject responseJson = restTemplate.getForEntity(url, JSONObject.class).getBody();
         return responseJson;
     }

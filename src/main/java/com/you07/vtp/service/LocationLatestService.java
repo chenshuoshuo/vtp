@@ -1,10 +1,11 @@
 package com.you07.vtp.service;
 
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.you07.eas.model.StudentInfo;
 import com.you07.eas.model.TeacherInfo;
 import com.you07.eas.service.StudentInfoService;
 import com.you07.eas.service.TeacherInfoService;
+import com.you07.util.Coordinate;
 import com.you07.util.CoordinateUtil;
 import com.you07.vtp.dao.LocationLatestDao;
 import com.you07.vtp.model.LocationCampusInfo;
@@ -12,6 +13,7 @@ import com.you07.vtp.model.LocationLatest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.awt.geom.Point2D;
 import java.util.Date;
 import java.util.List;
 
@@ -37,8 +39,8 @@ public class LocationLatestService {
         if (locationLatest.getInSchool() == null && zoneId != null) {
             //判断经纬度是否在校内
             LocationCampusInfo campus = locationCampusInfoService.queryById(zoneId);
-            Coordinate coordinate = new Coordinate(locationLatest.getLng(), locationLatest.getLat());
-            List<Coordinate> polygon = CoordinateUtil.convertStrToList(campus.getCoordinates());
+            Point2D.Double coordinate = new Point2D.Double(locationLatest.getLng(), locationLatest.getLat());
+            List<Point2D.Double> polygon = CoordinateUtil.convertStrToList(campus.getCoordinates());
 
             if (CoordinateUtil.isInPolygon(coordinate, polygon)) {
                 locationLatest.setInSchool(1);
