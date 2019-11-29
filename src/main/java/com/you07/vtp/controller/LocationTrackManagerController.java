@@ -129,7 +129,7 @@ public class LocationTrackManagerController {
 
                 int insertCount = locationTrackManagerService.add(locationTrackManager);
                 if(insertCount > 0){
-                    updatePrivilege(locationTrackManager.getUserid());
+                    //updatePrivilege(locationTrackManager.getUserid());
                     messageBean.setStatus(true);
                     messageBean.setCode(200);
                     messageBean.setMessage("添加成功");
