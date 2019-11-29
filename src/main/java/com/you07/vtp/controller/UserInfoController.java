@@ -1,25 +1,34 @@
 package com.you07.vtp.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.you07.eas.model.StudentInfo;
 import com.you07.eas.model.TeacherInfo;
 import com.you07.eas.service.StudentInfoService;
 import com.you07.eas.service.TeacherInfoService;
+import com.you07.util.JsonToXmlUtil;
+import com.you07.util.RestTemplateUtil;
 import com.you07.util.message.MessageBean;
 import com.you07.util.message.MessageListBean;
 import com.you07.vtp.model.LocationTrackManager;
-import com.you07.vtp.model.SystemConfigVO;
 import com.you07.vtp.model.UserInfo;
 import com.you07.vtp.service.LocationTrackManagerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.xml.sax.SAXException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户信息接口
@@ -150,4 +159,44 @@ public class UserInfoController {
 
         return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
     }
+
+    @ApiOperation("从Cmips得到权限xml")
+    @GetMapping("/getPrivilegeXml")
+    public MessageBean getPrivilegeXml() throws SAXException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JSONObject objectForCmIps = RestTemplateUtil.getJSONObjectForCmIps("/os/json/student");
+        JSONArray jsonArray = objectForCmIps.getJSONArray("data");
+        Document document = DocumentHelper.createDocument();
+        Element root = document.addElement("root");
+        Element student= root.addElement("student");
+        student.addAttribute("id","1");
+        student.addAttribute("name","学生");
+        student.addAttribute("count",String.valueOf(jsonArray.size()));
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject adJsonObj = jsonArray.getJSONObject(i);
+            String acadeName = adJsonObj.getString("name");
+            String adCode = adJsonObj.getString("code");
+            Element ad = student.addElement("ad");
+            ad.addAttribute("name",acadeName);
+            ad.addAttribute("id",adCode);
+            JSONArray mjJsonArr = adJsonObj.getJSONArray("children");
+            ad.addAttribute("count",String.valueOf(mjJsonArr.size()));
+           for (int j = 0; j < mjJsonArr.size(); j++) {
+               JSONObject mjJsonObj = mjJsonArr.getJSONObject(i);
+               String mjCode = mjJsonObj.getString("code");
+               String mjName = mjJsonObj.getString("name");
+               Element ci = ad.addElement("ci");
+               ci.addAttribute("name", mjName);
+               ci.addAttribute("id", mjCode);
+               JSONArray classJsonArr = mjJsonObj.getJSONArray("children");
+           }
+        }
+        MessageBean<Object> objectMessageBean = new MessageBean<>();
+        objectMessageBean.setCode(0);
+        objectMessageBean.setStatus(true);
+        objectMessageBean.setData(document.asXML());
+        objectMessageBean.setMessage("操作成功");
+        return objectMessageBean;
+    }
+
 }

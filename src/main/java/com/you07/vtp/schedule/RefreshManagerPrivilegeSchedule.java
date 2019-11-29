@@ -3,9 +3,7 @@ package com.you07.vtp.schedule;
 import com.you07.util.VTPFileUtil;
 import com.you07.vtp.model.LocationTrackManager;
 import com.you07.vtp.service.LocationTrackManagerService;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
+import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
@@ -14,9 +12,11 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
+import org.xml.sax.EntityResolver;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -152,5 +152,23 @@ public class RefreshManagerPrivilegeSchedule {
 
     public String getRootPath() throws FileNotFoundException {
         return ClassUtils.getDefaultClassLoader().getResource("").getPath();
+    }
+
+    public static void main(String[] args) {
+        Document document = DocumentHelper.createDocument();
+
+        Element root = document.addElement("root");
+        Element teacher = root.addElement("teacher");
+        teacher.addAttribute("id","1");
+        teacher.addAttribute("name","教职工");
+        teacher.addAttribute("count","50");
+        for (int i = 0;i<50;i++){
+            Element dept = teacher.addElement("dept");
+            dept.addAttribute("id",i+1+"");
+            dept.addAttribute("name","xxx"+i);
+            dept.addAttribute("count","50");
+        }
+        System.out.println(document.asXML());
+
     }
 }
