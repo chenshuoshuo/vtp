@@ -44,7 +44,7 @@ public interface LocationHistoryDao {
      * @return
      */
     @Select({
-            "select * from location_latest where userid in (${userids}) and substr(floorid, 0, 5) = '${campusId}' and lng is not null",
+            "select * from location_latest where userid in (${userids}) and zone_id = '${campusId}' and lng is not null",
             "and in_school = #{inSchool}"
     })
     List<LocationHistory> selectByUserids(@Param("userids") String userids,
@@ -58,7 +58,7 @@ public interface LocationHistoryDao {
      * @return
      */
     @Select({
-            "select * from location_latest where lng is not null and substr(floorid, 0, 5) = '${campusId}'",
+            "select * from location_latest where lng is not null and  zone_id  = '${campusId}'",
             "and in_school = #{inSchool}"
     })
     List<LocationHistory> selectAll(@Param("inSchool") Integer inSchool,
@@ -72,7 +72,7 @@ public interface LocationHistoryDao {
      * @return
      */
     @Select({
-            "select * from location_latest where org_code = #{orgCode} and substr(floorid, 0, 5) = '${campusId}' and lng is not null",
+            "select * from location_latest where org_code = #{orgCode} and zone_id = '${campusId}' and lng is not null",
             "and in_school = #{inSchool}"
     })
     List<LocationHistory> selectByOrgCode(@Param("orgCode") String orgCode,
@@ -87,7 +87,7 @@ public interface LocationHistoryDao {
      * @return
      */
     @Select({
-            "select * from location_latest where org_code in (${orgCodes}) and substr(floorid, 0, 5) = '${campusId}' and lng is not null",
+            "select * from location_latest where org_code in (${orgCodes}) and zone_id = '${campusId}' and lng is not null",
             "and in_school = #{inSchool}"
     })
     List<LocationHistory> selectByOrgCodes(@Param("orgCodes") String orgCodes,
@@ -109,7 +109,7 @@ public interface LocationHistoryDao {
             "(select userid, max(location_time) _last",
             "from ${tableName}",
             "where userid = #{userid}",
-            "and substr(floorid, 0, 5) = '${campusId}'",
+            "and  zone_id = '${campusId}'",
             "and location_time > to_timestamp(#{startTime},'yyyy-mm-dd hh24:mi:ss')",
             "and location_time < to_timestamp(#{endTime},'yyyy-mm-dd hh24:mi:ss')",
             "and lng is not null",
@@ -140,7 +140,7 @@ public interface LocationHistoryDao {
             "(select userid, max(location_time) _last",
             "from ${tableName}",
             "where userid in (${userids})" ,
-            "and substr(floorid, 0, 5) = '${campusId}'",
+            "and zone_id = '${campusId}'",
             "and location_time > to_timestamp(#{startTime},'yyyy-mm-dd hh24:mi:ss')",
             "and location_time < to_timestamp(#{endTime},'yyyy-mm-dd hh24:mi:ss')",
             "and lng is not null",
@@ -169,7 +169,7 @@ public interface LocationHistoryDao {
             "select * from ${tableName} _location,",
             "(select userid, max(location_time) _last",
             "from ${tableName}",
-            "where substr(floorid, 0, 5) = '${campusId}' and location_time > to_timestamp(#{startTime},'yyyy-mm-dd hh24:mi:ss')",
+            "where zone_id = '${campusId}' and location_time > to_timestamp(#{startTime},'yyyy-mm-dd hh24:mi:ss')",
             "and location_time < to_timestamp(#{endTime},'yyyy-mm-dd hh24:mi:ss')",
             "and lng is not null",
             "and in_school = #{inSchool}",
@@ -197,7 +197,7 @@ public interface LocationHistoryDao {
             "select * from ${tableName} _location,",
             "(select userid, max(location_time) _last",
             "from ${tableName}",
-            "where org_code = #{orgCode} and substr(floorid, 0, 5) = '${campusId}'" ,
+            "where org_code = #{orgCode} and  zone_id = '${campusId}'" ,
             "and location_time > to_timestamp(#{startTime},'yyyy-mm-dd hh24:mi:ss')",
             "and location_time < to_timestamp(#{endTime},'yyyy-mm-dd hh24:mi:ss')",
             "and lng is not null",
@@ -227,7 +227,7 @@ public interface LocationHistoryDao {
             "select * from ${tableName} _location,",
             "(select userid, max(location_time) _last",
             "from ${tableName}",
-            "where org_code in (${orgCodes}) and substr(floorid, 0, 5) = '${campusId}'" ,
+            "where org_code in (${orgCodes}) and zone_id = '${campusId}'" ,
             "and location_time > to_timestamp(#{startTime},'yyyy-mm-dd hh24:mi:ss')",
             "and location_time < to_timestamp(#{endTime},'yyyy-mm-dd hh24:mi:ss')",
             "and lng is not null",
