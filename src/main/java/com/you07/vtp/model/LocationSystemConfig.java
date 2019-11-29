@@ -35,6 +35,8 @@ public class LocationSystemConfig {
     private String rightTopBgColor;
     @ApiModelProperty(value = "右侧背景色下", name = "rightBottomBgColor", dataType = "String", example = "AAAAAA", required = false)
     private String rightBottomBgColor;
+    @ApiModelProperty(value = "右侧选中背景色", dataType = "String", example = "AAAAAA")
+    private String selectedColor;
     @ApiModelProperty(value = "学校LOGO", name = "logo", dataType = "String", example = "http://xxx.com/xx.png", required = false)
     private String logo;
     @ApiModelProperty(value = "水印LOGO", name = "waterMarkLogo", dataType = "String", example = "http://xxx.com/xx.png", required = false)
@@ -208,5 +210,13 @@ public class LocationSystemConfig {
 
     public void setIpsApi(String ipsApi) {
         this.ipsApi = ipsApi;
+    }
+
+    public String getSelectedColor() {
+        return selectedColor;
+    }
+
+    public void setSelectedColor(String selectedColor) {
+        this.selectedColor = selectedColor;
     }
 }
