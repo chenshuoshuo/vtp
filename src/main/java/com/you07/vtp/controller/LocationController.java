@@ -333,75 +333,45 @@ public class LocationController {
      * @return
      */
     public Boolean hasPrivilege(String userid, String managerId) {
-//         传入的用户账号为单个
-        if (!userid.contains(",")) {
-            // 检查查询用户的信息
-            StudentInfo studentInfo = studentInfoService.get(userid);
-            TeacherInfo teacherInfo = teacherInfoService.get(userid);
-            // 定义用户组织机构代码
-            String orgCode = null;
-            if (studentInfo != null && studentInfo.getClassInfo() != null) {
-                orgCode = studentInfo.getClassInfo().getClasscode();
-            }
-            if (teacherInfo != null && teacherInfo.getDepartmentInfo() != null) {
-                orgCode = teacherInfo.getDepartmentInfo().getXsbmdm();
-            }
-            // 要查的用户不为空，且能正确查到所属组织机构
-            if (orgCode != null) {
-                // 获取管理员
-                LocationTrackManager manager = locationTrackManagerService.get(managerId);
-                // 管理员不为空，且权限不为空
-                if (manager != null && manager.getOrgCodes() != null) {
-                    String privilegeOrgCodes = manager.getOrgCodes();
-                    // 管理员权限组织机构代码包含查询用户的组织机构代码
-                    // 才返回成功
-                    if (privilegeOrgCodes.contains(orgCode + ",") || privilegeOrgCodes.contains("," + orgCode)) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
 
-            } else {
-                return false;
-            }
-
-        } else {
-            return true;
-        }
-    }
-
-    /**
-     * 根据路径（两条边，且第一条边的终点为第二条边的起点）的三个坐标（第一条边的起点、终点，第二条边的终点）
-     * 判断是否是直行
-     * 注意：这里只考虑直行与掉头，不考虑左转/右转
-     *
-     * @param edgeStartLng
-     * @param edgeStartLat
-     * @param edgeEndLng
-     * @param edgeEndLat
-     * @param nextEdgeEndLng
-     * @param nextEdgeEndLat
-     * @return
-     */
-    public Boolean isForward(Double edgeStartLng, Double edgeStartLat, Double edgeEndLng, Double edgeEndLat,
-                             Double nextEdgeEndLng, Double nextEdgeEndLat) {
-        Double anglePrev = Angle.angle(new Coordinate(edgeEndLng, edgeEndLat), new Coordinate(edgeStartLng, edgeStartLat));
-        Double angleNext = Angle.angle(new Coordinate(edgeEndLng, edgeEndLat), new Coordinate(nextEdgeEndLng, nextEdgeEndLat));
-
-        Double angle = Angle.toDegrees(Angle.diff(angleNext, anglePrev));
-        System.out.println(edgeStartLng + "," + edgeStartLat + ";" + edgeEndLng + "," + edgeEndLat + ";" + nextEdgeEndLng + "," + nextEdgeEndLat + ";" + angle);
-        if (angle < FORWARD_ANGEL_MIN || angle > FORWARD_ANGEL_MAX) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-
-    public String getRootPath() {
-        return ClassUtils.getDefaultClassLoader().getResource("").getPath();
+        return true;
+////         传入的用户账号为单个
+//        if (!userid.contains(",")) {
+//            // 检查查询用户的信息
+//            StudentInfo studentInfo = studentInfoService.get(userid);
+//            TeacherInfo teacherInfo = teacherInfoService.get(userid);
+//            // 定义用户组织机构代码
+//            String orgCode = null;
+//            if (studentInfo != null && studentInfo.getClassInfo() != null) {
+//                orgCode = studentInfo.getClassInfo().getClasscode();
+//            }
+//            if (teacherInfo != null && teacherInfo.getDepartmentInfo() != null) {
+//                orgCode = teacherInfo.getDepartmentInfo().getXsbmdm();
+//            }
+//            // 要查的用户不为空，且能正确查到所属组织机构
+//            if (orgCode != null) {
+//                // 获取管理员
+//                LocationTrackManager manager = locationTrackManagerService.get(managerId);
+//                // 管理员不为空，且权限不为空
+//                if (manager != null && manager.getOrgCodes() != null) {
+//                    String privilegeOrgCodes = manager.getOrgCodes();
+//                    // 管理员权限组织机构代码包含查询用户的组织机构代码
+//                    // 才返回成功
+//                    if (privilegeOrgCodes.contains(orgCode + ",") || privilegeOrgCodes.contains("," + orgCode)) {
+//                        return true;
+//                    } else {
+//                        return false;
+//                    }
+//                } else {
+//                    return false;
+//                }
+//
+//            } else {
+//                return false;
+//            }
+//
+//        } else {
+//            return true;
+//        }
     }
 }
