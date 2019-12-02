@@ -4,16 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.you07.eas.model.StudentInfo;
 import com.you07.eas.model.TeacherInfo;
 import com.you07.eas.service.StudentInfoService;
 import com.you07.eas.service.TeacherInfoService;
-import com.you07.util.JsonToXmlUtil;
 import com.you07.util.RestTemplateUtil;
 import com.you07.util.message.MessageBean;
 import com.you07.util.message.MessageListBean;
-import com.you07.vtp.model.LocationSystemConfig;
 import com.you07.vtp.model.LocationTrackManager;
 import com.you07.vtp.model.UserInfo;
 import com.you07.vtp.service.LocationTrackManagerService;
@@ -29,7 +26,6 @@ import org.xml.sax.SAXException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 用户信息接口
@@ -204,59 +200,68 @@ public class UserInfoController {
     @GetMapping("/getPersonInfoXml")
     public MessageBean getPersonInfoXml(@ApiParam(name = "userCode", value = "用户ID", required = true) @RequestParam String userCode) throws SAXException {
         //根据userId得到能够查看的组织结构编码
-        LocationTrackManager locationTrackManager = locationTrackManagerService.get(userCode);
-        String orgCodes = null;
-        if (null != locationTrackManager) {
-            orgCodes = locationTrackManager.getOrgCodes();
-        }
-        String[] splitOrgCodes = null;
-        if (null != orgCodes) {
-            splitOrgCodes = orgCodes.split(",");
-        }
-        JSONObject objectForCmIps = RestTemplateUtil.getJSONObjectForCmIps("/os/json/student");
-        JSONArray jsonArray = objectForCmIps.getJSONArray("data");
-        Document document = DocumentHelper.createDocument();
-        Element root = document.addElement("root");
-        Element student= root.addElement("student");
-        student.addAttribute("id","1");
-        student.addAttribute("name","学生");
-        student.addAttribute("count",String.valueOf(jsonArray.size()));
-        loopFirst: for (int i = 0; i < jsonArray.size(); i++) {
-            JSONObject adJsonObj = jsonArray.getJSONObject(i);
-            String acadeName = adJsonObj.getString("name");
-            String adCode = adJsonObj.getString("code");
-            Element ad = student.addElement("ad");
-            ad.addAttribute("name",acadeName);
-            ad.addAttribute("id",adCode);
-            JSONArray mjJsonArr = adJsonObj.getJSONArray("children");
-            ad.addAttribute("count",String.valueOf(mjJsonArr.size()));
-            loopSecond: for (int j = 0; j < mjJsonArr.size(); j++) {
-                JSONObject mjJsonObj = mjJsonArr.getJSONObject(i);
-                JSONArray classJsonArr = mjJsonObj.getJSONArray("children");
-                loopThird: for (int k = 0; k < classJsonArr.size(); k ++) {
-                    JSONObject claJsonObj = classJsonArr.getJSONObject(k);
-                    String claCode = claJsonObj.getString("code");
-                    String claName = claJsonObj.getString("name");
-                    for (int l = 0; l < splitOrgCodes.length; l++) {
-                        if (!claCode.equals(splitOrgCodes[l])){
-                            break loopThird;
+        Document document = null;
+        try {
+            LocationTrackManager locationTrackManager = locationTrackManagerService.get(userCode);
+            String orgCodes = null;
+            if (null != locationTrackManager) {
+                orgCodes = locationTrackManager.getOrgCodes();
+            }
+            String[] splitOrgCodes = null;
+            if (null != orgCodes) {
+                splitOrgCodes = orgCodes.split(",");
+            }
+            JSONObject objectForCmIps = RestTemplateUtil.getJSONObjectForCmIps("/os/json/student");
+            JSONArray jsonArray = objectForCmIps.getJSONArray("data");
+            document = DocumentHelper.createDocument();
+            Element root = document.addElement("root");
+            Element student= root.addElement("student");
+            student.addAttribute("id","1");
+            student.addAttribute("name","学生");
+            student.addAttribute("count",String.valueOf(jsonArray.size()));
+            loopFirst: for (int i = 0; i < jsonArray.size(); i++) {
+                JSONObject adJsonObj = jsonArray.getJSONObject(i);
+                String acadeName = adJsonObj.getString("name");
+                String adCode = adJsonObj.getString("code");
+                Element ad = student.addElement("ad");
+                ad.addAttribute("name",acadeName);
+                ad.addAttribute("id",adCode);
+                JSONArray mjJsonArr = adJsonObj.getJSONArray("children");
+                ad.addAttribute("count",String.valueOf(mjJsonArr.size()));
+                loopSecond: for (int j = 0; j < mjJsonArr.size(); j++) {
+                    JSONObject mjJsonObj = mjJsonArr.getJSONObject(i);
+                    JSONArray classJsonArr = mjJsonObj.getJSONArray("children");
+                    loopThird: for (int k = 0; k < classJsonArr.size(); k ++) {
+                        JSONObject claJsonObj = classJsonArr.getJSONObject(k);
+                        String claCode = claJsonObj.getString("code");
+                        String claName = claJsonObj.getString("name");
+                        for (int l = 0; l < splitOrgCodes.length; l++) {
+                            if (!claCode.equals(splitOrgCodes[l])){
+                                break loopThird;
+                            }
                         }
-                    }
-                    Element ci = ad.addElement("ci");
-                    ci.addAttribute("name", claName);
-                    ci.addAttribute("id", claCode);
-                    JSONArray stuJsonArr = claJsonObj.getJSONArray("children");
-                    ci.addAttribute("count", String.valueOf(stuJsonArr.size()));
-                    for (int m = 0; m < stuJsonArr.size(); m ++) {
-                        JSONObject stuJsonObj = stuJsonArr.getJSONObject(m);
-                        String stuCode = stuJsonObj.getString("code");
-                        String stuName = stuJsonObj.getString("name");
-                        Element stu = ci.addElement("stu");
-                        stu.addAttribute("name", stuName);
-                        stu.addAttribute("id", stuCode);
+                        Element ci = ad.addElement("ci");
+                        ci.addAttribute("name", claName);
+                        ci.addAttribute("id", claCode);
+                        JSONArray stuJsonArr = claJsonObj.getJSONArray("children");
+                        ci.addAttribute("count", String.valueOf(stuJsonArr.size()));
+                        for (int m = 0; m < stuJsonArr.size(); m ++) {
+                            JSONObject stuJsonObj = stuJsonArr.getJSONObject(m);
+                            String stuCode = stuJsonObj.getString("code");
+                            String stuName = stuJsonObj.getString("name");
+                            Element stu = ci.addElement("stu");
+                            stu.addAttribute("name", stuName);
+                            stu.addAttribute("id", stuCode);
+                        }
                     }
                 }
             }
+        } catch (Exception e) {
+            MessageBean<Object> objectMessageBean = new MessageBean<>();
+            objectMessageBean.setCode(500);
+            objectMessageBean.setStatus(true);
+            objectMessageBean.setData("学号不存在");
+            return objectMessageBean;
         }
         MessageBean<Object> objectMessageBean = new MessageBean<>();
         objectMessageBean.setCode(0);
