@@ -67,6 +67,10 @@ public class LocationHistory {
      * 校区ID
      */
     private String zoneId;
+    /**
+     * 电话号码
+     */
+    private String telephone;
 
     /**
      * 停留时间
@@ -199,5 +203,13 @@ public class LocationHistory {
 
     public void setZoneId(String zoneId) {
         this.zoneId = zoneId;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 }

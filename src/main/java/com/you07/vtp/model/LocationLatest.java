@@ -78,8 +78,10 @@ public class LocationLatest {
      * 校区ID
      * */
     private String zoneId;
-
-
+    /**
+     * 电话号码
+     */
+    private String telephone;
 
     public String getUserid() {
         return userid;
@@ -207,5 +209,13 @@ public class LocationLatest {
 
     public void setZoneId(String zoneId) {
         this.zoneId = zoneId;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 }
