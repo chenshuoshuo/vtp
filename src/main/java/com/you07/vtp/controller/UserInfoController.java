@@ -258,9 +258,9 @@ public class UserInfoController {
             }
         } catch (Exception e) {
             MessageBean<Object> objectMessageBean = new MessageBean<>();
-            objectMessageBean.setCode(500);
+            objectMessageBean.setCode(200);
             objectMessageBean.setStatus(true);
-            objectMessageBean.setData("学号不存在");
+            objectMessageBean.setData("没有权限查看或无学生");
             return objectMessageBean;
         }
         MessageBean<Object> objectMessageBean = new MessageBean<>();
