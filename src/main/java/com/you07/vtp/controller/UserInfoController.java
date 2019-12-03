@@ -176,15 +176,18 @@ public class UserInfoController {
             ad.addAttribute("name",acadeName);
             ad.addAttribute("id",adCode);
             JSONArray mjJsonArr = adJsonObj.getJSONArray("children");
-            ad.addAttribute("count",String.valueOf(mjJsonArr.size()));
            for (int j = 0; j < mjJsonArr.size(); j++) {
                JSONObject mjJsonObj = mjJsonArr.getJSONObject(i);
-               String mjCode = mjJsonObj.getString("code");
-               String mjName = mjJsonObj.getString("name");
-               Element ci = ad.addElement("ci");
-               ci.addAttribute("name", mjName);
-               ci.addAttribute("id", mjCode);
                JSONArray classJsonArr = mjJsonObj.getJSONArray("children");
+               ad.addAttribute("count",String.valueOf(classJsonArr.size()));
+               for (int k = 0; k < classJsonArr.size(); k++) {
+                   JSONObject claObject = classJsonArr.getJSONObject(k);
+                   String claName = claObject.getString("name");
+                   String claCode = claObject.getString("code");
+                   Element ci = ad.addElement("ci");
+                   ci.addAttribute("name", claName);
+                   ci.addAttribute("id", claCode);
+               }
            }
         }
         MessageBean<Object> objectMessageBean = new MessageBean<>();
@@ -258,9 +261,9 @@ public class UserInfoController {
             }
         } catch (Exception e) {
             MessageBean<Object> objectMessageBean = new MessageBean<>();
-            objectMessageBean.setCode(500);
+            objectMessageBean.setCode(200);
             objectMessageBean.setStatus(true);
-            objectMessageBean.setData("学号不存在");
+            objectMessageBean.setData("没有权限查看或无学生");
             return objectMessageBean;
         }
         MessageBean<Object> objectMessageBean = new MessageBean<>();
