@@ -116,6 +116,7 @@ public class RestTemplateUtil {
         }
         System.out.println(url);
         JSONObject responseJson = restTemplate.getForEntity(url, JSONObject.class).getBody();
+        System.out.println(responseJson.toJSONString());
         return responseJson;
     }
 

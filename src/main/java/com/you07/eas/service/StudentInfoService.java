@@ -46,6 +46,7 @@ public class StudentInfoService {
             studentInfo.setRealName(name);
             studentInfo.setOrgCode(academyCode);
             studentInfo.setOrgName(academyName);
+            studentInfo.setClassCode(classCode);
             return studentInfo;
         } else {
             return null;

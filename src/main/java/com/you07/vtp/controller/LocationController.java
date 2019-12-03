@@ -1,14 +1,9 @@
 package com.you07.vtp.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.graphhopper.storage.GraphHopperStorage;
 import com.graphhopper.storage.index.LocationIndex;
-import com.vividsolutions.jts.algorithm.Angle;
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.you07.eas.model.StudentInfo;
 import com.you07.eas.model.TeacherInfo;
@@ -18,7 +13,6 @@ import com.you07.map.filter.GeoTrackFilter;
 import com.you07.util.RestTemplateUtil;
 import com.you07.util.message.MessageBean;
 import com.you07.util.message.MessageListBean;
-import com.you07.util.route.Routing;
 import com.you07.vtp.model.LocationHistory;
 import com.you07.vtp.model.LocationTrackManager;
 import com.you07.vtp.service.LocationHitoryService;
@@ -28,7 +22,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
@@ -341,11 +334,11 @@ public class LocationController {
             TeacherInfo teacherInfo = teacherInfoService.get(userid);
             // 定义用户组织机构代码
             String orgCode = null;
-            if (studentInfo != null && studentInfo.getClassInfo() != null) {
-                orgCode = studentInfo.getClassInfo().getClasscode();
+            if (studentInfo != null) {
+                orgCode = studentInfo.getClassCode();
             }
-            if (teacherInfo != null && teacherInfo.getDepartmentInfo() != null) {
-                orgCode = teacherInfo.getDepartmentInfo().getXsbmdm();
+            if (teacherInfo != null) {
+                orgCode = teacherInfo.getOrgCode();
             }
             // 要查的用户不为空，且能正确查到所属组织机构
             if (orgCode != null) {
@@ -356,11 +349,7 @@ public class LocationController {
                     String privilegeOrgCodes = manager.getOrgCodes();
                     // 管理员权限组织机构代码包含查询用户的组织机构代码
                     // 才返回成功
-                    if (privilegeOrgCodes.contains(orgCode + ",") || privilegeOrgCodes.contains("," + orgCode)) {
-                        return true;
-                    } else {
-                        return false;
-                    }
+                    return privilegeOrgCodes.contains(orgCode);
                 } else {
                     return false;
                 }
