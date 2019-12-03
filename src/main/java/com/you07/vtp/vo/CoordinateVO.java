@@ -36,6 +36,6 @@ public class CoordinateVO {
     }
 
     public Double[] toArray(){
-        return new Double[]{lat, lon};
+        return new Double[]{lon, lat};
     }
 }
