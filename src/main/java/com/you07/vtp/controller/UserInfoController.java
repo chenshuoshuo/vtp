@@ -240,7 +240,7 @@ public class UserInfoController {
                         String claName = claJsonObj.getString("name");
                         for (int l = 0; l < splitOrgCodes.length; l++) {
                             if (!claCode.equals(splitOrgCodes[l])){
-                                break loopThird;
+                                continue loopThird;
                             }
                         }
                         Element ci = ad.addElement("ci");
