@@ -53,4 +53,4 @@ oauth:
   client-id: cmccr-guest
   client-secret: cmccr-guest
   grant-type: client_credentials
-  token: https://cmdown.parkbobo.com/cmccr-server/oauth/token
+  token: https://yx2019.you07.com/cmccr-server/oauth/token

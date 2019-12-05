@@ -222,7 +222,7 @@ public class UserInfoController {
             student.addAttribute("id","1");
             student.addAttribute("name","学生");
             student.addAttribute("count",String.valueOf(jsonArray.size()));
-            loopFirst: for (int i = 0; i < jsonArray.size(); i++) {
+            for (int i = 0; i < jsonArray.size(); i++) {
                 JSONObject adJsonObj = jsonArray.getJSONObject(i);
                 String acadeName = adJsonObj.getString("name");
                 String adCode = adJsonObj.getString("code");
@@ -231,31 +231,32 @@ public class UserInfoController {
                 ad.addAttribute("id",adCode);
                 JSONArray mjJsonArr = adJsonObj.getJSONArray("children");
                 ad.addAttribute("count",String.valueOf(mjJsonArr.size()));
-                loopSecond: for (int j = 0; j < mjJsonArr.size(); j++) {
+                for (int j = 0; j < mjJsonArr.size(); j++) {
                     JSONObject mjJsonObj = mjJsonArr.getJSONObject(i);
                     JSONArray classJsonArr = mjJsonObj.getJSONArray("children");
-                    loopThird: for (int k = 0; k < classJsonArr.size(); k ++) {
+                    for (int k = 0; k < classJsonArr.size(); k ++) {
                         JSONObject claJsonObj = classJsonArr.getJSONObject(k);
                         String claCode = claJsonObj.getString("code");
                         String claName = claJsonObj.getString("name");
                         for (int l = 0; l < splitOrgCodes.length; l++) {
-                            if (!claCode.equals(splitOrgCodes[l])){
-                                continue loopThird;
+                            if (claCode.equals(splitOrgCodes[l])){
+                                //continue loopThird;
+                                Element ci = ad.addElement("ci");
+                                ci.addAttribute("name", claName);
+                                ci.addAttribute("id", claCode);
+                                JSONArray stuJsonArr = claJsonObj.getJSONArray("children");
+                                ci.addAttribute("count", String.valueOf(stuJsonArr.size()));
+                                for (int m = 0; m < stuJsonArr.size(); m ++) {
+                                    JSONObject stuJsonObj = stuJsonArr.getJSONObject(m);
+                                    String stuCode = stuJsonObj.getString("code");
+                                    String stuName = stuJsonObj.getString("name");
+                                    Element stu = ci.addElement("stu");
+                                    stu.addAttribute("name", stuName);
+                                    stu.addAttribute("id", stuCode);
+                                }
                             }
                         }
-                        Element ci = ad.addElement("ci");
-                        ci.addAttribute("name", claName);
-                        ci.addAttribute("id", claCode);
-                        JSONArray stuJsonArr = claJsonObj.getJSONArray("children");
-                        ci.addAttribute("count", String.valueOf(stuJsonArr.size()));
-                        for (int m = 0; m < stuJsonArr.size(); m ++) {
-                            JSONObject stuJsonObj = stuJsonArr.getJSONObject(m);
-                            String stuCode = stuJsonObj.getString("code");
-                            String stuName = stuJsonObj.getString("name");
-                            Element stu = ci.addElement("stu");
-                            stu.addAttribute("name", stuName);
-                            stu.addAttribute("id", stuCode);
-                        }
+
                     }
                 }
             }
