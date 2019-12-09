@@ -24,7 +24,7 @@ public class ClassInfoService {
         if (keyWord != null && StringUtils.isEmpty("")) {
             sb.append("?keyword=" + keyWord);
         }
-        if (privilegeOrgCodes != null && StringUtils.isEmpty("privilegeOrgCodes")) {
+        if (privilegeOrgCodes != null && StringUtils.isNotEmpty("privilegeOrgCodes")) {
             for(int i = 0; i < strings.length; i++) {
                 sb.append("&classcode=" + strings[i]);
             }
