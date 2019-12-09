@@ -26,7 +26,7 @@ public class ClassInfoService {
         }
         if (privilegeOrgCodes != null && StringUtils.isNotEmpty("privilegeOrgCodes")) {
             for(int i = 0; i < strings.length; i++) {
-                sb.append("&classcode=" + strings[i]);
+                sb.append("&classCodes=" + strings[i]);
             }
         }
         jsonObject = RestTemplateUtil.getJSONObjectForCmIps(sb.toString());
