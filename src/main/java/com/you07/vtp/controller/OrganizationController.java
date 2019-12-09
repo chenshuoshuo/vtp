@@ -133,16 +133,12 @@ public class OrganizationController {
                 messageListBean.setStatus(true);
                 messageListBean.setCode(200);
                 messageListBean.setMessage("获取成功");
-            } else{
-                messageListBean.setStatus(false);
-                messageListBean.setCode(10002);
-                messageListBean.setMessage("没有查询到数据");
             }
         } catch (Exception e) {
             e.printStackTrace();
             messageListBean.setStatus(false);
-            messageListBean.setCode(10001);
-            messageListBean.setMessage("接口错误");
+            messageListBean.setCode(200);
+            messageListBean.setMessage("没有查询到数据");
         }
 
         return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
@@ -163,16 +159,12 @@ public class OrganizationController {
                 messageListBean.setStatus(true);
                 messageListBean.setCode(200);
                 messageListBean.setMessage("获取成功");
-            } else{
-                messageListBean.setStatus(false);
-                messageListBean.setCode(10002);
-                messageListBean.setMessage("没有查询到数据");
             }
         } catch (Exception e) {
             e.printStackTrace();
             messageListBean.setStatus(false);
-            messageListBean.setCode(10001);
-            messageListBean.setMessage("接口错误");
+            messageListBean.setCode(200);
+            messageListBean.setMessage("没有查询到数据");
         }
 
         return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
