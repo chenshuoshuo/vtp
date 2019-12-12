@@ -232,7 +232,7 @@ public class UserInfoController {
                 JSONArray mjJsonArr = adJsonObj.getJSONArray("children");
                 ad.addAttribute("count",String.valueOf(mjJsonArr.size()));
                 for (int j = 0; j < mjJsonArr.size(); j++) {
-                    JSONObject mjJsonObj = mjJsonArr.getJSONObject(i);
+                    JSONObject mjJsonObj = mjJsonArr.getJSONObject(j);
                     JSONArray classJsonArr = mjJsonObj.getJSONArray("children");
                     for (int k = 0; k < classJsonArr.size(); k ++) {
                         JSONObject claJsonObj = classJsonArr.getJSONObject(k);
