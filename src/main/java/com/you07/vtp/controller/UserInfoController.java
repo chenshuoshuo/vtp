@@ -177,7 +177,7 @@ public class UserInfoController {
             ad.addAttribute("id",adCode);
             JSONArray mjJsonArr = adJsonObj.getJSONArray("children");
            for (int j = 0; j < mjJsonArr.size(); j++) {
-               JSONObject mjJsonObj = mjJsonArr.getJSONObject(i);
+               JSONObject mjJsonObj = mjJsonArr.getJSONObject(j);
                JSONArray classJsonArr = mjJsonObj.getJSONArray("children");
                ad.addAttribute("count",String.valueOf(classJsonArr.size()));
                for (int k = 0; k < classJsonArr.size(); k++) {
