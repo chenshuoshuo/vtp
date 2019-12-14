@@ -174,7 +174,6 @@ public class LocationTrackManagerController {
             manager.setOrgNames(locationTrackManager.getOrgNames());
             int updatecount = locationTrackManagerService.update(manager);
             if(updatecount > 0){
-                updatePrivilege(locationTrackManager.getUserid());
                 messageBean.setStatus(true);
                 messageBean.setCode(200);
                 messageBean.setMessage("更新成功");
