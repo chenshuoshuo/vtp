@@ -184,6 +184,7 @@ public class LocationTrackManagerController {
                 messageBean.setMessage("更新失败");
             }
         } catch (Exception e) {
+            logger.error(e.getMessage(),e);
 
             messageBean.setStatus(false);
             messageBean.setCode(10001);
