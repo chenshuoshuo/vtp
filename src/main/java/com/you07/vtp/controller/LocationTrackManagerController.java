@@ -17,6 +17,8 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
@@ -43,6 +45,7 @@ import java.util.Map;
 public class LocationTrackManagerController {
     @Autowired
     private LocationTrackManagerService locationTrackManagerService;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @ApiOperation("获取用户信息分页")
     @PostMapping("/pageQuery")
@@ -101,7 +104,7 @@ public class LocationTrackManagerController {
                 messageBean.setMessage("没有查询到数据");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(),e);
             messageBean.setStatus(false);
             messageBean.setCode(10001);
             messageBean.setMessage("接口错误");
@@ -181,7 +184,7 @@ public class LocationTrackManagerController {
                 messageBean.setMessage("更新失败");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
             messageBean.setStatus(false);
             messageBean.setCode(10001);
             messageBean.setMessage("接口错误");
