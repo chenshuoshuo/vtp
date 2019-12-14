@@ -154,11 +154,6 @@ public class LocationTrackManagerController {
         return JSON.toJSONString(messageBean);
     }
 
-    /**
-     * 更新用户信息
-     * @param  locationTrackManager 用户信息对象
-     * @return
-     */
     @ApiOperation("更新用户信息")
     @PostMapping("/update")
     @ResponseBody
@@ -166,21 +161,25 @@ public class LocationTrackManagerController {
         MessageBean<LocationTrackManager> messageBean = new MessageBean<LocationTrackManager>(null);
 
         try {
-                ShaPasswordEncoder sha = new ShaPasswordEncoder();
+                /*ShaPasswordEncoder sha = new ShaPasswordEncoder();
                 locationTrackManager.setPassword(sha.encodePassword(locationTrackManager.getPassword(), locationTrackManager.getUserid()));
-                locationTrackManager.setPosttime(new Date());
-
-                int updatecount = locationTrackManagerService.update(locationTrackManager);
-                if(updatecount > 0){
-                    updatePrivilege(locationTrackManager.getUserid());
-                    messageBean.setStatus(true);
-                    messageBean.setCode(200);
-                    messageBean.setMessage("更新成功");
-                } else{
-                    messageBean.setStatus(false);
-                    messageBean.setCode(10002);
-                    messageBean.setMessage("更新失败");
-                }
+                locationTrackManager.setPosttime(new Date());*/
+            LocationTrackManager manager = locationTrackManagerService.get(locationTrackManager.getUserid());
+            manager.setUsername(locationTrackManager.getUsername());
+            manager.setIsManager(locationTrackManager.getIsManager());
+            manager.setOrgCodes(locationTrackManager.getOrgCodes());
+            manager.setOrgNames(locationTrackManager.getOrgNames());
+            int updatecount = locationTrackManagerService.update(manager);
+            if(updatecount > 0){
+                updatePrivilege(locationTrackManager.getUserid());
+                messageBean.setStatus(true);
+                messageBean.setCode(200);
+                messageBean.setMessage("更新成功");
+            } else{
+                messageBean.setStatus(false);
+                messageBean.setCode(10002);
+                messageBean.setMessage("更新失败");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             messageBean.setStatus(false);
