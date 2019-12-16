@@ -2,6 +2,7 @@ package com.you07.vtp.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.github.pagehelper.Page;
 import com.graphhopper.storage.GraphHopperStorage;
 import com.graphhopper.storage.index.LocationIndex;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -166,10 +167,16 @@ public class LocationController {
     public String loadAllLocation(@ApiParam(name = "startTime", value = "开始时间，格式：'yyyy-MM-dd HH:mm:ss'", required = true) @RequestParam("startTime") String startTime,
                                   @ApiParam(name = "endTime", value = "结束时间，格式：'yyyy-MM-dd HH:mm:ss'", required = false) @RequestParam(name = "endTime", required = false, defaultValue = "") String endTime,
                                   @ApiParam(name = "inSchool", value = "校内校外，1校内，2校外", required = false) @RequestParam("inSchool") Integer inSchool,
+                                  String managerId,
                                   @ApiParam(name = "campusId", value = "校区ID", required = false) @RequestParam("campusId") Integer campusId) {
         MessageListBean<LocationHistory> messageListBean = new MessageListBean<LocationHistory>();
         try {
             List<LocationHistory> list = locationHitoryService.selectAll(startTime, endTime, inSchool, campusId);
+            //权限判定
+            for(int i=0;i<list.size(); i++){
+                if(hasPrivilege(list.get(i).getUserid(), managerId))
+                    list.remove(i--);
+            }
             if (list.size() > 0) {
                 messageListBean.setData(list);
                 messageListBean.setStatus(true);
@@ -267,7 +274,9 @@ public class LocationController {
     public String loadOrgUnknown(@ApiParam(name = "orgCodes", value = "组织机构代码，多个以','分隔", required = true) @RequestParam("orgCodes") String orgCodes,
                                  @ApiParam(name = "startTime", value = "开始时间，格式：'yyyy-MM-dd HH:mm:ss'", required = true) @RequestParam("startTime") String startTime,
                                  @ApiParam(name = "endTime", value = "结束时间，格式：'yyyy-MM-dd HH:mm:ss'", required = false) @RequestParam(name = "endTime", required = false, defaultValue = "") String endTime,
-                                 @ApiParam(name = "campusId", value = "校区ID", required = false) @RequestParam("campusId") Integer campusId) {
+                                 @ApiParam(name = "campusId", value = "校区ID", required = false) @RequestParam("campusId") Integer campusId
+//                                 @RequestParam Integer page, @RequestParam Integer pageSize
+    ) {
         MessageListBean<StudentInfo> messageListBean = new MessageListBean<StudentInfo>();
         try {
             List<StudentInfo> studentInfoList = studentInfoService.loadWithClassCodes(orgCodes);
@@ -277,7 +286,6 @@ public class LocationController {
                     studentInfoMap.put(studentInfo.getStudentno(), studentInfo);
                 }
             }
-
 
             List<LocationHistory> inSchoolList = locationHitoryService.selectByOrgCodes(orgCodes, startTime, endTime, 1, campusId);
             List<LocationHistory> outSchoolList = locationHitoryService.selectByOrgCodes(orgCodes, startTime, endTime, 2, campusId);

@@ -57,8 +57,8 @@ public class CoordinateUtil {
         Point2D.Double first = polygon.get(0);
         // 通过移动到指定坐标（以双精度指定），将一个点添加到路径中
         peneralPath.moveTo(first.x, first.y);
-        polygon.remove(0);
-        for (Point2D.Double d : polygon) {
+        for (int i = 1; i<polygon.size(); i++) {
+            Point2D.Double d = polygon.get(i);
             // 通过绘制一条从当前坐标到新指定坐标（以双精度指定）的直线，将一个点添加到路径中。
             peneralPath.lineTo(d.x, d.y);
         }

@@ -5,7 +5,6 @@ import com.you07.eas.model.StudentInfo;
 import com.you07.eas.model.TeacherInfo;
 import com.you07.eas.service.StudentInfoService;
 import com.you07.eas.service.TeacherInfoService;
-import com.you07.util.Coordinate;
 import com.you07.util.CoordinateUtil;
 import com.you07.vtp.dao.LocationLatestDao;
 import com.you07.vtp.model.LocationCampusInfo;
@@ -54,13 +53,13 @@ public class LocationLatestService {
             if (stu != null || tea != null) {
                 if (stu != null) {
                     realname = stu.getRealName();
-                    orgCode = stu.getClassInfo().getClasscode();
-                    orgName = stu.getClassInfo().getClassname();
+                    orgCode = stu.getClassCode();
+                    orgName = stu.getOrgName();
                 }
                 if (tea != null) {
                     realname = tea.getName();
-                    orgCode = tea.getDepartmentInfo().getXsbmdm();
-                    orgName = tea.getDepartmentInfo().getXsbmmc();
+                    orgCode = tea.getOrgCode();
+                    orgName = tea.getOrgName();
                 }
                 locationLatest.setGender(gender);
                 locationLatest.setRealname(realname);
