@@ -269,7 +269,7 @@ public class LocationController {
                 messageListBean.setMessage("没有查看权限或者没有该用户");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("接口错误", e);
             messageListBean.setStatus(false);
             messageListBean.setCode(10001);
             messageListBean.setMessage("接口错误");
