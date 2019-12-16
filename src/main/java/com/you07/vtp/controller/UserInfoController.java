@@ -225,7 +225,7 @@ public class UserInfoController {
             student.addAttribute("name", "学生");
             student.addAttribute("count", String.valueOf(jsonArray.size()));
             //院系
-            for (int i = 0, l; i < jsonArray.size(); i++) {
+            for (int i = 0; i < jsonArray.size(); i++) {
                 JSONObject adJsonObj = jsonArray.getJSONObject(i);
                 String acadeName = adJsonObj.getString("name");
                 String adCode = adJsonObj.getString("code");
@@ -239,13 +239,14 @@ public class UserInfoController {
                     JSONObject mjJsonObj = mjJsonArr.getJSONObject(j);
                     JSONArray classJsonArr = mjJsonObj.getJSONArray("children");
                     //班级
-                    for (int k = 0; k < classJsonArr.size(); k++) {
+                    for (int k = 0, cnt=0; k < classJsonArr.size(); k++) {
                         JSONObject claJsonObj = classJsonArr.getJSONObject(k);
                         String claCode = claJsonObj.getString("code");
                         String claName = claJsonObj.getString("name");
-                        for (l = 0; l < splitOrgCodes.length; l++) {
+                        for (int l = 0; l < splitOrgCodes.length; l++) {
                             //判断是否有班级权限
                             if (claCode.equals(splitOrgCodes[l])) {
+                                cnt++;
                                 //continue loopThird;
                                 Element ci = ad.addElement("ci");
                                 ci.addAttribute("name", claName);
@@ -265,8 +266,9 @@ public class UserInfoController {
 
                         }
                         //如果没有班级，删除该院系
-                        if (l == 0)
-                            document.remove(ad);
+                        if (cnt == 0)
+                            student.remove(ad);
+                        cnt = 0;
 
                     }
                 }
