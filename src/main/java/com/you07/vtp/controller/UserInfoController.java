@@ -161,11 +161,7 @@ public class UserInfoController {
 
     @ApiOperation("从Cmips得到权限xml")
     @GetMapping("/getPrivilegeXml")
-    public MessageBean getPrivilegeXml(@RequestParam String managerId) throws SAXException {
-        LocationTrackManager manager = locationTrackManagerService.get(managerId);
-        if (manager == null)
-            throw new NullPointerException("用户不存在");
-        List<String> orgs = Arrays.asList(manager.getOrgCodes().split(","));
+    public MessageBean getPrivilegeXml() throws SAXException {
         JSONObject objectForCmIps = RestTemplateUtil.getJSONObjectForCmIps("/os/json/student");
         JSONArray jsonArray = objectForCmIps.getJSONArray("data");
         Document document = DocumentHelper.createDocument();
@@ -193,17 +189,8 @@ public class UserInfoController {
                     Element ci = ad.addElement("ci");
                     ci.addAttribute("name", claName);
                     ci.addAttribute("id", claCode);
-                    //查看用户是否已选中班级
-                    if (orgs.contains(claCode)) {
-                        ci.addAttribute("selected", "true");
-                        count++;
-                    } else {
-                        ci.addAttribute("selected", "false");
-                    }
                 }
             }
-            //如果选中了所有班级，则班级的上级院系设为选中
-            ad.addAttribute("selected", count == mjJsonArr.size() ? "true" : "false");
         }
         MessageBean<Object> objectMessageBean = new MessageBean<>();
         objectMessageBean.setCode(0);

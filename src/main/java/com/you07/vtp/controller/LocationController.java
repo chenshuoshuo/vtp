@@ -171,11 +171,17 @@ public class LocationController {
                                   @ApiParam(name = "campusId", value = "校区ID", required = false) @RequestParam("campusId") Integer campusId) {
         MessageListBean<LocationHistory> messageListBean = new MessageListBean<LocationHistory>();
         try {
+            LocationTrackManager manager = locationTrackManagerService.get(managerId);
+            if(manager == null)
+                throw new NullPointerException("管理员不存在");
             List<LocationHistory> list = locationHitoryService.selectAll(startTime, endTime, inSchool, campusId);
             //权限判定
+            List<String> orgs = Arrays.asList(manager.getOrgCodes().split(","));
             for(int i=0;i<list.size(); i++){
-                if(hasPrivilege(list.get(i).getUserid(), managerId))
+                LocationHistory history = list.get(i);
+                if(!orgs.contains(history.getOrgCode())){
                     list.remove(i--);
+                }
             }
             if (list.size() > 0) {
                 messageListBean.setData(list);
