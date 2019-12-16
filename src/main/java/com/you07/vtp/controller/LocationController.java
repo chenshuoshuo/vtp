@@ -22,6 +22,8 @@ import com.you07.vtp.vo.CoordinateVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,6 +51,8 @@ public class LocationController {
     private TeacherInfoService teacherInfoService;
     @Autowired
     private StudentInfoService studentInfoService;
+
+    private Logger logger = LoggerFactory.getLogger(LocationController.class);
 
     private static GeometryCollection LINES = null;
 
@@ -321,6 +325,7 @@ public class LocationController {
                 messageListBean.setMessage("没有查询到数据");
             }
         } catch (Exception e) {
+            logger.warn("接口错误", e);
             e.printStackTrace();
             messageListBean.setStatus(false);
             messageListBean.setCode(10001);
