@@ -18,7 +18,7 @@ public interface LocationHistoryDao {
      * @return
      */
     @Select({
-            "select * from location_latest where userid = #{userid} and substr(floorid, 0, 5) = '${campusId}' and lng is not null",
+            "select * from location_latest where userid = #{userid} and zone_id = '${campusId}' and lng is not null",
             "and in_school = #{inSchool}"
     })
     List<LocationHistory> selectByUserid(@Param("userid") String userid,
