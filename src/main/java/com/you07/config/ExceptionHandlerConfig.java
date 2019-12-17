@@ -18,7 +18,7 @@ public class ExceptionHandlerConfig {
 
 	private static final Logger logger = LoggerFactory.getLogger(ExceptionHandler.class);
 
-	@ExceptionHandler(Exception.class)
+	@ExceptionHandler(NetworkException.class)
 	public MessageBean handlerException(NetworkException e) {
 		logger.error("网络错误", e);
 		return MessageBean.error("网络错误", e);
