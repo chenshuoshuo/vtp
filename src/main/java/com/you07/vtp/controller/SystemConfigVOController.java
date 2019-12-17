@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -41,21 +42,15 @@ public class SystemConfigVOController {
     public String loadProductConfig() {
         MessageBean<SystemConfigVO> messageBean = new MessageBean<SystemConfigVO>(null);
 
-        try {
-            SystemConfigVO systemConfigVO = new SystemConfigVO();
-            systemConfigVO.setLocationSystemConfig(locationSystemConfigService.loadDefault());
-            systemConfigVO.setCampusInfoList(locationCampusInfoService.queryAll());
+        SystemConfigVO systemConfigVO = new SystemConfigVO();
+        systemConfigVO.setLocationSystemConfig(locationSystemConfigService.loadDefault());
+        systemConfigVO.setCampusInfoList(locationCampusInfoService.queryAll());
 
-            messageBean.setData(systemConfigVO);
-            messageBean.setStatus(true);
-            messageBean.setCode(200);
-            messageBean.setMessage("获取成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-            messageBean.setStatus(false);
-            messageBean.setCode(10001);
-            messageBean.setMessage("接口错误");
-        }
+        messageBean.setData(systemConfigVO);
+        messageBean.setStatus(true);
+        messageBean.setCode(200);
+        messageBean.setMessage("获取成功");
+
 
         return JSON.toJSONString(messageBean);
     }
@@ -63,20 +58,14 @@ public class SystemConfigVOController {
     @ApiOperation("刷新校区列表（重新拉取校区）")
     @GetMapping("refresh")
     @ResponseBody
-    public String refresh() {
+    public String refresh() throws IOException {
         MessageBean messageBean = new MessageBean<>(null);
-        try {
-            //初始化校区
-            locationCampusInfoService.refreshCampus();
-            messageBean.setStatus(true);
-            messageBean.setCode(200);
-            messageBean.setMessage("刷新成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-            messageBean.setStatus(false);
-            messageBean.setCode(10001);
-            messageBean.setMessage("刷新失败");
-        }
+        //初始化校区
+        locationCampusInfoService.refreshCampus();
+        messageBean.setStatus(true);
+        messageBean.setCode(200);
+        messageBean.setMessage("刷新成功");
+
 
         return JSON.toJSONString(messageBean);
     }
@@ -87,19 +76,13 @@ public class SystemConfigVOController {
     public String saveMapConfig(@ApiParam(name = "locationSystemConfig", value = "产品配置信息对象", required = true) @RequestBody LocationSystemConfig locationSystemConfig) {
         MessageBean<LocationSystemConfig> messageBean = new MessageBean<LocationSystemConfig>(null);
 
-        try {
-            locationSystemConfigService.update(locationSystemConfig);
+        locationSystemConfigService.update(locationSystemConfig);
 
-            messageBean.setData(locationSystemConfigService.loadDefault());
-            messageBean.setStatus(true);
-            messageBean.setCode(200);
-            messageBean.setMessage("更新成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-            messageBean.setStatus(false);
-            messageBean.setCode(10001);
-            messageBean.setMessage("接口错误");
-        }
+        messageBean.setData(locationSystemConfigService.loadDefault());
+        messageBean.setStatus(true);
+        messageBean.setCode(200);
+        messageBean.setMessage("更新成功");
+
 
         return JSON.toJSONString(messageBean);
     }
@@ -110,20 +93,14 @@ public class SystemConfigVOController {
     public String saveCampusConfig(@ApiParam(name = "campusInfoList", value = "校区信息列表", required = true) @RequestBody List<LocationCampusInfo> campusInfoList) {
         MessageListBean<LocationCampusInfo> messageListBean = new MessageListBean<LocationCampusInfo>(null);
 
-        try {
-            for (LocationCampusInfo locationSystemConfig : campusInfoList) {
-                locationCampusInfoService.update(locationSystemConfig);
-            }
-            messageListBean.setData(locationCampusInfoService.queryAll());
-            messageListBean.setStatus(true);
-            messageListBean.setCode(200);
-            messageListBean.setMessage("更新成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-            messageListBean.setStatus(false);
-            messageListBean.setCode(10001);
-            messageListBean.setMessage("接口错误");
+        for (LocationCampusInfo locationSystemConfig : campusInfoList) {
+            locationCampusInfoService.update(locationSystemConfig);
         }
+        messageListBean.setData(locationCampusInfoService.queryAll());
+        messageListBean.setStatus(true);
+        messageListBean.setCode(200);
+        messageListBean.setMessage("更新成功");
+
 
         return JSON.toJSONString(messageListBean);
     }
@@ -134,19 +111,13 @@ public class SystemConfigVOController {
     public String loadGeneralConfig() {
         MessageBean<LocationSystemConfig> messageBean = new MessageBean<LocationSystemConfig>(null);
 
-        try {
-            LocationSystemConfig locationSystemConfig = locationSystemConfigService.loadDefault();
+        LocationSystemConfig locationSystemConfig = locationSystemConfigService.loadDefault();
 
-            messageBean.setData(locationSystemConfig);
-            messageBean.setStatus(true);
-            messageBean.setCode(200);
-            messageBean.setMessage("获取成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-            messageBean.setStatus(false);
-            messageBean.setCode(10001);
-            messageBean.setMessage("接口错误");
-        }
+        messageBean.setData(locationSystemConfig);
+        messageBean.setStatus(true);
+        messageBean.setCode(200);
+        messageBean.setMessage("获取成功");
+
 
         return JSON.toJSONString(messageBean);
     }
@@ -157,20 +128,14 @@ public class SystemConfigVOController {
     public String saveGeneralConfig(@ApiParam(name = "locationSystemConfig", value = "产品配置信息对象", required = true) @RequestBody LocationSystemConfig locationSystemConfig) {
         MessageBean<LocationSystemConfig> messageBean = new MessageBean<LocationSystemConfig>(null);
 
-        try {
-            locationSystemConfig.setUpdateTime(new Date());
-            locationSystemConfigService.update(locationSystemConfig);
+        locationSystemConfig.setUpdateTime(new Date());
+        locationSystemConfigService.update(locationSystemConfig);
 
-            messageBean.setData(locationSystemConfig);
-            messageBean.setStatus(true);
-            messageBean.setCode(200);
-            messageBean.setMessage("获取成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-            messageBean.setStatus(false);
-            messageBean.setCode(10001);
-            messageBean.setMessage("接口错误");
-        }
+        messageBean.setData(locationSystemConfig);
+        messageBean.setStatus(true);
+        messageBean.setCode(200);
+        messageBean.setMessage("获取成功");
+
 
         return JSON.toJSONString(messageBean);
     }

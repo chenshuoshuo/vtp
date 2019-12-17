@@ -2,7 +2,6 @@ package com.you07.vtp.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.github.pagehelper.Page;
 import com.graphhopper.storage.GraphHopperStorage;
 import com.graphhopper.storage.index.LocationIndex;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -27,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -176,14 +176,14 @@ public class LocationController {
         MessageListBean<LocationHistory> messageListBean = new MessageListBean<LocationHistory>();
         try {
             LocationTrackManager manager = locationTrackManagerService.get(managerId);
-            if(manager == null)
+            if (manager == null)
                 throw new NullPointerException("管理员不存在");
             List<LocationHistory> list = locationHitoryService.selectAll(startTime, endTime, inSchool, campusId);
             //权限判定
             List<String> orgs = Arrays.asList(manager.getOrgCodes().split(","));
-            for(int i=0;i<list.size(); i++){
+            for (int i = 0; i < list.size(); i++) {
                 LocationHistory history = list.get(i);
-                if(!orgs.contains(history.getOrgCode())){
+                if (!orgs.contains(history.getOrgCode())) {
                     list.remove(i--);
                 }
             }
@@ -215,64 +215,57 @@ public class LocationController {
                             @ApiParam(name = "endTime", value = "结束时间，格式：'yyyy-MM-dd HH:mm:ss'", required = false) @RequestParam(name = "endTime", required = false, defaultValue = "") String endTime,
                             @ApiParam(name = "inSchool", value = "校内校外，1校内，2校外", required = false) @RequestParam("inSchool") Integer inSchool,
                             @ApiParam(name = "campusId", value = "校区ID", required = false) @RequestParam("campusId") Integer campusId,
-                            @ApiParam(name = "managerId", value = "管理员ID", required = false) @RequestParam("managerId") String managerId) {
+                            @ApiParam(name = "managerId", value = "管理员ID", required = false) @RequestParam("managerId") String managerId) throws ParseException {
         MessageListBean<LocationHistory> messageListBean = new MessageListBean<LocationHistory>();
-        try {
-            if (hasPrivilege(userid, managerId)) {
-                List<LocationHistory> locationHistories = locationHitoryService.selectTrack(userid, startTime, endTime, inSchool, campusId);
+        if (hasPrivilege(userid, managerId)) {
+            List<LocationHistory> locationHistories = locationHitoryService.selectTrack(userid, startTime, endTime, inSchool, campusId);
 
-                if (locationHistories.size() > 0) {
+            if (locationHistories.size() > 0) {
 
 //                    locationHistoryList.add(locationHistories.get(0));
-                    //过滤连续重复点
-                    LocationHistory last = locationHistories.get(0);
-                    for (int i = 1; i < locationHistories.size(); ) {
-                        LocationHistory current = locationHistories.get(i);
-                        if (last.getLat().equals(current.getLat()) && last.getLng().equals(current.getLng())) {
-                            locationHistories.remove(current);
-                        } else {
-                            last = current;
-                            i++;
-                        }
+                //过滤连续重复点
+                LocationHistory last = locationHistories.get(0);
+                for (int i = 1; i < locationHistories.size(); ) {
+                    LocationHistory current = locationHistories.get(i);
+                    if (last.getLat().equals(current.getLat()) && last.getLng().equals(current.getLng())) {
+                        locationHistories.remove(current);
+                    } else {
+                        last = current;
+                        i++;
                     }
-
-                    //卡尔曼滤波去躁柔化
-                    List<CoordinateVO> coordinateVOS = new LinkedList<>();
-                    GeoTrackFilter filter = new GeoTrackFilter(1.0D);
-                    locationHistories.forEach(h -> {
-                        filter.update_velocity2d(h.getLat(), h.getLng(), 0D);
-                        double[] latlon = filter.get_lat_long();
-                        h.setLat(latlon[0]);
-                        h.setLng(latlon[1]);
-                        coordinateVOS.add(new CoordinateVO(latlon));
-                    });
-
-                    //向cmgis请求路径规划
-                    String jsonArray = RestTemplateUtil.postJSONObjectFormCmGis("/map/route/v3/bind/road/"+locationHistories.get(0).getZoneId(), coordinateVOS).getJSONArray("data").toJSONString();
-                    List<CoordinateVO> list = JSON.parseArray(jsonArray, CoordinateVO.class);
-                    List<Double[]> trackList = new LinkedList<>();
-                    list.forEach(c->trackList.add(c.toArray()));
-
-                    messageListBean.setData(locationHistories);
-                    messageListBean.setStatus(true);
-                    messageListBean.setCode(200);
-                    messageListBean.addPropertie("track", trackList.toArray());
-                    messageListBean.setMessage("获取成功");
-                } else {
-                    messageListBean.setStatus(false);
-                    messageListBean.setCode(10002);
-                    messageListBean.setMessage("没有查询到数据");
                 }
+
+                //卡尔曼滤波去躁柔化
+                List<CoordinateVO> coordinateVOS = new LinkedList<>();
+                GeoTrackFilter filter = new GeoTrackFilter(1.0D);
+                locationHistories.forEach(h -> {
+                    filter.update_velocity2d(h.getLat(), h.getLng(), 0D);
+                    double[] latlon = filter.get_lat_long();
+                    h.setLat(latlon[0]);
+                    h.setLng(latlon[1]);
+                    coordinateVOS.add(new CoordinateVO(latlon));
+                });
+
+                //向cmgis请求路径规划
+                String jsonArray = RestTemplateUtil.postJSONObjectFormCmGis("/map/route/v3/bind/road/" + locationHistories.get(0).getZoneId(), coordinateVOS).getJSONArray("data").toJSONString();
+                List<CoordinateVO> list = JSON.parseArray(jsonArray, CoordinateVO.class);
+                List<Double[]> trackList = new LinkedList<>();
+                list.forEach(c -> trackList.add(c.toArray()));
+
+                messageListBean.setData(locationHistories);
+                messageListBean.setStatus(true);
+                messageListBean.setCode(200);
+                messageListBean.addPropertie("track", trackList.toArray());
+                messageListBean.setMessage("获取成功");
             } else {
                 messageListBean.setStatus(false);
-                messageListBean.setCode(10003);
-                messageListBean.setMessage("没有查看权限或者没有该用户");
+                messageListBean.setCode(10002);
+                messageListBean.setMessage("没有查询到数据");
             }
-        } catch (Exception e) {
-            logger.warn("接口错误", e);
+        } else {
             messageListBean.setStatus(false);
-            messageListBean.setCode(10001);
-            messageListBean.setMessage("接口错误");
+            messageListBean.setCode(10003);
+            messageListBean.setMessage("没有查看权限或者没有该用户");
         }
 
         return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
@@ -286,51 +279,44 @@ public class LocationController {
                                  @ApiParam(name = "endTime", value = "结束时间，格式：'yyyy-MM-dd HH:mm:ss'", required = false) @RequestParam(name = "endTime", required = false, defaultValue = "") String endTime,
                                  @ApiParam(name = "campusId", value = "校区ID", required = false) @RequestParam("campusId") Integer campusId
 //                                 @RequestParam Integer page, @RequestParam Integer pageSize
-    ) {
+    ) throws ParseException {
         MessageListBean<StudentInfo> messageListBean = new MessageListBean<StudentInfo>();
-        try {
-            List<StudentInfo> studentInfoList = studentInfoService.loadWithClassCodes(orgCodes);
-            Map<String, StudentInfo> studentInfoMap = new HashMap<String, StudentInfo>();
-            for (StudentInfo studentInfo : studentInfoList) {
-                if (!studentInfoMap.containsKey(studentInfo.getStudentno())) {
-                    studentInfoMap.put(studentInfo.getStudentno(), studentInfo);
-                }
+        List<StudentInfo> studentInfoList = studentInfoService.loadWithClassCodes(orgCodes);
+        Map<String, StudentInfo> studentInfoMap = new HashMap<String, StudentInfo>();
+        for (StudentInfo studentInfo : studentInfoList) {
+            if (!studentInfoMap.containsKey(studentInfo.getStudentno())) {
+                studentInfoMap.put(studentInfo.getStudentno(), studentInfo);
             }
-
-            List<LocationHistory> inSchoolList = locationHitoryService.selectByOrgCodes(orgCodes, startTime, endTime, 1, campusId);
-            List<LocationHistory> outSchoolList = locationHitoryService.selectByOrgCodes(orgCodes, startTime, endTime, 2, campusId);
-
-            for (LocationHistory locationHistory : inSchoolList) {
-                if (studentInfoMap.containsKey(locationHistory.getUserid())) {
-                    studentInfoMap.remove(locationHistory.getUserid());
-                }
-            }
-
-            for (LocationHistory locationHistory : outSchoolList) {
-                if (studentInfoMap.containsKey(locationHistory.getUserid())) {
-                    studentInfoMap.remove(locationHistory.getUserid());
-                }
-            }
-
-            if (studentInfoMap.values().size() > 0) {
-                messageListBean.setStatus(true);
-                messageListBean.setCode(200);
-                messageListBean.setMessage("获取成功");
-                for (StudentInfo studentInfo : studentInfoMap.values()) {
-                    messageListBean.addData(studentInfo);
-                }
-            } else {
-                messageListBean.setStatus(false);
-                messageListBean.setCode(10002);
-                messageListBean.setMessage("没有查询到数据");
-            }
-        } catch (Exception e) {
-            logger.warn("接口错误", e);
-            e.printStackTrace();
-            messageListBean.setStatus(false);
-            messageListBean.setCode(10001);
-            messageListBean.setMessage("接口错误");
         }
+
+        List<LocationHistory> inSchoolList = locationHitoryService.selectByOrgCodes(orgCodes, startTime, endTime, 1, campusId);
+        List<LocationHistory> outSchoolList = locationHitoryService.selectByOrgCodes(orgCodes, startTime, endTime, 2, campusId);
+
+        for (LocationHistory locationHistory : inSchoolList) {
+            if (studentInfoMap.containsKey(locationHistory.getUserid())) {
+                studentInfoMap.remove(locationHistory.getUserid());
+            }
+        }
+
+        for (LocationHistory locationHistory : outSchoolList) {
+            if (studentInfoMap.containsKey(locationHistory.getUserid())) {
+                studentInfoMap.remove(locationHistory.getUserid());
+            }
+        }
+
+        if (studentInfoMap.values().size() > 0) {
+            messageListBean.setStatus(true);
+            messageListBean.setCode(200);
+            messageListBean.setMessage("获取成功");
+            for (StudentInfo studentInfo : studentInfoMap.values()) {
+                messageListBean.addData(studentInfo);
+            }
+        } else {
+            messageListBean.setStatus(false);
+            messageListBean.setCode(10002);
+            messageListBean.setMessage("没有查询到数据");
+        }
+
 
         return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
     }

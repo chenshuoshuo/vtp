@@ -12,6 +12,14 @@ public class MessageBean<T>  extends MessageBaseBean implements Serializable {
         this.setTime(System.currentTimeMillis());
     }
 
+    public static MessageBean ok(){
+        MessageBean messageBean = new MessageBean();
+        messageBean.setStatus(true);
+        messageBean.setCode(200);
+        messageBean.setMessage("成功");
+        return messageBean;
+    }
+
     public MessageBean(T data) {
         this.data = data;
 
@@ -22,6 +30,14 @@ public class MessageBean<T>  extends MessageBaseBean implements Serializable {
      * 被包含的消息实体
      */
     private T data;
+
+    public static MessageBean error(String msg) {
+        MessageBean messageBean = new MessageBean();
+        messageBean.setStatus(true);
+        messageBean.setCode(200);
+        messageBean.setMessage(msg);
+        return messageBean;
+    }
 
     public T getData() {
         return data;

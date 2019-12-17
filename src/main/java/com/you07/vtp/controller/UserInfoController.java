@@ -52,7 +52,6 @@ public class UserInfoController {
     @ResponseBody
     public String detail(@ApiParam(name = "userCode", value = "用户名", required = false) @RequestParam(name = "userCode", required = true) String userCode) {
         MessageBean<UserInfo> messageBean = new MessageBean<UserInfo>(null);
-        try {
             LocationTrackManager locationTrackManager = locationTrackManagerService.get(userCode);
             StudentInfo studentInfo = studentInfoService.get(userCode);
             TeacherInfo teacherInfo = teacherInfoService.get(userCode);
@@ -89,12 +88,7 @@ public class UserInfoController {
                 messageBean.setMessage("没有查询到数据");
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            messageBean.setStatus(false);
-            messageBean.setCode(10001);
-            messageBean.setMessage("接口错误");
-        }
+
 
         return JSON.toJSONString(messageBean);
     }

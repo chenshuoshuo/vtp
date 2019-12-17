@@ -8,12 +8,7 @@ import com.you07.eas.service.ClassInfoService;
 import com.you07.eas.service.StudentInfoService;
 import com.you07.util.VTPFileUtil;
 import com.you07.util.message.MessageListBean;
-import com.you07.vtp.model.LocationCampusInfo;
-import com.you07.vtp.model.LocationHistory;
-import com.you07.vtp.model.LocationSystemConfig;
 import com.you07.vtp.model.LocationTrackManager;
-import com.you07.vtp.service.LocationCampusInfoService;
-import com.you07.vtp.service.LocationSystemConfigService;
 import com.you07.vtp.service.LocationTrackManagerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,14 +23,15 @@ import java.util.List;
 
 /**
  * 组织机构信息接口controller
- * @version 1.0
+ *
  * @author RY
+ * @version 1.0
  * @since 2018-6-21 17:18:30
  */
 
 @RestController
 @CrossOrigin
-@Api(value="组织机构信息 controller",tags={"组织机构信息接口"})
+@Api(value = "组织机构信息 controller", tags = {"组织机构信息接口"})
 public class OrganizationController {
 
     @Autowired
@@ -48,7 +44,7 @@ public class OrganizationController {
     @GetMapping("/orgXml")
     @ApiOperation("获取组织机构信息")
     public String orgXml(HttpServletResponse httpServletResponse,
-                            @ApiParam(name="userid",value="用户ID",required=true) @RequestParam("userid") String userid){
+                         @ApiParam(name = "userid", value = "用户ID", required = true) @RequestParam("userid") String userid) {
         try {
             // 设置响应头
             // 指定内容类型为 xml 格式
@@ -68,6 +64,7 @@ public class OrganizationController {
 
     /**
      * 读取XML文件
+     *
      * @return
      * @throws FileNotFoundException
      */
@@ -75,15 +72,14 @@ public class OrganizationController {
         StringBuffer temp = new StringBuffer();
         File file = new File(VTPFileUtil.getRootPath()
                 + "user-xml" + System.getProperty("file.separator")
-                +  usercode + ".xml");
-        if(!file.exists()){
+                + usercode + ".xml");
+        if (!file.exists()) {
             return "";
-        } else{
+        } else {
             String str;
             try {
                 BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
-                while ((str = in.readLine()) != null)
-                {
+                while ((str = in.readLine()) != null) {
                     temp.append(str);
                 }
                 in.close();
@@ -100,7 +96,7 @@ public class OrganizationController {
     @GetMapping("/privilegeXml")
     @ApiOperation("获取权限结构信息")
     public String privilegeXml(HttpServletResponse httpServletResponse,
-                            @ApiParam(name="userid",value="用户ID",required=true) @RequestParam("userid") String userid){
+                               @ApiParam(name = "userid", value = "用户ID", required = true) @RequestParam("userid") String userid) {
         try {
             // 设置响应头
             // 指定内容类型为 xml 格式
@@ -121,25 +117,19 @@ public class OrganizationController {
     @ApiOperation("搜索班级")
     @PostMapping("/searchClassInfo")
     @ResponseBody
-    public String searchClassInfo(@ApiParam(name="keyWord",value="关键词，班级代码/名称",required=true) @RequestParam("keyWord") String keyWord,
-                                   @ApiParam(name="managerId",value="管理员ID",required=false) @RequestParam("managerId") String managerId){
+    public String searchClassInfo(@ApiParam(name = "keyWord", value = "关键词，班级代码/名称", required = true) @RequestParam("keyWord") String keyWord,
+                                  @ApiParam(name = "managerId", value = "管理员ID", required = false) @RequestParam("managerId") String managerId) {
         MessageListBean<ClassInfo> messageListBean = new MessageListBean<ClassInfo>();
-        try {
-            LocationTrackManager manager = locationTrackManagerService.get(managerId);
-            String orgCodes = manager.getOrgCodes();
-            List<ClassInfo> list = classInfoService.selectWithPrivilegeOrgCodes(keyWord, orgCodes);
-            if(list.size() > 0){
-                messageListBean.setData(list);
-                messageListBean.setStatus(true);
-                messageListBean.setCode(200);
-                messageListBean.setMessage("获取成功");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            messageListBean.setStatus(false);
+        LocationTrackManager manager = locationTrackManagerService.get(managerId);
+        String orgCodes = manager.getOrgCodes();
+        List<ClassInfo> list = classInfoService.selectWithPrivilegeOrgCodes(keyWord, orgCodes);
+        if (list.size() > 0) {
+            messageListBean.setData(list);
+            messageListBean.setStatus(true);
             messageListBean.setCode(200);
-            messageListBean.setMessage("没有查询到数据");
+            messageListBean.setMessage("获取成功");
         }
+
 
         return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
     }
@@ -147,31 +137,26 @@ public class OrganizationController {
     @ApiOperation("搜索学生")
     @PostMapping("/searchStudentInfo")
     @ResponseBody
-    public String searchStudentInfo(@ApiParam(name="keyWord",value="关键词，学生学号/名称",required=true) @RequestParam("keyWord") String keyWord,
-                                  @ApiParam(name="managerId",value="管理员ID",required=false) @RequestParam("managerId") String managerId){
+    public String searchStudentInfo(@ApiParam(name = "keyWord", value = "关键词，学生学号/名称", required = true) @RequestParam("keyWord") String keyWord,
+                                    @ApiParam(name = "managerId", value = "管理员ID", required = false) @RequestParam("managerId") String managerId) {
         MessageListBean<StudentInfo> messageListBean = new MessageListBean<StudentInfo>();
-        try {
-            LocationTrackManager manager = locationTrackManagerService.get(managerId);
-            String orgCodes = manager.getOrgCodes();
-            List<StudentInfo> list = studentInfoService.selectWithPrivilegeOrgCodes(keyWord, orgCodes);
-            if(list.size() > 0){
-                messageListBean.setData(list);
-                messageListBean.setStatus(true);
-                messageListBean.setCode(200);
-                messageListBean.setMessage("获取成功");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            messageListBean.setStatus(false);
+        LocationTrackManager manager = locationTrackManagerService.get(managerId);
+        String orgCodes = manager.getOrgCodes();
+        List<StudentInfo> list = studentInfoService.selectWithPrivilegeOrgCodes(keyWord, orgCodes);
+        if (list.size() > 0) {
+            messageListBean.setData(list);
+            messageListBean.setStatus(true);
             messageListBean.setCode(200);
-            messageListBean.setMessage("没有查询到数据");
+            messageListBean.setMessage("获取成功");
         }
+
 
         return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
     }
 
     /**
      * 读取XML文件
+     *
      * @return
      * @throws FileNotFoundException
      */
@@ -179,17 +164,16 @@ public class OrganizationController {
         StringBuffer temp = new StringBuffer();
         File file = new File(VTPFileUtil.getRootPath()
                 + "privilege-xml" + System.getProperty("file.separator")
-                +  usercode + ".xml");
-        if(!file.exists()){
+                + usercode + ".xml");
+        if (!file.exists()) {
             file = new File(VTPFileUtil.getRootPath()
                     + "privilege-xml" + System.getProperty("file.separator")
-                    +  "all.xml");
+                    + "all.xml");
         }
         String str;
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
-            while ((str = in.readLine()) != null)
-            {
+            while ((str = in.readLine()) != null) {
                 temp.append(str);
             }
             in.close();
