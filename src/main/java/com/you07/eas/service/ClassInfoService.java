@@ -8,39 +8,25 @@ import com.you07.util.RestTemplateUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ClassInfoService {
 
     public List<ClassInfo> selectWithPrivilegeOrgCodes(String keyWord, String privilegeOrgCodes){
-        String[] strings = privilegeOrgCodes.split(",");
+        List<String> orgs = Arrays.asList(privilegeOrgCodes.split(","));
         JSONObject jsonObject = null;
         StringBuilder sb = new StringBuilder();
-        sb.append("/os/classInfo/searchWithClassCodeAndKeyWord");
+        sb.append("/os/classInfo/searchWithClassCodeAndKeyWord?page=0&pageSize=100000");
         if (keyWord != null && StringUtils.isEmpty("")) {
-            sb.append("?keyword=" + keyWord);
-        }
-        if (privilegeOrgCodes != null && StringUtils.isNotEmpty("privilegeOrgCodes")) {
-            for(int i = 0; i < strings.length; i++) {
-                sb.append("&classCodes=" + strings[i]);
-            }
+            sb.append("&keyword=" + keyWord);
         }
         jsonObject = RestTemplateUtil.getJSONObjectForCmIps(sb.toString());
-        List<ClassInfo> classInfoList = new ArrayList<>();
-        Result<List<ClassInfo>> listResult = jsonObject.toJavaObject(Result.class);
-        List<ClassInfo> classInfoList1 = listResult.getData();
-        for (int i = 0; i < classInfoList1.size(); i++){
-            ClassInfo classInfo = new ClassInfo();
-            List<String> rulerList = (List<String>) classInfoList1.get(i);
-            classInfo.setClasscode(rulerList.get(0));
-            classInfo.setMajorCode(rulerList.get(1));
-            classInfo.setClassname(rulerList.get(2));
-            classInfo.setGrade(String.valueOf(rulerList.get(3)));
-            classInfoList.add(classInfo);
+        List<ClassInfo> classInfoList = jsonObject.getJSONObject("data").getJSONArray("content").toJavaList(ClassInfo.class);
+        for(int i=0;i<classInfoList.size(); i++){
+            ClassInfo classInfo = classInfoList.get(i);
+            if(!orgs.contains(classInfo.getClasscode()))
+                classInfoList.remove(i--);
         }
         return classInfoList;
     }

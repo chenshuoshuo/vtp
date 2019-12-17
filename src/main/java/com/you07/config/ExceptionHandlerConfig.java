@@ -24,8 +24,6 @@ public class ExceptionHandlerConfig {
 		return MessageBean.error("网络错误", e);
 	}
 
-
-
 	@ExceptionHandler(Exception.class)
 	public MessageBean handlerException(Exception e) {
         logger.error("未知异常", e);
