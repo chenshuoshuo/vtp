@@ -13,10 +13,7 @@ import com.you07.util.RestTemplateUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -94,44 +91,23 @@ public class StudentInfoService {
     }
 
     public List<StudentInfo> selectWithPrivilegeOrgCodes(String keyWord, String privilegeOrgCodes) {
-        String[] strings = privilegeOrgCodes.split(",");
+        List<String> orgs = Arrays.asList(privilegeOrgCodes.split(","));
         JSONObject jsonObject = null;
         StringBuilder sb = new StringBuilder();
         sb.append("/os/studentInfo/searchWithClassCodeAndKeyWord?page=0&pageSize=100");
         if (keyWord != null && StringUtils.isEmpty("")) {
-            sb.append("?keyword=" + keyWord);
-        }
-        if (privilegeOrgCodes != null && StringUtils.isNotEmpty("privilegeOrgCodes")) {
-            for (int i = 0; i < strings.length; i++) {
-                sb.append("&classCodes=" + strings[i]);
-            }
+            sb.append("&keyword=" + keyWord);
         }
         jsonObject = RestTemplateUtil.getJSONObjectForCmIps(sb.toString());
-        List<StudentInfo> studentInfoList = new ArrayList<>();
+        List<StudentInfo> students = new ArrayList<>();
         List<StudentVO> studentVOS = jsonObject.getJSONObject("data").getJSONArray("content").toJavaList(StudentVO.class);
-        studentVOS.forEach(s->studentInfoList.add(new StudentInfo(s)));
-        for (int i = 0; i < studentInfoList.size(); i++) {
-            StudentInfo studentInfo = studentInfoList.get(i);
-            //通过班级编码拿到班级信息
-            String classCode = studentInfo.getClassCode();
-            //根据班级号查询机构
-            //根据学号编号得到班级编号
-            JSONObject jsonObjectClass = null;
-            jsonObjectClass = RestTemplateUtil.getJSONObjectForCmIps("/os/classInfo/get/" + classCode);
-            String majorCode = jsonObjectClass.getJSONObject("data").getString("majorCode");
-            //根据专业编号得到院系编号
-            JSONObject jsonObjectMajor = null;
-            jsonObjectMajor = RestTemplateUtil.getJSONObjectForCmIps("/os/major/get/" + majorCode);
-            String academyCode = jsonObjectMajor.getJSONObject("data").getString("academyCode");
-            //根据院系编号得到院系名
-            JSONObject jsonObjectAcade = null;
-            jsonObjectAcade = RestTemplateUtil.getJSONObjectForCmIps("/os/academy/get/" + academyCode);
-            String academyName = jsonObjectAcade.getJSONObject("data").getString("academyName");
-            studentInfo.setOrgCode(academyCode);
-            studentInfo.setOrgName(academyName);
-            studentInfoList.add(studentInfo);
+        studentVOS.forEach(s->students.add(new StudentInfo(s)));
+        for (int i = 0; i < students.size(); i++) {
+            StudentInfo studentInfo = students.get(i);
+            if(!orgs.contains(studentInfo.getClassCode()))
+                students.remove(i--);
         }
-        return studentInfoList;
+        return students;
     }
 
     public List<StudentInfo> loadWithClassCodes(String classCode) {
