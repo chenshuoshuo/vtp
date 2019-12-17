@@ -24,8 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.xml.sax.SAXException;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -52,42 +52,41 @@ public class UserInfoController {
     @ResponseBody
     public String detail(@ApiParam(name = "userCode", value = "用户名", required = false) @RequestParam(name = "userCode", required = true) String userCode) {
         MessageBean<UserInfo> messageBean = new MessageBean<UserInfo>(null);
-            LocationTrackManager locationTrackManager = locationTrackManagerService.get(userCode);
-            StudentInfo studentInfo = studentInfoService.get(userCode);
-            TeacherInfo teacherInfo = teacherInfoService.get(userCode);
-            Integer isManager = 0;
-            if (locationTrackManager != null || teacherInfo != null || studentInfo != null) {
-                String username, orgName;
-                username = orgName = "";
-                if (locationTrackManager != null) {
-                    username = locationTrackManager.getUsername();
-                    orgName = locationTrackManager.getDeptname();
-                    isManager = locationTrackManager.getIsManager();
-                } else if (teacherInfo != null) {
-                    username = teacherInfo.getName();
-                    orgName = teacherInfo.getOrgName();
-                } else {
-                    username = studentInfo.getRealName();
-                    orgName = studentInfo.getOrgName();
-                }
-
-                UserInfo userInfo = new UserInfo();
-                userInfo.setUserId(userCode);
-                userInfo.setAvatar("");
-                userInfo.setOrgName(orgName);
-                userInfo.setUsername(username);
-
-                messageBean.setData(userInfo);
-                messageBean.setStatus(true);
-                messageBean.setCode(200);
-                messageBean.setMessage("获取成功");
-                messageBean.addPropertie("isManager", isManager);
+        LocationTrackManager locationTrackManager = locationTrackManagerService.get(userCode);
+        StudentInfo studentInfo = studentInfoService.get(userCode);
+        TeacherInfo teacherInfo = teacherInfoService.get(userCode);
+        Integer isManager = 0;
+        if (locationTrackManager != null || teacherInfo != null || studentInfo != null) {
+            String username, orgName;
+            username = orgName = "";
+            if (locationTrackManager != null) {
+                username = locationTrackManager.getUsername();
+                orgName = locationTrackManager.getDeptname();
+                isManager = locationTrackManager.getIsManager();
+            } else if (teacherInfo != null) {
+                username = teacherInfo.getName();
+                orgName = teacherInfo.getOrgName();
             } else {
-                messageBean.setStatus(false);
-                messageBean.setCode(1002);
-                messageBean.setMessage("没有查询到数据");
+                username = studentInfo.getRealName();
+                orgName = studentInfo.getOrgName();
             }
 
+            UserInfo userInfo = new UserInfo();
+            userInfo.setUserId(userCode);
+            userInfo.setAvatar("");
+            userInfo.setOrgName(orgName);
+            userInfo.setUsername(username);
+
+            messageBean.setData(userInfo);
+            messageBean.setStatus(true);
+            messageBean.setCode(200);
+            messageBean.setMessage("获取成功");
+            messageBean.addPropertie("isManager", isManager);
+        } else {
+            messageBean.setStatus(false);
+            messageBean.setCode(1002);
+            messageBean.setMessage("没有查询到数据");
+        }
 
 
         return JSON.toJSONString(messageBean);
@@ -98,57 +97,50 @@ public class UserInfoController {
     @ResponseBody
     public String search(@ApiParam(name = "keyword", value = "学工号/姓名", required = false) @RequestParam(name = "keyword", required = true) String keyword,
                          @ApiParam(name = "page", value = "当前页", required = true) @RequestParam("page") String page,
-                         @ApiParam(name = "pageSize", value = "每页显示条数", required = true) @RequestParam("pageSize") String pageSize) {
+                         @ApiParam(name = "pageSize", value = "每页显示条数", required = true) @RequestParam("pageSize") String pageSize) throws IOException {
         MessageListBean<UserInfo> messageListBean = new MessageListBean<UserInfo>(null);
-        try {
-            List<StudentInfo> studentInfoList = studentInfoService.searchWithCodeName(keyword, page, pageSize);
-            List<TeacherInfo> teacherInfoList = teacherInfoService.searchWithCodeName(keyword, page, pageSize);
+        List<StudentInfo> studentInfoList = studentInfoService.searchWithCodeName(keyword, page, pageSize);
+        List<TeacherInfo> teacherInfoList = teacherInfoService.searchWithCodeName(keyword, page, pageSize);
 
-            if (teacherInfoList.size() > 0 || studentInfoList.size() > 0) {
-                List<UserInfo> userInfoList = new ArrayList<>();
+        if (teacherInfoList.size() > 0 || studentInfoList.size() > 0) {
+            List<UserInfo> userInfoList = new ArrayList<>();
 
-                for (TeacherInfo teacherInfo : teacherInfoList) {
-                    UserInfo userInfo = new UserInfo();
-                    userInfo.setUserId(teacherInfo.getTeachercode());
-                    userInfo.setAvatar("");
-                    if (teacherInfo.getDepartmentInfo() != null) {
-                        userInfo.setOrgName(teacherInfo.getOrgName());
-                    }
-                    userInfo.setUsername(teacherInfo.getName());
-                    userInfo.setUserType("教职工");
-
-                    userInfoList.add(userInfo);
+            for (TeacherInfo teacherInfo : teacherInfoList) {
+                UserInfo userInfo = new UserInfo();
+                userInfo.setUserId(teacherInfo.getTeachercode());
+                userInfo.setAvatar("");
+                if (teacherInfo.getDepartmentInfo() != null) {
+                    userInfo.setOrgName(teacherInfo.getOrgName());
                 }
+                userInfo.setUsername(teacherInfo.getName());
+                userInfo.setUserType("教职工");
 
-                for (StudentInfo studentInfo : studentInfoList) {
-                    UserInfo userInfo = new UserInfo();
-                    userInfo.setUserId(studentInfo.getStudentno());
-                    userInfo.setAvatar("");
-                    if (studentInfo.getClassCode() != null) {
-                        userInfo.setOrgName(studentInfo.getOrgName());
-                    }
-                    userInfo.setUsername(studentInfo.getRealName());
-                    userInfo.setUserType("学生");
-
-                    userInfoList.add(userInfo);
-                }
-
-                messageListBean.setStatus(true);
-                messageListBean.setData(userInfoList);
-                messageListBean.setCode(200);
-                messageListBean.setMessage("获取成功");
-            } else {
-                messageListBean.setStatus(false);
-                messageListBean.setCode(1002);
-                messageListBean.setMessage("没有查询到数据");
+                userInfoList.add(userInfo);
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            for (StudentInfo studentInfo : studentInfoList) {
+                UserInfo userInfo = new UserInfo();
+                userInfo.setUserId(studentInfo.getStudentno());
+                userInfo.setAvatar("");
+                if (studentInfo.getClassCode() != null) {
+                    userInfo.setOrgName(studentInfo.getOrgName());
+                }
+                userInfo.setUsername(studentInfo.getRealName());
+                userInfo.setUserType("学生");
+
+                userInfoList.add(userInfo);
+            }
+
+            messageListBean.setStatus(true);
+            messageListBean.setData(userInfoList);
+            messageListBean.setCode(200);
+            messageListBean.setMessage("获取成功");
+        } else {
             messageListBean.setStatus(false);
-            messageListBean.setCode(10001);
-            messageListBean.setMessage("接口错误");
+            messageListBean.setCode(1002);
+            messageListBean.setMessage("没有查询到数据");
         }
+
 
         return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
     }
@@ -233,7 +225,7 @@ public class UserInfoController {
                     JSONObject mjJsonObj = mjJsonArr.getJSONObject(j);
                     JSONArray classJsonArr = mjJsonObj.getJSONArray("children");
                     //班级
-                    for (int k = 0, cnt=0; k < classJsonArr.size(); k++) {
+                    for (int k = 0, cnt = 0; k < classJsonArr.size(); k++) {
                         JSONObject claJsonObj = classJsonArr.getJSONObject(k);
                         String claCode = claJsonObj.getString("code");
                         String claName = claJsonObj.getString("name");

@@ -21,6 +21,7 @@ import com.you07.vtp.vo.CoordinateVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,51 +72,12 @@ public class LocationController {
                                    @ApiParam(name = "endTime", value = "结束时间，格式：'yyyy-MM-dd HH:mm:ss'", required = false) @RequestParam(name = "endTime", required = false, defaultValue = "") String endTime,
                                    @ApiParam(name = "inSchool", value = "校内校外，1校内，2校外", required = false) @RequestParam("inSchool") Integer inSchool,
                                    @ApiParam(name = "campusId", value = "校区ID", required = false) @RequestParam("campusId") Integer campusId,
-                                   @ApiParam(name = "managerId", value = "管理员ID", required = false) @RequestParam("managerId") String managerId) {
+                                   @ApiParam(name = "managerId", value = "管理员ID", required = false) @RequestParam("managerId") String managerId) throws ParseException {
         MessageListBean<LocationHistory> messageListBean = new MessageListBean<LocationHistory>();
-        try {
-            if (hasPrivilege(userids, managerId)) {
-                List<LocationHistory> list = locationHitoryService.selectByUserids(userids, startTime, endTime, inSchool, campusId);
-                if (list.size() > 0) {
-                    messageListBean.setData(list);
-                    messageListBean.setStatus(true);
-                    messageListBean.setCode(200);
-                    messageListBean.setMessage("获取成功");
-                } else {
-                    messageListBean.setStatus(false);
-                    messageListBean.setCode(10002);
-                    messageListBean.setMessage("没有查询到数据");
-                }
-            } else {
-                messageListBean.setStatus(false);
-                messageListBean.setCode(10003);
-                messageListBean.setMessage("没有查看权限或者没有该用户");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            messageListBean.setStatus(false);
-            messageListBean.setCode(10001);
-            messageListBean.setMessage("接口错误");
-        }
-
-        return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
-    }
-
-    @ApiOperation("根据单用户查询位置")
-    @GetMapping("/loadOneUserLocation")
-    @ResponseBody
-    public String loadOneUserLocation(@ApiParam(name = "userid", value = "用户id", required = true) @RequestParam("userid") String userid,
-                                      @ApiParam(name = "range", value = "有效时间范围，单位分钟", required = true) @RequestParam("range") Integer range) {
-        MessageBean<LocationHistory> messageListBean = new MessageBean<>();
-        try {
-            LocationHistory locationHistory = locationHitoryService.selectByUserid(userid);
-
-            if (locationHistory != null && (System.currentTimeMillis() - locationHistory.getLocationTime().getTime()) / 1000 / 60 > range) {
-                locationHistory = null;
-            }
-
-            if (locationHistory != null) {
-                messageListBean.setData(locationHistory);
+        if (hasPrivilege(userids, managerId)) {
+            List<LocationHistory> list = locationHitoryService.selectByUserids(userids, startTime, endTime, inSchool, campusId);
+            if (list.size() > 0) {
+                messageListBean.setData(list);
                 messageListBean.setStatus(true);
                 messageListBean.setCode(200);
                 messageListBean.setMessage("获取成功");
@@ -124,12 +86,39 @@ public class LocationController {
                 messageListBean.setCode(10002);
                 messageListBean.setMessage("没有查询到数据");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else {
             messageListBean.setStatus(false);
-            messageListBean.setCode(10001);
-            messageListBean.setMessage("接口错误");
+            messageListBean.setCode(10003);
+            messageListBean.setMessage("没有查看权限或者没有该用户");
         }
+
+
+        return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
+    }
+
+    @ApiOperation("根据单用户查询位置")
+    @GetMapping("/loadOneUserLocation")
+    @ResponseBody
+    public String loadOneUserLocation(@ApiParam(name = "userid", value = "用户id", required = true) @RequestParam("userid") String userid,
+                                      @ApiParam(name = "range", value = "有效时间范围，单位分钟", required = true) @RequestParam("range") Integer range) throws ParseException {
+        MessageBean<LocationHistory> messageListBean = new MessageBean<>();
+        LocationHistory locationHistory = locationHitoryService.selectByUserid(userid);
+
+        if (locationHistory != null && (System.currentTimeMillis() - locationHistory.getLocationTime().getTime()) / 1000 / 60 > range) {
+            locationHistory = null;
+        }
+
+        if (locationHistory != null) {
+            messageListBean.setData(locationHistory);
+            messageListBean.setStatus(true);
+            messageListBean.setCode(200);
+            messageListBean.setMessage("获取成功");
+        } else {
+            messageListBean.setStatus(false);
+            messageListBean.setCode(10002);
+            messageListBean.setMessage("没有查询到数据");
+        }
+
 
         return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
     }
@@ -141,26 +130,20 @@ public class LocationController {
                                   @ApiParam(name = "startTime", value = "开始时间，格式：'yyyy-MM-dd HH:mm:ss'", required = true) @RequestParam("startTime") String startTime,
                                   @ApiParam(name = "endTime", value = "结束时间，格式：'yyyy-MM-dd HH:mm:ss'", required = false) @RequestParam(name = "endTime", required = false, defaultValue = "") String endTime,
                                   @ApiParam(name = "inSchool", value = "校内校外，1校内，2校外", required = false) @RequestParam("inSchool") Integer inSchool,
-                                  @ApiParam(name = "campusId", value = "校区ID", required = false) @RequestParam("campusId") Integer campusId) {
+                                  @ApiParam(name = "campusId", value = "校区ID", required = false) @RequestParam("campusId") Integer campusId) throws ParseException {
         MessageListBean<LocationHistory> messageListBean = new MessageListBean<LocationHistory>();
-        try {
-            List<LocationHistory> list = locationHitoryService.selectByOrgCodes(orgCodes, startTime, endTime, inSchool, campusId);
-            if (list.size() > 0) {
-                messageListBean.setData(list);
-                messageListBean.setStatus(true);
-                messageListBean.setCode(200);
-                messageListBean.setMessage("获取成功");
-            } else {
-                messageListBean.setStatus(false);
-                messageListBean.setCode(10002);
-                messageListBean.setMessage("没有查询到数据");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        List<LocationHistory> list = locationHitoryService.selectByOrgCodes(orgCodes, startTime, endTime, inSchool, campusId);
+        if (list.size() > 0) {
+            messageListBean.setData(list);
+            messageListBean.setStatus(true);
+            messageListBean.setCode(200);
+            messageListBean.setMessage("获取成功");
+        } else {
             messageListBean.setStatus(false);
-            messageListBean.setCode(10001);
-            messageListBean.setMessage("接口错误");
+            messageListBean.setCode(10002);
+            messageListBean.setMessage("没有查询到数据");
         }
+
 
         return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
     }
@@ -172,36 +155,29 @@ public class LocationController {
                                   @ApiParam(name = "endTime", value = "结束时间，格式：'yyyy-MM-dd HH:mm:ss'", required = false) @RequestParam(name = "endTime", required = false, defaultValue = "") String endTime,
                                   @ApiParam(name = "inSchool", value = "校内校外，1校内，2校外", required = false) @RequestParam("inSchool") Integer inSchool,
                                   String managerId,
-                                  @ApiParam(name = "campusId", value = "校区ID", required = false) @RequestParam("campusId") Integer campusId) {
+                                  @ApiParam(name = "campusId", value = "校区ID", required = false) @RequestParam("campusId") Integer campusId) throws ParseException {
         MessageListBean<LocationHistory> messageListBean = new MessageListBean<LocationHistory>();
-        try {
-            LocationTrackManager manager = locationTrackManagerService.get(managerId);
-            if (manager == null)
-                throw new NullPointerException("管理员不存在");
-            List<LocationHistory> list = locationHitoryService.selectAll(startTime, endTime, inSchool, campusId);
-            //权限判定
-            List<String> orgs = Arrays.asList(manager.getOrgCodes().split(","));
-            for (int i = 0; i < list.size(); i++) {
-                LocationHistory history = list.get(i);
-                if (!orgs.contains(history.getOrgCode())) {
-                    list.remove(i--);
-                }
+        LocationTrackManager manager = locationTrackManagerService.get(managerId);
+        if (manager == null)
+            throw new NullPointerException("管理员不存在");
+        List<LocationHistory> list = locationHitoryService.selectAll(startTime, endTime, inSchool, campusId);
+        //权限判定
+        List<String> orgs = Arrays.asList(manager.getOrgCodes().split(","));
+        for (int i = 0; i < list.size(); i++) {
+            LocationHistory history = list.get(i);
+            if (!orgs.contains(history.getOrgCode())) {
+                list.remove(i--);
             }
-            if (list.size() > 0) {
-                messageListBean.setData(list);
-                messageListBean.setStatus(true);
-                messageListBean.setCode(200);
-                messageListBean.setMessage("获取成功");
-            } else {
-                messageListBean.setStatus(false);
-                messageListBean.setCode(10002);
-                messageListBean.setMessage("没有查询到数据");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }
+        if (list.size() > 0) {
+            messageListBean.setData(list);
+            messageListBean.setStatus(true);
+            messageListBean.setCode(200);
+            messageListBean.setMessage("获取成功");
+        } else {
             messageListBean.setStatus(false);
-            messageListBean.setCode(10001);
-            messageListBean.setMessage("接口错误");
+            messageListBean.setCode(10002);
+            messageListBean.setMessage("没有查询到数据");
         }
 
         return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
@@ -247,6 +223,12 @@ public class LocationController {
                 });
 
                 //向cmgis请求路径规划
+                if(coordinateVOS.size() == 0 || locationHistories.size()==0 || StringUtils.isBlank(locationHistories.get(0).getZoneId())){
+                    messageListBean.setStatus(false);
+                    messageListBean.setCode(10002);
+                    messageListBean.setMessage("没有查询到数据");
+                    return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
+                }
                 String jsonArray = RestTemplateUtil.postJSONObjectFormCmGis("/map/route/v3/bind/road/" + locationHistories.get(0).getZoneId(), coordinateVOS).getJSONArray("data").toJSONString();
                 List<CoordinateVO> list = JSON.parseArray(jsonArray, CoordinateVO.class);
                 List<Double[]> trackList = new LinkedList<>();
