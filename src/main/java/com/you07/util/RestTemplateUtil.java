@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.you07.config.RestTemplateInterceptor;
+import com.you07.exception.NetworkException;
 import com.you07.vtp.dao.LocationSystemConfigDao;
 import com.you07.vtp.model.LocationSystemConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -11,11 +12,15 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -34,6 +39,7 @@ import java.util.Date;
 public class RestTemplateUtil {
 
     private final static ObjectMapper objectMapper = new ObjectMapper();
+    private final static Logger log = LoggerFactory.getLogger(RestTemplateUtil.class);
 
     private static LocationSystemConfigDao systemConfigDao;
 
@@ -80,7 +86,7 @@ public class RestTemplateUtil {
         }
         LocationSystemConfig systemConfig = systemConfigDao.loadDefault();
         RestTemplateInterceptor interceptor = new RestTemplateInterceptor(tokenResponse.getAccess_token(), "Bearer");
-        return sendRequest(systemConfig.getIpsApi() + uri, interceptor);
+        return sendRequest(systemConfig.getIpsApi() + uri, interceptor, HttpMethod.GET, null);
     }
 
     /**
@@ -93,7 +99,7 @@ public class RestTemplateUtil {
     public static JSONObject getJSONObjectForCmGis(String uri) {
         LocationSystemConfig systemConfig = systemConfigDao.loadDefault();
         RestTemplateInterceptor interceptor = new RestTemplateInterceptor(systemConfig.getGisMapToken(), "Basic");
-        return sendRequest(systemConfig.getLqMapGisUrl() + uri, interceptor);
+        return sendRequest(systemConfig.getLqMapGisUrl() + uri, interceptor, HttpMethod.GET, null);
     }
 
     public static JSONObject postJSONObjectFormCmGis(String uri, Object postData) {
@@ -103,21 +109,36 @@ public class RestTemplateUtil {
         restTemplate.getMessageConverters().add(new StringHttpMessageConverter(Charset.forName("utf-8")));
         restTemplate.setInterceptors(Collections.<ClientHttpRequestInterceptor>singletonList(interceptor));
         String url = systemConfig.getLqMapGisUrl() + uri;
-        System.out.println(url + "\n" + JSONObject.toJSONString(postData));
-        JSONObject jsonObject =  restTemplate.postForEntity(url, postData, JSONObject.class).getBody();
-        return jsonObject;
+        return sendRequest(url, interceptor, HttpMethod.POST, postData);
     }
 
-    private static JSONObject sendRequest(String url, RestTemplateInterceptor interceptor) {
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new StringHttpMessageConverter(Charset.forName("utf-8")));
-        if (interceptor != null) {
-            restTemplate.setInterceptors(Collections.<ClientHttpRequestInterceptor>singletonList(interceptor));
+    private static JSONObject sendRequest(String url, RestTemplateInterceptor interceptor, HttpMethod method, Object postData) {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.getMessageConverters().add(new StringHttpMessageConverter(Charset.forName("utf-8")));
+            if (interceptor != null) {
+                restTemplate.setInterceptors(Collections.<ClientHttpRequestInterceptor>singletonList(interceptor));
+            }
+            JSONObject responseJson;
+            switch (method){
+                case GET:
+                    responseJson = restTemplate.getForEntity(url, JSONObject.class).getBody();
+                    break;
+                case POST:
+                    responseJson =  restTemplate.postForEntity(url, postData, JSONObject.class).getBody();
+                    break;
+                default:
+                    throw new HttpRequestMethodNotSupportedException(method.name());
+            }
+
+            return responseJson;
+        }catch (HttpRequestMethodNotSupportedException e) {
+            throw new RuntimeException(e);
+        }catch (Exception e){
+            throw new NetworkException(e);
         }
-        System.out.println(url);
-        JSONObject responseJson = restTemplate.getForEntity(url, JSONObject.class).getBody();
-        System.out.println(responseJson.toJSONString());
-        return responseJson;
+
+
     }
 
     @Value("${oauth.token}")
