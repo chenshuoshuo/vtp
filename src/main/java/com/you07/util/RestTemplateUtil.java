@@ -2,6 +2,7 @@ package com.you07.util;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.you07.config.RestTemplateInterceptor;
 import com.you07.exception.NetworkException;
@@ -102,13 +103,15 @@ public class RestTemplateUtil {
         return sendRequest(systemConfig.getLqMapGisUrl() + uri, interceptor, HttpMethod.GET, null);
     }
 
-    public static JSONObject postJSONObjectFormCmGis(String uri, Object postData) {
+    public static JSONObject postJSONObjectFormCmGis(String uri, Object postData) throws JsonProcessingException {
         LocationSystemConfig systemConfig = systemConfigDao.loadDefault();
         RestTemplateInterceptor interceptor = new RestTemplateInterceptor(systemConfig.getGisMapToken(), "Basic");
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new StringHttpMessageConverter(Charset.forName("utf-8")));
         restTemplate.setInterceptors(Collections.<ClientHttpRequestInterceptor>singletonList(interceptor));
         String url = systemConfig.getLqMapGisUrl() + uri;
+
+        log.debug("向"+url+"发送post数据：" + objectMapper.writeValueAsString(postData));
         return sendRequest(url, interceptor, HttpMethod.POST, postData);
     }
 

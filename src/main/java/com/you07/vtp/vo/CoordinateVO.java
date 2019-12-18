@@ -1,5 +1,7 @@
 package com.you07.vtp.vo;
 
+import com.you07.vtp.model.LocationHistory;
+
 /**
  * @author egan
  * @date 2019/9/12 14:44
@@ -17,6 +19,11 @@ public class CoordinateVO {
     public CoordinateVO(double[] latlon) {
         lat = latlon[0];
         lon = latlon[1];
+    }
+
+    public CoordinateVO(LocationHistory h) {
+        lat = h.getLat();
+        lon = h.getLng();
     }
 
     public Double getLat() {

@@ -2,6 +2,7 @@ package com.you07.vtp.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.graphhopper.storage.GraphHopperStorage;
 import com.graphhopper.storage.index.LocationIndex;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -9,7 +10,6 @@ import com.you07.eas.model.StudentInfo;
 import com.you07.eas.model.TeacherInfo;
 import com.you07.eas.service.StudentInfoService;
 import com.you07.eas.service.TeacherInfoService;
-import com.you07.map.filter.GeoTrackFilter;
 import com.you07.util.RestTemplateUtil;
 import com.you07.util.message.MessageBean;
 import com.you07.util.message.MessageListBean;
@@ -191,7 +191,7 @@ public class LocationController {
                             @ApiParam(name = "endTime", value = "结束时间，格式：'yyyy-MM-dd HH:mm:ss'", required = false) @RequestParam(name = "endTime", required = false, defaultValue = "") String endTime,
                             @ApiParam(name = "inSchool", value = "校内校外，1校内，2校外", required = false) @RequestParam("inSchool") Integer inSchool,
                             @ApiParam(name = "campusId", value = "校区ID", required = false) @RequestParam("campusId") Integer campusId,
-                            @ApiParam(name = "managerId", value = "管理员ID", required = false) @RequestParam("managerId") String managerId) throws ParseException {
+                            @ApiParam(name = "managerId", value = "管理员ID", required = false) @RequestParam("managerId") String managerId) throws ParseException, JsonProcessingException {
         MessageListBean<LocationHistory> messageListBean = new MessageListBean<LocationHistory>();
         if (hasPrivilege(userid, managerId)) {
             List<LocationHistory> locationHistories = locationHitoryService.selectTrack(userid, startTime, endTime, inSchool, campusId);
@@ -199,37 +199,27 @@ public class LocationController {
             if (locationHistories.size() > 0) {
 
 //                    locationHistoryList.add(locationHistories.get(0));
-                //过滤连续重复点
+                //过滤距离小于x的点
                 LocationHistory last = locationHistories.get(0);
                 for (int i = 1; i < locationHistories.size(); ) {
                     LocationHistory current = locationHistories.get(i);
-                    if (last.getLat().equals(current.getLat()) && last.getLng().equals(current.getLng())) {
-                        locationHistories.remove(current);
-                    } else {
-                        last = current;
-                        i++;
-                    }
+                    if (getDistance(current, last) < 15)
+                        locationHistories.remove(i--);
+                    last = locationHistories.get(i);
                 }
 
-                //卡尔曼滤波去躁柔化
+                //卡尔曼滤波去躁柔化(暂时不使用该算法)
                 List<CoordinateVO> coordinateVOS = new LinkedList<>();
-                GeoTrackFilter filter = new GeoTrackFilter(1.0D);
-                locationHistories.forEach(h -> {
-                    filter.update_velocity2d(h.getLat(), h.getLng(), 0D);
-                    double[] latlon = filter.get_lat_long();
-                    h.setLat(latlon[0]);
-                    h.setLng(latlon[1]);
-                    coordinateVOS.add(new CoordinateVO(latlon));
-                });
+                locationHistories.forEach(h -> coordinateVOS.add(new CoordinateVO(h)));
 
                 //向cmgis请求路径规划
-                if(coordinateVOS.size() == 0 || locationHistories.size()==0 || StringUtils.isBlank(locationHistories.get(0).getZoneId())){
+                if (coordinateVOS.size() == 0 || locationHistories.size() == 0 || StringUtils.isBlank(locationHistories.get(0).getZoneId())) {
                     messageListBean.setStatus(false);
                     messageListBean.setCode(10002);
                     messageListBean.setMessage("没有查询到数据");
                     return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
                 }
-                String jsonArray = RestTemplateUtil.postJSONObjectFormCmGis("/map/route/v3/bind/road/" + locationHistories.get(0).getZoneId(), coordinateVOS).getJSONArray("data").toJSONString();
+                String jsonArray = RestTemplateUtil.postJSONObjectFormCmGis("/map/route/v3/bind/road/" + campusId, coordinateVOS).getJSONArray("data").toJSONString();
                 List<CoordinateVO> list = JSON.parseArray(jsonArray, CoordinateVO.class);
                 List<Double[]> trackList = new LinkedList<>();
                 list.forEach(c -> trackList.add(c.toArray()));
@@ -348,5 +338,22 @@ public class LocationController {
         } else {
             return true;
         }
+    }
+
+    private double getDistance(LocationHistory h1, LocationHistory h2) {
+        final  double EARTH_RADIUS = 6371000;//赤道半径(单位m)
+        final  double INTEGR_NUM = 10000;
+
+        double lat1 = h1.getLat(), lng1 = h1.getLng(), lat2 = h2.getLat(), lng2 = h2.getLng();
+        double x1 = Math.cos(lat1) * Math.cos(lng1);
+        double y1 = Math.cos(lat1) * Math.sin(lng1);
+        double z1 = Math.sin(lat1);
+        double x2 = Math.cos(lat2) * Math.cos(lng2);
+        double y2 = Math.cos(lat2) * Math.sin(lng2);
+        double z2 = Math.sin(lat2);
+        double lineDistance =
+                Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2));
+        double s = EARTH_RADIUS * Math.PI * 2 * Math.asin(0.5 * lineDistance) / 180;
+        return Math.round(s * INTEGR_NUM) / INTEGR_NUM;
     }
 }
