@@ -25,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -52,6 +53,8 @@ public class LocationController {
     private TeacherInfoService teacherInfoService;
     @Autowired
     private StudentInfoService studentInfoService;
+    @Value("${vtp.track-distance}")
+    private double distance;
 
     private Logger logger = LoggerFactory.getLogger(LocationController.class);
 
@@ -201,9 +204,9 @@ public class LocationController {
 //                    locationHistoryList.add(locationHistories.get(0));
                 //过滤距离小于x的点
                 LocationHistory last = locationHistories.get(0);
-                for (int i = 1; i < locationHistories.size(); ) {
+                for (int i = 1; i < locationHistories.size(); i++) {
                     LocationHistory current = locationHistories.get(i);
-                    if (getDistance(current, last) < 15)
+                    if (getDistance(current, last) < distance)
                         locationHistories.remove(i--);
                     last = locationHistories.get(i);
                 }
