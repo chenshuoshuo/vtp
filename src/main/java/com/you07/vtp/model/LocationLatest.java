@@ -1,5 +1,10 @@
 package com.you07.vtp.model;
 
+import com.you07.eas.model.StudentInfo;
+import com.you07.eas.model.TeacherInfo;
+import com.you07.eas.vo.AcademyVO;
+import com.you07.eas.vo.StudentVO;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -7,6 +12,7 @@ import java.util.Date;
 
 /**
  * 用户最新位置信息
+ *
  * @author RY
  * @since 2018-8-8 15:48:49
  */
@@ -43,6 +49,10 @@ public class LocationLatest {
      */
     private String orgName;
     /**
+     * 班级代码
+     **/
+    private String classCode;
+    /**
      * 位置经度
      */
     private Double lng;
@@ -75,13 +85,55 @@ public class LocationLatest {
      */
     private Integer inSchool;
     /**
+     * 顺序
+     **/
+    private Integer orderid;
+    /**
+     * beizhu
+     **/
+    private String memo;
+    /**
+     * 坐标系类型
+     **/
+    private String type;
+    /**
      * 校区ID
-     * */
+     */
     private String zoneId;
     /**
      * 电话号码
      */
     private String telephone;
+
+    public LocationLatest() {
+    }
+
+    public LocationLatest(StudentVO studentVO, AcademyVO academyVO) {
+        setUserid(studentVO.getStudentNo());
+        setGender(studentVO.getGender());
+        setRealname(studentVO.getRealName());
+        setTelephone(studentVO.getTelephone());
+        setOrgCode(studentVO.getClassCode());
+        setOrgName(academyVO.getAcademyName());
+        setClassCode(studentVO.getClassCode());
+    }
+
+    public LocationLatest(StudentInfo studentInfo) {
+        setUserid(studentInfo.getStudentno());
+        setRealname(studentInfo.getRealName());
+        setGender(studentInfo.getGender());
+        setOrgCode(studentInfo.getOrgCode());
+        setOrgName(studentInfo.getOrgName());
+        setClassCode(studentInfo.getClassCode());
+    }
+
+    public LocationLatest(TeacherInfo teacherInfo) {
+        setUserid(teacherInfo.getTeachercode());
+        setRealname(teacherInfo.getName());
+        setGender(teacherInfo.getGender());
+        setOrgCode(teacherInfo.getOrgCode());
+        setOrgName(teacherInfo.getOrgName());
+    }
 
     public String getUserid() {
         return userid;
@@ -211,11 +263,43 @@ public class LocationLatest {
         this.zoneId = zoneId;
     }
 
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
+
     public String getTelephone() {
         return telephone;
     }
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
+    }
+
+    public Integer getOrderid() {
+        return orderid;
+    }
+
+    public void setOrderid(Integer orderid) {
+        this.orderid = orderid;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getClassCode() {
+        return classCode;
+    }
+
+    public void setClassCode(String classCode) {
+        this.classCode = classCode;
     }
 }

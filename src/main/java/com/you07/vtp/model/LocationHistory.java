@@ -32,6 +32,10 @@ public class LocationHistory {
      */
     private String orgName;
     /**
+     * 班级代码
+     **/
+    private String classCode;
+    /**
      * 位置经度
      */
     private Double lng;
@@ -211,5 +215,13 @@ public class LocationHistory {
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
+    }
+
+    public String getClassCode() {
+        return classCode;
+    }
+
+    public void setClassCode(String classCode) {
+        this.classCode = classCode;
     }
 }

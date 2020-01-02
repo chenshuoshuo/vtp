@@ -26,6 +26,16 @@ public interface LocationHistoryDao {
                                    @Param("campusId") Integer campusId);
 
     /**
+     * egan
+     * 判断表是否存在
+     * @date 2020/1/2 10:53
+     * @param
+     **/
+    @Select({"select 1 from pg_tables where schemaname = 'public' and tablename = #{tablename}"})
+    String selectTableName(@Param("tablename") String tablename);
+
+
+    /**
      * 单用户查询最新位置
      * 只获取位置
      * @param userid
@@ -44,10 +54,12 @@ public interface LocationHistoryDao {
      * @return
      */
     @Select({
-            "select * from location_latest where userid in (${userids}) and zone_id = '${campusId}' and lng is not null",
+            "select * from location_latest where (userid in (${userids}) or org_code in (${org}) or class_code in (${cls})) and zone_id = '${campusId}' and lng is not null",
             "and in_school = #{inSchool}"
     })
     List<LocationHistory> selectByUserids(@Param("userids") String userids,
+                                          @Param("org") String orgCodes,
+                                          @Param("cls") String classCodes,
                                           @Param("inSchool") Integer inSchool,
                                           @Param("campusId") Integer campusId);
 
@@ -119,6 +131,8 @@ public interface LocationHistoryDao {
              "and _location.userid = _group.userid"
     })
     List<LocationHistory> selectByUseridTimeZone(@Param("userid") String userid,
+                                                 @Param("org") String orgCodes,
+                                                 @Param("cls") String classCodes,
                                            @Param("tableName") String tableName,
                                            @Param("startTime") String startTime,
                                            @Param("endTime") String endTime,
@@ -139,7 +153,7 @@ public interface LocationHistoryDao {
             "select * from ${tableName} _location,",
             "(select userid, max(location_time) _last",
             "from ${tableName}",
-            "where userid in (${userids})" ,
+            "where (userid in (${userids}) or org_code in (${org}) or class_code in (${cls}))" ,
             "and zone_id = '${campusId}'",
             "and location_time > to_timestamp(#{startTime},'yyyy-mm-dd hh24:mi:ss')",
             "and location_time < to_timestamp(#{endTime},'yyyy-mm-dd hh24:mi:ss')",
@@ -150,6 +164,8 @@ public interface LocationHistoryDao {
             "and _location.userid = _group.userid"
     })
     List<LocationHistory> selectByUseridsTimeZone(@Param("userids") String userids,
+                                                  @Param("org") String orgCodes,
+                                                  @Param("cls") String classCodes,
                                                   @Param("tableName") String tableName,
                                                   @Param("startTime") String startTime,
                                                   @Param("endTime") String endTime,

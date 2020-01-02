@@ -1,12 +1,15 @@
 package com.you07.vtp.service;
 
 import com.you07.vtp.dao.LocationHistoryDao;
+import com.you07.vtp.form.UserLocationForm;
 import com.you07.vtp.model.LocationHistory;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,26 +24,20 @@ public class LocationHitoryService {
     /**
      * 根据用户ID、时间范围
      * 获取用户最新位置
-     * @param userids
-     * @param startTime
-     * @param endTime
-     * @param inSchool
+     * @param form
      * @return
      * @throws ParseException
      */
-    public List<LocationHistory> selectByUserids(String userids, String startTime, String endTime, Integer inSchool, Integer campusId) throws ParseException {
+    public List<LocationHistory> selectByUserids(UserLocationForm form) throws ParseException {
+        String startTime = form.getStartTime(), endTime = form.getEndTime();
+        String tableName = getTableName(startTime, endTime);
         if(endTime == null || "".equals(endTime.trim())){
-            if(userids.indexOf(",") == -1){
-                return locationHistoryDao.selectByUserid(userids, inSchool, campusId);
-            } else{
-                return locationHistoryDao.selectByUserids(addQuot(userids), inSchool, campusId);
-            }
+                return locationHistoryDao.selectByUserids(addQuot(form.getUserIds()), addQuot(form.getOrgCodes()), addQuot(form.getClassCodes()), form.getInSchool(), form.getCampusId());
+
         } else{
-            if(userids.indexOf(",") == -1){
-                return locationHistoryDao.selectByUseridTimeZone(userids, getTableName(startTime, endTime), startTime, endTime, inSchool, campusId);
-            } else{
-                return locationHistoryDao.selectByUseridsTimeZone(addQuot(userids), getTableName(startTime, endTime), startTime, endTime, inSchool, campusId);
-            }
+            if(StringUtils.isBlank(locationHistoryDao.selectTableName(tableName)))
+                return new ArrayList<>();
+            return locationHistoryDao.selectByUseridsTimeZone(addQuot(form.getUserIds()), addQuot(form.getOrgCodes()), addQuot(form.getClassCodes()), getTableName(startTime, endTime), startTime, endTime, form.getInSchool(), form.getCampusId());
         }
     }
 
@@ -157,6 +154,8 @@ public class LocationHitoryService {
      * @return
      */
     public String addQuot(String str){
+        if(str.indexOf(",") == -1)
+            return str;
         return "'" + str.replaceAll(",", "','") + "'";
     }
 

@@ -13,6 +13,7 @@ import com.you07.eas.service.TeacherInfoService;
 import com.you07.util.RestTemplateUtil;
 import com.you07.util.message.MessageBean;
 import com.you07.util.message.MessageListBean;
+import com.you07.vtp.form.UserLocationForm;
 import com.you07.vtp.model.LocationHistory;
 import com.you07.vtp.model.LocationTrackManager;
 import com.you07.vtp.service.LocationHitoryService;
@@ -28,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -68,17 +70,11 @@ public class LocationController {
 
 
     @ApiOperation("根据用户查询位置")
-    @GetMapping("/loadUserLocation")
+    @PostMapping("/loadUserLocation")
     @ResponseBody
-    public String loadUserLocation(@ApiParam(name = "userids", value = "用户id，多个以','分隔", required = true) @RequestParam("userids") String userids,
-                                   @ApiParam(name = "startTime", value = "开始时间，格式：'yyyy-MM-dd HH:mm:ss'", required = true) @RequestParam("startTime") String startTime,
-                                   @ApiParam(name = "endTime", value = "结束时间，格式：'yyyy-MM-dd HH:mm:ss'", required = false) @RequestParam(name = "endTime", required = false, defaultValue = "") String endTime,
-                                   @ApiParam(name = "inSchool", value = "校内校外，1校内，2校外", required = false) @RequestParam("inSchool") Integer inSchool,
-                                   @ApiParam(name = "campusId", value = "校区ID", required = false) @RequestParam("campusId") Integer campusId,
-                                   @ApiParam(name = "managerId", value = "管理员ID", required = false) @RequestParam("managerId") String managerId) throws ParseException {
+    public String loadUserLocation(@Valid @RequestBody UserLocationForm form) throws ParseException {
         MessageListBean<LocationHistory> messageListBean = new MessageListBean<LocationHistory>();
-        if (hasPrivilege(userids, managerId)) {
-            List<LocationHistory> list = locationHitoryService.selectByUserids(userids, startTime, endTime, inSchool, campusId);
+            List<LocationHistory> list = locationHitoryService.selectByUserids(form);
             if (list.size() > 0) {
                 messageListBean.setData(list);
                 messageListBean.setStatus(true);
@@ -89,12 +85,6 @@ public class LocationController {
                 messageListBean.setCode(10002);
                 messageListBean.setMessage("没有查询到数据");
             }
-        } else {
-            messageListBean.setStatus(false);
-            messageListBean.setCode(10003);
-            messageListBean.setMessage("没有查看权限或者没有该用户");
-        }
-
 
         return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
     }
