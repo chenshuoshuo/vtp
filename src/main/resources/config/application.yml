@@ -30,6 +30,9 @@ druid:
     url: jdbc:postgresql://211.149.159.39:5407/test_vtpl
     username: postgres
     password: Lqkjcs!@#147123
+#    url: jdbc:postgresql://192.168.4.241:5432/vtpl_plus
+#    username: postgres
+#    password: lqkj007
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
@@ -51,6 +54,9 @@ logging:
     com.you07.map.dap: debug
 
 
+#用户轨迹点间的距离，删除小于值的轨迹点(单位米)
+vtp:
+  track-distance: 15
 
 #请求认证的接口地址
 oauth:

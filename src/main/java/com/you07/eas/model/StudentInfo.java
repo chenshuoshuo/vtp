@@ -1,6 +1,7 @@
 package com.you07.eas.model;
 
 import com.you07.eas.vo.AcademyVO;
+import com.you07.eas.vo.MajorVO;
 import com.you07.eas.vo.StudentVO;
 
 import javax.persistence.Column;
@@ -15,15 +16,8 @@ import javax.persistence.Transient;
  * @version 1.0
  * @since 2018-8-6 09:39:01
  */
-
-/**
- * 学生信息
- * @author RY
- * @version 1.0
- * @since 2018-8-6 09:39:01
- */
 @Table(name = "eas_studentinfo")
-public class StudentInfo{
+public class StudentInfo {
 	/**
 	 * 学号
 	 */
@@ -31,14 +25,10 @@ public class StudentInfo{
 	@Column(name = "studentno")
 	private String studentno;
 	/**
-	 * 班级信息
-	 */
-	private String classCode;
-	/**
 	 * 姓名
 	 */
 	@Column(name = "name")
-	private String name;
+	private String realName;
 	/**
 	 * 性别
 	 */
@@ -84,27 +74,39 @@ public class StudentInfo{
 
 	private String orgName;
 
+	private String majorCode;
+
+	private String classCode;
+
+	private String nation;
+
+	private String birthplace;
+
 	public StudentInfo() {
 	}
 
 	public StudentInfo(StudentVO studentVO) {
 		setStudentno(studentVO.getStudentNo());
 		setGender(studentVO.getGender());
-		setName(studentVO.getRealName());
+		setRealName(studentVO.getRealName());
 		setTel(studentVO.getTelephone());
 		setClassCode(studentVO.getClassCode());
+		setNation(studentVO.getNation());
+		setBirthplace(studentVO.getBirthplace());
 	}
 
-	public StudentInfo(StudentVO studentVO, AcademyVO academyVO) {
+	public StudentInfo(StudentVO studentVO, MajorVO majorVO, AcademyVO academyVO) {
 		setStudentno(studentVO.getStudentNo());
 		setGender(studentVO.getGender());
-		setName(studentVO.getRealName());
+		setRealName(studentVO.getRealName());
 		setTel(studentVO.getTelephone());
 		setClassCode(studentVO.getClassCode());
+		setMajorCode(majorVO.getMajorCode());
+		setNation(studentVO.getNation());
+		setBirthplace(studentVO.getBirthplace());
 		setOrgCode(academyVO.getAcademyCode());
 		setOrgName(academyVO.getAcademyName());
 	}
-
 
 	public String getStudentno() {
 		return studentno;
@@ -114,20 +116,13 @@ public class StudentInfo{
 		this.studentno = studentno;
 	}
 
-	public String getClassCode() {
-		return classCode;
-	}
-
-	public void setClassCode(String classCode) {
-		this.classCode = classCode;
-	}
 
 	public String getRealName() {
-		return name;
+		return realName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setRealName(String realName) {
+		this.realName = realName;
 	}
 
 	public String getGender() {
@@ -208,5 +203,37 @@ public class StudentInfo{
 
 	public void setOrgName(String orgName) {
 		this.orgName = orgName;
+	}
+
+	public String getMajorCode() {
+		return majorCode;
+	}
+
+	public void setMajorCode(String majorCode) {
+		this.majorCode = majorCode;
+	}
+
+	public String getClassCode() {
+		return classCode;
+	}
+
+	public void setClassCode(String classCode) {
+		this.classCode = classCode;
+	}
+
+	public String getNation() {
+		return nation;
+	}
+
+	public void setNation(String nation) {
+		this.nation = nation;
+	}
+
+	public String getBirthplace() {
+		return birthplace;
+	}
+
+	public void setBirthplace(String birthplace) {
+		this.birthplace = birthplace;
 	}
 }

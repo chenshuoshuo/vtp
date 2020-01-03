@@ -32,12 +32,14 @@ public class LocationHitoryService {
         String startTime = form.getStartTime(), endTime = form.getEndTime();
         String tableName = getTableName(startTime, endTime);
         if(endTime == null || "".equals(endTime.trim())){
-                return locationHistoryDao.selectByUserids(addQuot(form.getUserIds()), addQuot(form.getOrgCodes()), addQuot(form.getClassCodes()), form.getInSchool(), form.getCampusId());
+                return locationHistoryDao.selectByUserids(addQuot(form.getUserIds()), addQuot(form.getOrgCodes()), addQuot(form.getClassCodes()), addQuot(form.getNation()), addQuot(form.getBirthplace()),
+                        form.getInSchool(), form.getCampusId());
 
         } else{
             if(StringUtils.isBlank(locationHistoryDao.selectTableName(tableName)))
                 return new ArrayList<>();
-            return locationHistoryDao.selectByUseridsTimeZone(addQuot(form.getUserIds()), addQuot(form.getOrgCodes()), addQuot(form.getClassCodes()), getTableName(startTime, endTime), startTime, endTime, form.getInSchool(), form.getCampusId());
+            return locationHistoryDao.selectByUseridsTimeZone(addQuot(form.getUserIds()),addQuot(form.getOrgCodes()), addQuot(form.getClassCodes()), addQuot(form.getNation()), addQuot(form.getBirthplace()),
+                    getTableName(startTime, endTime), startTime, endTime, form.getInSchool(), form.getCampusId());
         }
     }
 
@@ -154,9 +156,9 @@ public class LocationHitoryService {
      * @return
      */
     public String addQuot(String str){
-        if(str.indexOf(",") == -1)
-            return str;
-        return "'" + str.replaceAll(",", "','") + "'";
+        if(StringUtils.isBlank(str))
+            return "''";
+        return "'" + (str.contains(",") ? str.replaceAll(",", "','") : str) + "'";
     }
 
 

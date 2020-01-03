@@ -201,8 +201,16 @@ public class LocationController {
                     last = locationHistories.get(i);
                 }
 
-                //卡尔曼滤波去躁柔化(暂时不使用该算法)
                 List<CoordinateVO> coordinateVOS = new LinkedList<>();
+                //卡尔曼滤波去躁柔化(由于偏差太大，暂时不使用该算法)
+//                GeoTrackFilter filter = new GeoTrackFilter(1.0D);
+//                locationHistories.forEach(h -> {
+//                    filter.update_velocity2d(h.getLat(), h.getLng(), 0D);
+//                    double[] latlon = filter.get_lat_long();
+//                    h.setLat(latlon[0]);
+//                    h.setLng(latlon[1]);
+//                    coordinateVOS.add(new CoordinateVO(latlon));
+//                });
                 locationHistories.forEach(h -> coordinateVOS.add(new CoordinateVO(h)));
 
                 //向cmgis请求路径规划
@@ -212,7 +220,8 @@ public class LocationController {
                     messageListBean.setMessage("没有查询到数据");
                     return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
                 }
-                String jsonArray = RestTemplateUtil.postJSONObjectFormCmGis("/map/route/v3/bind/road/" + campusId, coordinateVOS).getJSONArray("data").toJSONString();
+                String jsonArray = RestTemplateUtil.postJSONObjectFormCmGis("/map/route/v3/bind/road/" + campusId, coordinateVOS)
+                        .getJSONArray("data").toJSONString();
                 List<CoordinateVO> list = JSON.parseArray(jsonArray, CoordinateVO.class);
                 List<Double[]> trackList = new LinkedList<>();
                 list.forEach(c -> trackList.add(c.toArray()));

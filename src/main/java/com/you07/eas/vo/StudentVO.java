@@ -19,6 +19,26 @@ public class StudentVO {
 
     private String telephone;
 
+    private String nation;
+
+    private String birthplace;
+
+    public String getNation() {
+        return nation;
+    }
+
+    public void setNation(String nation) {
+        this.nation = nation;
+    }
+
+    public String getBirthplace() {
+        return birthplace;
+    }
+
+    public void setBirthplace(String birthplace) {
+        this.birthplace = birthplace;
+    }
+
     public String getStudentNo() {
         return studentNo;
     }

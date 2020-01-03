@@ -12,6 +12,10 @@ public class UserLocationForm {
 
     private String userIds;
 
+    private String nation;
+
+    private String birthplace;
+
     private String orgCodes;
 
     private String classCodes;
@@ -88,5 +92,21 @@ public class UserLocationForm {
 
     public void setClassCodes(String classCodes) {
         this.classCodes = classCodes;
+    }
+
+    public String getNation() {
+        return nation;
+    }
+
+    public void setNation(String nation) {
+        this.nation = nation;
+    }
+
+    public String getBirthplace() {
+        return birthplace;
+    }
+
+    public void setBirthplace(String birthplace) {
+        this.birthplace = birthplace;
     }
 }

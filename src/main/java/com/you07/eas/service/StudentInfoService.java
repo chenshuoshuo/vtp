@@ -1,9 +1,6 @@
 package com.you07.eas.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.Page;
-import com.you07.eas.model.ClassInfo;
-import com.you07.eas.model.Result;
 import com.you07.eas.model.StudentInfo;
 import com.you07.eas.vo.AcademyVO;
 import com.you07.eas.vo.ClassVO;
@@ -33,7 +30,7 @@ public class StudentInfoService {
         JSONObject academyJson = RestTemplateUtil.getJSONObjectForCmIps("/os/academy/get/"+majorVO.getAcademyCode());
         AcademyVO academyVO = academyJson.getObject("data", AcademyVO.class);
 
-        return new StudentInfo(studentVO, academyVO);
+        return new StudentInfo(studentVO, majorVO, academyVO);
     }
 
     public List<StudentInfo> searchWithCodeName(String keyword, String page, String pageSize) {
@@ -64,7 +61,7 @@ public class StudentInfoService {
             Map<String, Object> map = new LinkedHashMap<>();
             map = (Map<String, Object>) objectList.get(i);
             studentInfo.setStudentno((String) map.get("studentNo"));
-            studentInfo.setName((String) map.get("realName"));
+            studentInfo.setRealName((String) map.get("realName"));
             studentInfo.setGender((String) map.get("gender"));
             String classCode = (String) map.get("classCode");
             //根据班级号查询机构
