@@ -158,7 +158,7 @@ public class LocationController {
         List<String> orgs = Arrays.asList(manager.getOrgCodes().split(","));
         for (int i = 0; i < list.size(); i++) {
             LocationHistory history = list.get(i);
-            if (!orgs.contains(history.getOrgCode())) {
+            if (!orgs.contains(history.getClassCode())) {
                 list.remove(i--);
             }
         }
