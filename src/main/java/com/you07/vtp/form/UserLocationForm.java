@@ -12,6 +12,8 @@ public class UserLocationForm {
 
     private String userIds;
 
+    private String keyWord;
+
     private String nation;
 
     private String birthplace;
@@ -36,6 +38,14 @@ public class UserLocationForm {
 
     public void setUserIds(String userIds) {
         this.userIds = userIds;
+    }
+
+    public String getKeyWord() {
+        return keyWord;
+    }
+
+    public void setKeyWord(String keyWord) {
+        this.keyWord = keyWord;
     }
 
     public String getStartTime() {

@@ -32,7 +32,7 @@ public class LocationHitoryService {
         String startTime = form.getStartTime(), endTime = form.getEndTime();
         String tableName = getTableName(startTime, endTime);
         if(endTime == null || "".equals(endTime.trim())){
-                return locationHistoryDao.selectByUserids(addQuot(form.getUserIds()), addQuot(form.getOrgCodes()), addQuot(form.getClassCodes()), addQuot(form.getNation()), addQuot(form.getBirthplace()),
+                return locationHistoryDao.selectByUserids(addQuot(form.getKeyWord()), addQuot(form.getKeyWord()), addQuot(form.getKeyWord()), addQuot(form.getOrgCodes()), addQuot(form.getClassCodes()), addQuot(form.getNation()), addQuot(form.getBirthplace()),
                         form.getInSchool(), form.getCampusId());
 
         } else{

@@ -55,11 +55,13 @@ public interface LocationHistoryDao {
      */
     @Select({
             "select * from location_latest " +
-            "where (userid in (${userids}) or org_code in (${org}) or class_code in (${cls}) or nation in (${nations}) or birthplace in (${birthplaces}))" +
+            "where (userid in (${userids}) or realname in (${userNames}) or account_mac in (${accountMacs}) or org_code in (${org}) or class_code in (${cls}) or nation in (${nations}) or birthplace in (${birthplaces}))" +
             "and zone_id = '${campusId}' and lng is not null",
             "and in_school = #{inSchool}"
     })
     List<LocationHistory> selectByUserids(@Param("userids") String userids,
+                                          @Param("userNames") String userNames,
+                                          @Param("accountMacs") String accountMacs,
                                           @Param("org") String orgCodes,
                                           @Param("cls") String classCodes,
                                           @Param("nations") String nations,
