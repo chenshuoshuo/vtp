@@ -14,6 +14,14 @@ public class UserLocationForm {
 
     private String keyWord;
 
+    private String nationCodes;
+
+    private String originCodes;
+
+    private String provicesCodes;
+
+    private String cityCodes;
+
     private String nation;
 
     private String birthplace;
@@ -46,6 +54,38 @@ public class UserLocationForm {
 
     public void setKeyWord(String keyWord) {
         this.keyWord = keyWord;
+    }
+
+    public String getNationCodes() {
+        return nationCodes;
+    }
+
+    public void setNationCodes(String nationCodes) {
+        this.nationCodes = nationCodes;
+    }
+
+    public String getOriginCodes() {
+        return originCodes;
+    }
+
+    public void setOriginCodes(String originCodes) {
+        this.originCodes = originCodes;
+    }
+
+    public String getProvicesCodes() {
+        return provicesCodes;
+    }
+
+    public void setProvicesCodes(String provicesCodes) {
+        this.provicesCodes = provicesCodes;
+    }
+
+    public String getCityCodes() {
+        return cityCodes;
+    }
+
+    public void setCityCodes(String cityCodes) {
+        this.cityCodes = cityCodes;
     }
 
     public String getStartTime() {

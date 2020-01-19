@@ -7,6 +7,7 @@ import com.you07.eas.vo.ClassVO;
 import com.you07.eas.vo.MajorVO;
 import com.you07.eas.vo.StudentVO;
 import com.you07.util.RestTemplateUtil;
+import com.you07.vtp.form.UserLocationForm;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,7 @@ public class StudentInfoService {
         return new StudentInfo(studentVO, majorVO, academyVO);
     }
 
-    public List<StudentInfo> searchWithCodeName(String keyword, String page, String pageSize) {
+    public List<StudentInfo> searchWithCodeName(String keyword, String page, String pageSize) throws Exception {
         JSONObject jsonObject = null;
         String pattern = "^[0-9]\\d*$";
         Pattern patternSecond = Pattern.compile(pattern);
@@ -87,7 +88,7 @@ public class StudentInfoService {
         return studentInfoList;
     }
 
-    public List<StudentInfo> selectWithPrivilegeOrgCodes(String keyWord, String privilegeOrgCodes) {
+    public List<StudentInfo> selectWithPrivilegeOrgCodes(String keyWord, String privilegeOrgCodes) throws Exception {
         List<String> orgs = Arrays.asList(privilegeOrgCodes.split(","));
         JSONObject jsonObject = null;
         StringBuilder sb = new StringBuilder();
@@ -107,7 +108,7 @@ public class StudentInfoService {
         return students;
     }
 
-    public List<StudentInfo> loadWithClassCodes(String classCode) {
+    public List<StudentInfo> loadWithClassCodes(String classCode) throws Exception {
 
         String[] orgCodes = classCode.split(",");
         JSONObject jsonObject = null;
@@ -125,4 +126,7 @@ public class StudentInfoService {
         return studentInfos;
     }
 
+    public String getJsonDynamic(UserLocationForm form) {
+        return null;
+    }
 }

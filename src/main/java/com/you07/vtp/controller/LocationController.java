@@ -120,6 +120,7 @@ public class LocationController {
     @GetMapping("/loadOrgLocation")
     @ResponseBody
     public String loadOrgLocation(@ApiParam(name = "orgCodes", value = "组织机构代码，多个以','分隔", required = true) @RequestParam("orgCodes") String orgCodes,
+                                  @ApiParam(name= "keyWords", value = "关键字,多个关键字以','分隔", required = false) @RequestParam("keyWords") String keyWords,
                                   @ApiParam(name = "startTime", value = "开始时间，格式：'yyyy-MM-dd HH:mm:ss'", required = true) @RequestParam("startTime") String startTime,
                                   @ApiParam(name = "endTime", value = "结束时间，格式：'yyyy-MM-dd HH:mm:ss'", required = false) @RequestParam(name = "endTime", required = false, defaultValue = "") String endTime,
                                   @ApiParam(name = "inSchool", value = "校内校外，1校内，2校外", required = false) @RequestParam("inSchool") Integer inSchool,
@@ -254,45 +255,49 @@ public class LocationController {
                                  @ApiParam(name = "campusId", value = "校区ID", required = false) @RequestParam("campusId") Integer campusId
 //                                 @RequestParam Integer page, @RequestParam Integer pageSize
     ) throws ParseException {
-        MessageListBean<StudentInfo> messageListBean = new MessageListBean<StudentInfo>();
-        List<StudentInfo> studentInfoList = studentInfoService.loadWithClassCodes(orgCodes);
-        Map<String, StudentInfo> studentInfoMap = new HashMap<String, StudentInfo>();
-        for (StudentInfo studentInfo : studentInfoList) {
-            if (!studentInfoMap.containsKey(studentInfo.getStudentno())) {
-                studentInfoMap.put(studentInfo.getStudentno(), studentInfo);
+        try {
+            MessageListBean<StudentInfo> messageListBean = new MessageListBean<StudentInfo>();
+            List<StudentInfo> studentInfoList = studentInfoService.loadWithClassCodes(orgCodes);
+            Map<String, StudentInfo> studentInfoMap = new HashMap<String, StudentInfo>();
+            for (StudentInfo studentInfo : studentInfoList) {
+                if (!studentInfoMap.containsKey(studentInfo.getStudentno())) {
+                    studentInfoMap.put(studentInfo.getStudentno(), studentInfo);
+                }
             }
-        }
 
-        List<LocationHistory> inSchoolList = locationHitoryService.selectByOrgCodes(orgCodes, startTime, endTime, 1, campusId);
-        List<LocationHistory> outSchoolList = locationHitoryService.selectByOrgCodes(orgCodes, startTime, endTime, 2, campusId);
+            List<LocationHistory> inSchoolList = locationHitoryService.selectByOrgCodes(orgCodes, startTime, endTime, 1, campusId);
+            List<LocationHistory> outSchoolList = locationHitoryService.selectByOrgCodes(orgCodes, startTime, endTime, 2, campusId);
 
-        for (LocationHistory locationHistory : inSchoolList) {
-            if (studentInfoMap.containsKey(locationHistory.getUserid())) {
-                studentInfoMap.remove(locationHistory.getUserid());
+            for (LocationHistory locationHistory : inSchoolList) {
+                if (studentInfoMap.containsKey(locationHistory.getUserid())) {
+                    studentInfoMap.remove(locationHistory.getUserid());
+                }
             }
-        }
 
-        for (LocationHistory locationHistory : outSchoolList) {
-            if (studentInfoMap.containsKey(locationHistory.getUserid())) {
-                studentInfoMap.remove(locationHistory.getUserid());
+            for (LocationHistory locationHistory : outSchoolList) {
+                if (studentInfoMap.containsKey(locationHistory.getUserid())) {
+                    studentInfoMap.remove(locationHistory.getUserid());
+                }
             }
-        }
 
-        if (studentInfoMap.values().size() > 0) {
-            messageListBean.setStatus(true);
-            messageListBean.setCode(200);
-            messageListBean.setMessage("获取成功");
-            for (StudentInfo studentInfo : studentInfoMap.values()) {
-                messageListBean.addData(studentInfo);
+            if (studentInfoMap.values().size() > 0) {
+                messageListBean.setStatus(true);
+                messageListBean.setCode(200);
+                messageListBean.setMessage("获取成功");
+                for (StudentInfo studentInfo : studentInfoMap.values()) {
+                    messageListBean.addData(studentInfo);
+                }
+            } else {
+                messageListBean.setStatus(false);
+                messageListBean.setCode(10002);
+                messageListBean.setMessage("没有查询到数据");
             }
-        } else {
-            messageListBean.setStatus(false);
-            messageListBean.setCode(10002);
-            messageListBean.setMessage("没有查询到数据");
+
+
+            return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
+        }catch (Exception e) {
+            return "未知异常";
         }
-
-
-        return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
     }
 
     /**

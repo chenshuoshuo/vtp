@@ -90,8 +90,9 @@ public interface LocationHistoryDao {
      * @return
      */
     @Select({
-            "select * from location_latest where org_code = #{orgCode} and zone_id = '${campusId}' and lng is not null",
-            "and in_school = #{inSchool}"
+            /*"select * from location_latest where org_code = #{orgCode} and zone_id = '${campusId}' and lng is not null",
+            "and in_school = #{inSchool}"*/
+            "select * from location_latest where (nation = '02' or birthplace = '02') and org_code = '09' and zone_id = '8' and lng is not null and in_school = '1'"
     })
     List<LocationHistory> selectByOrgCode(@Param("orgCode") String orgCode,
                                           @Param("inSchool") Integer inSchool,

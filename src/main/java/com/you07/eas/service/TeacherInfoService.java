@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 public class TeacherInfoService {
 
 
-    public TeacherInfo get(String teacherCode){
+    public TeacherInfo get(String teacherCode) {
         JSONObject jsonObject = null;
         jsonObject = RestTemplateUtil.getJSONObjectForCmIps("/os/teachingStaff/get/"+teacherCode);
         if (jsonObject.getJSONObject("data").getString("staffNumber") != null) {

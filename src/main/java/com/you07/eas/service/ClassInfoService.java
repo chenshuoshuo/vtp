@@ -13,7 +13,7 @@ import java.util.*;
 @Service
 public class ClassInfoService {
 
-    public List<ClassInfo> selectWithPrivilegeOrgCodes(String keyWord, String privilegeOrgCodes){
+    public List<ClassInfo> selectWithPrivilegeOrgCodes(String keyWord, String privilegeOrgCodes) throws Exception{
         List<String> orgs = Arrays.asList(privilegeOrgCodes.split(","));
         JSONObject jsonObject = null;
         StringBuilder sb = new StringBuilder();

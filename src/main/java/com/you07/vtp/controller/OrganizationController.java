@@ -119,19 +119,23 @@ public class OrganizationController {
     @ResponseBody
     public String searchClassInfo(@ApiParam(name = "keyWord", value = "关键词，班级代码/名称", required = true) @RequestParam("keyWord") String keyWord,
                                   @ApiParam(name = "managerId", value = "管理员ID", required = false) @RequestParam("managerId") String managerId) {
-        MessageListBean<ClassInfo> messageListBean = new MessageListBean<ClassInfo>();
-        LocationTrackManager manager = locationTrackManagerService.get(managerId);
-        String orgCodes = manager.getOrgCodes();
-        List<ClassInfo> list = classInfoService.selectWithPrivilegeOrgCodes(keyWord, orgCodes);
-        if (list.size() > 0) {
-            messageListBean.setData(list);
-            messageListBean.setStatus(true);
-            messageListBean.setCode(200);
-            messageListBean.setMessage("获取成功");
+        try {
+            MessageListBean<ClassInfo> messageListBean = new MessageListBean<ClassInfo>();
+            LocationTrackManager manager = locationTrackManagerService.get(managerId);
+            String orgCodes = manager.getOrgCodes();
+            List<ClassInfo> list = classInfoService.selectWithPrivilegeOrgCodes(keyWord, orgCodes);
+            if (list.size() > 0) {
+                messageListBean.setData(list);
+                messageListBean.setStatus(true);
+                messageListBean.setCode(200);
+                messageListBean.setMessage("获取成功");
+            }
+
+
+            return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
+        }catch (Exception e) {
+            return "未知异常";
         }
-
-
-        return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
     }
 
     @ApiOperation("搜索学生")
@@ -139,19 +143,23 @@ public class OrganizationController {
     @ResponseBody
     public String searchStudentInfo(@ApiParam(name = "keyWord", value = "关键词，学生学号/名称", required = true) @RequestParam("keyWord") String keyWord,
                                     @ApiParam(name = "managerId", value = "管理员ID", required = false) @RequestParam("managerId") String managerId) {
-        MessageListBean<StudentInfo> messageListBean = new MessageListBean<StudentInfo>();
-        LocationTrackManager manager = locationTrackManagerService.get(managerId);
-        String orgCodes = manager.getOrgCodes();
-        List<StudentInfo> list = studentInfoService.selectWithPrivilegeOrgCodes(keyWord, orgCodes);
-        if (list.size() > 0) {
-            messageListBean.setData(list);
-            messageListBean.setStatus(true);
-            messageListBean.setCode(200);
-            messageListBean.setMessage("获取成功");
+        try {
+            MessageListBean<StudentInfo> messageListBean = new MessageListBean<StudentInfo>();
+            LocationTrackManager manager = locationTrackManagerService.get(managerId);
+            String orgCodes = manager.getOrgCodes();
+            List<StudentInfo> list = studentInfoService.selectWithPrivilegeOrgCodes(keyWord, orgCodes);
+            if (list.size() > 0) {
+                messageListBean.setData(list);
+                messageListBean.setStatus(true);
+                messageListBean.setCode(200);
+                messageListBean.setMessage("获取成功");
+            }
+
+
+            return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
+        }catch (Exception e) {
+            return "未知异常";
         }
-
-
-        return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
     }
 
     /**

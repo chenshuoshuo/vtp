@@ -81,7 +81,7 @@ public class LocationHitoryService {
      * @return
      * @throws ParseException
      */
-    public List<LocationHistory> selectByOrgCodes(String orgCodes,String startTime, String endTime, Integer inSchool, Integer campusId) throws ParseException {
+    public List<LocationHistory> selectByOrgCodes(String orgCodes, String startTime, String endTime, Integer inSchool, Integer campusId) throws ParseException {
         if(endTime == null || "".equals(endTime.trim())){
             if(orgCodes.indexOf(",") == -1){
                 return locationHistoryDao.selectByOrgCode(orgCodes, inSchool, campusId);
