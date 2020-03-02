@@ -74,7 +74,8 @@ public class ApiController {
         configJson.append("safetyIcon:'" + locationSystemConfig.getSafetyIcon() + "',");
         configJson.append("campusSwitchIcon:'" + locationSystemConfig.getCampusSwitchIcon() + "',");
         configJson.append("contact:'" + locationSystemConfig.getContact() + "',");
-
+        configJson.append("EpidemicMonitoringIcon:'" + locationSystemConfig.getEpidemicMonitoringIcon() + "',");
+        configJson.append("dockingOpen:'" + locationSystemConfig.getDockingOpen() + "',");
 
         // 校区信息对象
         List<LocationCampusInfo> locationCampusInfoList = locationCampusInfoService.queryAllDisplay();

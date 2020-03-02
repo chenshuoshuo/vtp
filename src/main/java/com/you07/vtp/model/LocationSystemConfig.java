@@ -59,6 +59,10 @@ public class LocationSystemConfig {
     private String gisMapToken;
     @ApiModelProperty(value = "CMIPS-M接口", example = "https://testgis:you07:com/cmips-server")
     private String ipsApi;
+    @ApiModelProperty(value = "疫情监控图标",name = "EpidemicMonitoringIcon", dataType = "String", example = "http://xxx.com/xx.png", required = false)
+    private String EpidemicMonitoringIcon;
+    @ApiModelProperty(value = "是否开启人员对接参数", name = "dockingOpen", dataType = "boolean", example = "true", required = false)
+    private String dockingOpen;
 
     public Integer getConfigId() {
         return configId;
@@ -218,5 +222,21 @@ public class LocationSystemConfig {
 
     public void setSelectedColor(String selectedColor) {
         this.selectedColor = selectedColor;
+    }
+
+    public String getEpidemicMonitoringIcon() {
+        return EpidemicMonitoringIcon;
+    }
+
+    public void setEpidemicMonitoringIcon(String epidemicMonitoringIcon) {
+        EpidemicMonitoringIcon = epidemicMonitoringIcon;
+    }
+
+    public String getDockingOpen() {
+        return dockingOpen;
+    }
+
+    public void setDockingOpen(String dockingOpen) {
+        this.dockingOpen = dockingOpen;
     }
 }

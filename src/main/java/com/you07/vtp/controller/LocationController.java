@@ -1,8 +1,10 @@
 package com.you07.vtp.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.pagehelper.PageInfo;
 import com.graphhopper.storage.GraphHopperStorage;
 import com.graphhopper.storage.index.LocationIndex;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -16,6 +18,7 @@ import com.you07.util.message.MessageListBean;
 import com.you07.vtp.form.UserLocationForm;
 import com.you07.vtp.model.LocationHistory;
 import com.you07.vtp.model.LocationTrackManager;
+import com.you07.vtp.model.vo.LocationQueryVO;
 import com.you07.vtp.service.LocationHitoryService;
 import com.you07.vtp.service.LocationTrackManagerService;
 import com.you07.vtp.vo.CoordinateVO;
@@ -299,6 +302,88 @@ public class LocationController {
             return "未知异常";
         }
     }
+
+    /**
+     * 根据校区和分组查询分组下所有人员最后位置信息
+     */
+    @GetMapping("/loadUserLocationWithGroup")
+    @ResponseBody
+    public String loadUserLocationWithGroup(@RequestParam(name = "groupId",defaultValue = "-1") Integer groupId,
+                                            @RequestParam("startTime") String startTime,
+                                            @RequestParam("endTime") String endTime,
+                                            @RequestParam("campusCode") Integer campusCode,
+                                            @RequestParam("page")Integer page,
+                                            @RequestParam("pageSize")Integer pageSize) throws ParseException {
+        MessageBean<PageInfo<List<LocationHistory>>> messageListBean = new MessageBean<>();
+        PageInfo<List<LocationHistory>> pageInfo = locationHitoryService.selectByGroupIds(groupId,startTime,endTime,campusCode,page,pageSize);
+
+
+        if (pageInfo.getList().size() > 0) {
+            messageListBean.setData(pageInfo);
+            messageListBean.setStatus(true);
+            messageListBean.setCode(200);
+            messageListBean.setMessage("获取成功");
+        } else {
+            messageListBean.setStatus(false);
+            messageListBean.setCode(10002);
+            messageListBean.setMessage("没有查询到数据");
+        }
+
+
+        return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
+    }
+
+    /**
+     * 获取指定用户活动范围
+     */
+    @GetMapping("/loadUserGeomWithTimeZone")
+    @ResponseBody
+    public String loadUserGeomWithTimeZone(@RequestParam(name = "userId") String userId,
+                                            @RequestParam("startTime") String startTime,
+                                            @RequestParam("endTime") String endTime,
+                                            @RequestParam("campusCode") Integer campusCode) throws ParseException {
+        MessageBean<Object> messageListBean = new MessageBean<>();
+        Object result = locationHitoryService.selectUserTrackWithTimeZone(userId,startTime,endTime,campusCode);
+
+
+        if (result != null) {
+            messageListBean.setData(result);
+            messageListBean.setStatus(true);
+            messageListBean.setCode(200);
+            messageListBean.setMessage("获取成功");
+        } else {
+            messageListBean.setStatus(false);
+            messageListBean.setCode(10002);
+            messageListBean.setMessage("没有查询到数据");
+        }
+        return JSON.toJSONString(messageListBean);
+    }
+
+    /**
+     * 根据活动范围获取该范围内受影响人员列表
+     */
+//    @GetMapping("/loadUserLocationWithGroup")
+//    @ResponseBody
+//    public String loadEffectUserWithTrack(LocationQueryVO locationQueryVO) throws ParseException {
+//        MessageBean<PageInfo<List<LocationHistory>>> messageListBean = new MessageBean<>();
+//        PageInfo<List<LocationHistory>> pageInfo = locationHitoryService.selectByGroupIds(groupId,startTime,endTime,campusCode,page,pageSize);
+//
+//
+//        if (pageInfo.getList().size() > 0) {
+//            messageListBean.setData(pageInfo);
+//            messageListBean.setStatus(true);
+//            messageListBean.setCode(200);
+//            messageListBean.setMessage("获取成功");
+//        } else {
+//            messageListBean.setStatus(false);
+//            messageListBean.setCode(10002);
+//            messageListBean.setMessage("没有查询到数据");
+//        }
+//
+//
+//        return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
+//    }
+
 
     /**
      * 根据查询用户ID、管理员ID判断是否有权限查看

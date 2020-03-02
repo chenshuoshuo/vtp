@@ -1,8 +1,14 @@
 package com.you07.vtp.service;
 
+import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.you07.vtp.dao.LocationHistoryDao;
+import com.you07.vtp.dao.SsGroupDao;
 import com.you07.vtp.form.UserLocationForm;
 import com.you07.vtp.model.LocationHistory;
+import com.you07.vtp.model.SsGroup;
+import com.you07.vtp.model.vo.LocationQueryVO;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,11 +18,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LocationHitoryService {
     @Autowired
     private LocationHistoryDao locationHistoryDao;
+    @Autowired
+    private SsGroupDao groupDao;
 
     private static SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static SimpleDateFormat DF = new SimpleDateFormat("yyyyMMdd");
@@ -123,6 +132,85 @@ public class LocationHitoryService {
     public List<LocationHistory> selectTrackWithTimeZone(String startTime, String endTime, Integer inSchool, Integer campusId) throws ParseException {
         return locationHistoryDao.selectTrackWithTimeZone(getTableName(startTime, endTime), startTime, endTime, inSchool, campusId);
     }
+
+    /**
+     * 根据分组编号、时间范围
+     * 查询分组用户最新位置
+     * @param groupId
+     * @param startTime
+     * @param endTime
+     * @return
+     * @throws ParseException
+     */
+    public PageInfo<List<LocationHistory>> selectByGroupIds(Integer groupId, String startTime, String endTime, Integer campusId, Integer page, Integer pageSize) throws ParseException {
+
+        PageHelper.startPage(page,pageSize);
+        List<List<LocationHistory>> list = new ArrayList<>();
+
+        if(groupId == -1){
+            List<SsGroup> groupList = groupDao.selectAll();
+
+            for (SsGroup group : groupList) {
+                if(group.getSpecialPersonIdList().size() > 0){
+                    String userIds  = group.getSpecialPersonIdList()
+                            .stream()
+                            .collect(Collectors.joining(","));
+                    List<LocationHistory> userLocationList = locationHistoryDao.selectLastLngByUserIds(userIds,getTableName(startTime, endTime),startTime,endTime,campusId);
+                    list.add(userLocationList);
+                }
+            }
+
+        }
+        return new PageInfo<List<LocationHistory>>(list);
+
+    }
+    /**
+     * 根据时间范围
+     * 查询用户轨迹
+     * @param startTime
+     * @param endTime
+     * @return
+     * @throws ParseException
+     */
+    public Object selectUserTrackWithTimeZone(String userId,String startTime, String endTime, Integer campusId) throws ParseException {
+
+        List<LocationHistory> locationHistoryList = locationHistoryDao.selectUserTrackWithTimeZone(userId,getTableName(startTime, endTime), startTime, endTime, campusId);
+        StringBuilder multiPoint = new StringBuilder();
+        if(locationHistoryList.size() > 0){
+            for (LocationHistory history : locationHistoryList) {
+                multiPoint .append(history.getLng())
+                        .append(" ")
+                        .append(history.getLat())
+                        .append(",");
+            }
+        }
+        String multiPointString = "'MULTIPOINT(" + multiPoint.deleteCharAt(multiPoint.length() - 1) + ")'";
+
+        return JSON.parseObject(locationHistoryDao.transformLngLatToPolygon(multiPointString));
+    }
+
+    /**
+     * 根据范围
+     * 查询疑似受影响人员
+     * @return
+     * @throws ParseException
+     */
+//    public List<LocationHistory> loadEffectUserWithTrack(LocationQueryVO locationQueryVO) throws ParseException {
+//
+//        List<LocationHistory> locationHistoryList = locationHistoryDao.selectUserTrackWithTimeZone(userId,getTableName(startTime, endTime), startTime, endTime, campusId);
+//        StringBuilder multiPoint = new StringBuilder();
+//        if(locationHistoryList.size() > 0){
+//            for (LocationHistory history : locationHistoryList) {
+//                multiPoint .append(history.getLng())
+//                        .append(" ")
+//                        .append(history.getLat())
+//                        .append(",");
+//            }
+//        }
+//        String multiPointString = "'MULTIPOINT(" + multiPoint.deleteCharAt(multiPoint.length() - 1) + ")'";
+//
+//        return JSON.parseObject(locationHistoryDao.transformLngLatToPolygon(multiPointString));
+//    }
 
     /**
      * 根据时间范围

@@ -46,6 +46,7 @@ public interface LocationHistoryDao {
     })
     LocationHistory selectOneUserLocation(@Param("userid") String userid);
 
+
     /**
      * 多用户查询最新位置
      * @param userids
@@ -183,6 +184,34 @@ public interface LocationHistoryDao {
                                                   @Param("campusId") Integer campusId);
 
     /**
+     * 根据时间范围查询多用户最新位置
+     * @param userids
+     * @param tableName
+     * @param startTime
+     * @param endTime
+     * @param campusId
+     * @return
+     */
+    @Select({
+            "select * from ${tableName} _location,",
+            "(select userid, max(location_time) _last",
+            "from ${tableName}",
+            "where userid in (${userids} " ,
+            "and zone_id = '${campusId}'",
+            "and location_time > to_timestamp(#{startTime},'yyyy-mm-dd hh24:mi:ss')",
+            "and location_time < to_timestamp(#{endTime},'yyyy-mm-dd hh24:mi:ss')",
+            "and lng is not null",
+            "group by userid) as _group",
+            "where _location.location_time = _group._last",
+            "and _location.userid = _group.userid"
+    })
+    List<LocationHistory> selectLastLngByUserIds(@Param("userids") String userids,
+                                                  @Param("tableName") String tableName,
+                                                  @Param("startTime") String startTime,
+                                                  @Param("endTime") String endTime,
+                                                  @Param("campusId") Integer campusId);
+
+    /**
      * 根据时间范围查询全校用户最新位置
      * @param tableName
      * @param startTime
@@ -293,6 +322,27 @@ public interface LocationHistoryDao {
                                                         @Param("endTime") String endTime,
                                                         @Param("inSchool") Integer inSchool,
                                                         @Param("campusId") Integer campusId);
+    /**
+     * 根据用户、时间范围查询轨迹信息
+     * @param userid
+     * @param tableName
+     * @param startTime
+     * @param endTime
+     * @param campusId
+     * @return
+     */
+    @Select({
+            "select * from ${tableName} where userid = #{userid} and zone_id = '${campusId}'",
+            "and location_time > to_timestamp(#{startTime},'yyyy-mm-dd hh24:mi:ss')",
+            "and location_time < to_timestamp(#{endTime},'yyyy-mm-dd hh24:mi:ss')",
+            "and lng is not null",
+            "order by location_time"
+    })
+    List<LocationHistory> selectUserTrackWithTimeZone(@Param("userid") String userid,
+                                                        @Param("tableName") String tableName,
+                                                        @Param("startTime") String startTime,
+                                                        @Param("endTime") String endTime,
+                                                        @Param("campusId") Integer campusId);
 
     /**
      * 根据时间范围查询轨迹信息
@@ -316,4 +366,12 @@ public interface LocationHistoryDao {
                                                         @Param("endTime") String endTime,
                                                         @Param("inSchool") Integer inSchool,
                                                         @Param("campusId") Integer campusId);
+
+    /**
+     * 用户轨迹经纬度转面
+     */
+    @Select({
+            "select ST_ConcaveHull(ST_GeomFromText(#{multiPoint})"
+    })
+    String transformLngLatToPolygon(@Param("multiPoint")String multiPoint);
 }
