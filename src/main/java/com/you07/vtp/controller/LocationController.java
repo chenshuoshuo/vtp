@@ -18,6 +18,7 @@ import com.you07.util.message.MessageListBean;
 import com.you07.vtp.form.UserLocationForm;
 import com.you07.vtp.model.LocationHistory;
 import com.you07.vtp.model.LocationTrackManager;
+import com.you07.vtp.model.vo.LocationExcelVO;
 import com.you07.vtp.model.vo.LocationQueryVO;
 import com.you07.vtp.service.LocationHitoryService;
 import com.you07.vtp.service.LocationTrackManagerService;
@@ -26,13 +27,22 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -362,27 +372,35 @@ public class LocationController {
     /**
      * 根据活动范围获取该范围内受影响人员列表
      */
-//    @GetMapping("/loadUserLocationWithGroup")
-//    @ResponseBody
-//    public String loadEffectUserWithTrack(LocationQueryVO locationQueryVO) throws ParseException {
-//        MessageBean<PageInfo<List<LocationHistory>>> messageListBean = new MessageBean<>();
-//        PageInfo<List<LocationHistory>> pageInfo = locationHitoryService.selectByGroupIds(groupId,startTime,endTime,campusCode,page,pageSize);
-//
-//
-//        if (pageInfo.getList().size() > 0) {
-//            messageListBean.setData(pageInfo);
-//            messageListBean.setStatus(true);
-//            messageListBean.setCode(200);
-//            messageListBean.setMessage("获取成功");
-//        } else {
-//            messageListBean.setStatus(false);
-//            messageListBean.setCode(10002);
-//            messageListBean.setMessage("没有查询到数据");
-//        }
-//
-//
-//        return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
-//    }
+    @GetMapping("/loadUserLocationWithGroup")
+    @ResponseBody
+    public String loadEffectUserWithTrack(LocationQueryVO locationQueryVO) throws ParseException {
+        MessageBean<List<LocationExcelVO>> messageListBean = new MessageBean<>();
+
+        List<LocationExcelVO> list = locationHitoryService.loadEffectUserWithTrack(locationQueryVO);
+
+        if (list.size() > 0) {
+            messageListBean.setData(list);
+            messageListBean.setStatus(true);
+            messageListBean.setCode(200);
+            messageListBean.setMessage("获取成功");
+        } else {
+            messageListBean.setStatus(false);
+            messageListBean.setCode(10002);
+            messageListBean.setMessage("没有查询到数据");
+        }
+
+        return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
+    }
+
+    /**
+     * 导出疑似受影响人员
+     * @throws IOException IO异常
+     */
+    @GetMapping("/download")
+    public ResponseEntity<StreamingResponseBody> download(LocationQueryVO locationQueryVO, OutputStream os) throws IOException,ParseException{
+        return locationHitoryService.download(locationQueryVO,os);
+    }
 
 
     /**

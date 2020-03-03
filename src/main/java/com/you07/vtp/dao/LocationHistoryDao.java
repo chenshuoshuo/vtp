@@ -299,6 +299,33 @@ public interface LocationHistoryDao {
                                            @Param("campusId") Integer campusId);
 
     /**
+     * 根据时间范围查询在轨迹范围内的疑似受影响人员
+     * @param geojson
+     * @param tableName
+     * @param startTime
+     * @param endTime
+     * @param campusId
+     * @return
+     */
+    @Select({
+            "select * from ${tableName} _location,",
+            "(select userid, max(location_time) _last",
+            "from ${tableName}",
+            "where ST_Intersects(#{geojson},st_asgeojson(st_point(lng,lat))) is true and zone_id = '${campusId}'" ,
+            "and location_time > to_timestamp(#{startTime},'yyyy-mm-dd hh24:mi:ss')",
+            "and location_time < to_timestamp(#{endTime},'yyyy-mm-dd hh24:mi:ss')",
+            "and lng is not null",
+            "group by userid) as _group",
+            "where _location.location_time = _group._last",
+            "and _location.userid = _group.userid"
+    })
+    List<LocationHistory> selectEffectUserWithTrack(@Param("geojson") String geojson,
+                                                   @Param("tableName") String tableName,
+                                                   @Param("startTime") String startTime,
+                                                   @Param("endTime") String endTime,
+                                                   @Param("campusId") Integer campusId);
+
+    /**
      * 根据用户、时间范围查询轨迹信息
      * @param userid
      * @param tableName
