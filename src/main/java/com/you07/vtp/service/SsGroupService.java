@@ -41,20 +41,33 @@ public class SsGroupService {
      * 添加分组
      */
     public int add(SsGroup group){
-        if(group.getGroupId() == null){
-            group.setGroupId(groupDao.queryNewColumnId());
+        SsGroup exsitWithEnName = groupDao.exsitWithEnName(group.getGroupEnName());
+        if(exsitWithEnName != null){
+            if(group.getGroupId() == null){
+                group.setGroupId(groupDao.queryNewColumnId());
+            }
+
+            return groupDao.add(group);
+        }else {
+            return -1;
         }
-        return groupDao.add(group);
+
     }
 
     /**
      * 编辑分组
      */
-    public Integer update(SsGroup group){
-        if(group.getIdString() != null){
-            group.setSpecialPersonId(group.getIdString().split(","));
+    public int update(SsGroup group){
+        SsGroup exsitWithEnName = groupDao.exsitWithEnName(group.getGroupEnName());
+        if(exsitWithEnName != null && exsitWithEnName.getGroupId() == group.getGroupId()){
+            if(group.getIdString() != null){
+                group.setSpecialPersonId(group.getIdString().split(","));
+            }
+
+            return groupDao.update(group);
+        }else {
+            return -1;
         }
-        return groupDao.update(group);
     }
 
     /**

@@ -82,7 +82,11 @@ public class SsGroupController {
                 messageBean.setStatus(true);
                 messageBean.setCode(200);
                 messageBean.setMessage("添加成功");
-            } else {
+            } else if(add == -1){
+                messageBean.setStatus(false);
+                messageBean.setCode(1001);
+                messageBean.setMessage("英文名不能重复");
+            }else {
                 messageBean.setStatus(false);
                 messageBean.setCode(1002);
                 messageBean.setMessage("没有查询到数据");
@@ -105,7 +109,11 @@ public class SsGroupController {
                 messageBean.setData(update);
                 messageBean.setCode(200);
                 messageBean.setMessage("更新成功");
-            } else {
+            } else if(update == -1){
+                messageBean.setStatus(false);
+                messageBean.setCode(1001);
+                messageBean.setMessage("英文名不能重复");
+            }else {
                 messageBean.setStatus(false);
                 messageBean.setCode(1002);
                 messageBean.setMessage("没有查询到数据");

@@ -42,6 +42,9 @@ public interface SsGroupDao extends BaseDao<SsGroup> {
     @Delete("delete from ss_group where group_id = #{groupId}")
     int deleteById(@Param("groupId")Integer groupId);
 
+    @Select("select * from ss_group where group_en_name = #{enName}")
+    SsGroup exsitWithEnName(@Param("enName") String enName);
+
 
 
 

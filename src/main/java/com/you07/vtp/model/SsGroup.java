@@ -32,6 +32,10 @@ public class SsGroup {
 
     private String groupName;
 
+    private String groupEnName;
+
+    private String icon;
+
     private String color;
 
     private Timestamp updateTime;
@@ -126,6 +130,24 @@ public class SsGroup {
 
     public void setMemo(String memo) {
         this.memo = memo;
+    }
+
+    @Column(name = "group_en_name")
+    public String getGroupEnName() {
+        return groupEnName;
+    }
+
+    public void setGroupEnName(String groupEnName) {
+        this.groupEnName = groupEnName;
+    }
+
+    @Column(name = "icon")
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     @Transient
