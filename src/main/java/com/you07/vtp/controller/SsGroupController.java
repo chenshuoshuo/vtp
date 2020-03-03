@@ -33,7 +33,7 @@ public class SsGroupController {
 
     @GetMapping("/page")
     @ResponseBody
-    public String page(@RequestParam(name = "groupName")String groupName,
+    public String page(@RequestParam(name = "groupName",required = false)String groupName,
                        @RequestParam(name = "page")Integer page,
                        @RequestParam(name = "pageSize")Integer pageSize) {
 
@@ -76,12 +76,10 @@ public class SsGroupController {
     public String add(@RequestBody SsGroup ssGroup){
         try {
             MessageBean messageBean = new MessageBean<>(null);
-            ssGroup.setUpdateTime(new Timestamp(new Date().getTime()));
-            Integer add = groupService.add(ssGroup);
+            int add = groupService.add(ssGroup);
 
             if (add > 0) {
                 messageBean.setStatus(true);
-                messageBean.setData(add);
                 messageBean.setCode(200);
                 messageBean.setMessage("添加成功");
             } else {
@@ -100,7 +98,6 @@ public class SsGroupController {
     public String update(@RequestBody SsGroup ssGroup){
         try {
             MessageBean messageBean = new MessageBean<>(null);
-            ssGroup.setUpdateTime(new Timestamp(new Date().getTime()));
             Integer update = groupService.update(ssGroup);
 
             if (update > 0) {
@@ -108,6 +105,29 @@ public class SsGroupController {
                 messageBean.setData(update);
                 messageBean.setCode(200);
                 messageBean.setMessage("更新成功");
+            } else {
+                messageBean.setStatus(false);
+                messageBean.setCode(1002);
+                messageBean.setMessage("没有查询到数据");
+            }
+            return JSON.toJSONString(messageBean);
+        }catch (Exception e) {
+            return JSON.toJSONString("未知异常");
+        }
+    }
+
+    @GetMapping("/get")
+    @ResponseBody
+    public String get(@RequestParam(name = "groupId")Integer groupId){
+        try {
+            MessageBean messageBean = new MessageBean<>(null);
+            SsGroup group = groupService.get(groupId);
+
+            if (group != null) {
+                messageBean.setStatus(true);
+                messageBean.setData(group);
+                messageBean.setCode(200);
+                messageBean.setMessage("获取成功");
             } else {
                 messageBean.setStatus(false);
                 messageBean.setCode(1002);

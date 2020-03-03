@@ -33,7 +33,7 @@ public class SsMarkerController {
     @GetMapping("/page")
     @ResponseBody
     public String page(@RequestParam(name = "campusCode")Integer campusCode,
-                       @RequestParam(name = "markerName")String markerName,
+                       @RequestParam(name = "markerName",required = false)String markerName,
                        @RequestParam(name = "page")Integer page,
                        @RequestParam(name = "pageSize")Integer pageSize) {
 
@@ -55,7 +55,7 @@ public class SsMarkerController {
 
     @GetMapping("/listQuery")
     @ResponseBody
-    public String listQuery(@RequestParam(name = "campusCode")Integer campusCode) {
+    public MessageListBean listQuery(@RequestParam(name = "campusCode")Integer campusCode) {
         MessageListBean<SsMarker> messageBean = new MessageListBean<SsMarker>(null);
         List<SsMarker> list = markerService.listQuery(campusCode);
         if (list.size() > 0) {
@@ -68,7 +68,7 @@ public class SsMarkerController {
             messageBean.setCode(1002);
             messageBean.setMessage("没有查询到数据");
         }
-        return JSON.toJSONString(messageBean,SerializerFeature.DisableCircularReferenceDetect);
+        return messageBean;
     }
 
     @PostMapping("/add")

@@ -1,5 +1,7 @@
 package com.you07.vtp.model.vo;
 
+import com.alibaba.fastjson.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
@@ -10,23 +12,19 @@ import java.net.URLDecoder;
  **/
 public class LocationQueryVO {
 
-    private String geojson;
+    private JSONObject geojson;
     private Integer campusCode;
     private String startTime;
     private String endTime;
     private Integer page = 0;
     private Integer pageSize = 5;
 
-    public String getGeojson() {
+    public JSONObject getGeojson() {
         return geojson;
     }
 
-    public void setGeojson(String geojson) {
-        try {
-            this.geojson = URLDecoder.decode(geojson, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+    public void setGeojson(JSONObject geojson) {
+        this.geojson = geojson;
     }
 
     public Integer getCampusCode() {

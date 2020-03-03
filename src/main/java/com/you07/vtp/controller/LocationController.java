@@ -318,14 +318,14 @@ public class LocationController {
      */
     @GetMapping("/loadUserLocationWithGroup")
     @ResponseBody
-    public String loadUserLocationWithGroup(@RequestParam(name = "groupId",defaultValue = "-1") Integer groupId,
+    public String loadUserLocationWithGroup(@RequestParam(name = "groupName",required = false) String groupName,
                                             @RequestParam("startTime") String startTime,
                                             @RequestParam("endTime") String endTime,
                                             @RequestParam("campusCode") Integer campusCode,
                                             @RequestParam("page")Integer page,
                                             @RequestParam("pageSize")Integer pageSize) throws ParseException {
-        MessageBean<PageInfo<List<LocationHistory>>> messageListBean = new MessageBean<>();
-        PageInfo<List<LocationHistory>> pageInfo = locationHitoryService.selectByGroupIds(groupId,startTime,endTime,campusCode,page,pageSize);
+        MessageBean<PageInfo<LocationHistory>> messageListBean = new MessageBean<>();
+        PageInfo<LocationHistory> pageInfo = locationHitoryService.selectByGroupIds(groupName,startTime,endTime,campusCode,page,pageSize);
 
 
         if (pageInfo.getList().size() > 0) {
@@ -372,9 +372,9 @@ public class LocationController {
     /**
      * 根据活动范围获取该范围内受影响人员列表
      */
-    @GetMapping("/loadUserLocationWithGroup")
+    @PostMapping("/loadEffectUserWithTrack")
     @ResponseBody
-    public String loadEffectUserWithTrack(LocationQueryVO locationQueryVO) throws ParseException {
+    public String loadEffectUserWithTrack(@RequestBody LocationQueryVO locationQueryVO) throws ParseException {
         MessageBean<List<LocationExcelVO>> messageListBean = new MessageBean<>();
 
         List<LocationExcelVO> list = locationHitoryService.loadEffectUserWithTrack(locationQueryVO);
@@ -397,8 +397,10 @@ public class LocationController {
      * 导出疑似受影响人员
      * @throws IOException IO异常
      */
-    @GetMapping("/download")
-    public ResponseEntity<StreamingResponseBody> download(LocationQueryVO locationQueryVO, OutputStream os) throws IOException,ParseException{
+    @ApiOperation("导出疑似受影响人员")
+    @PostMapping("/download")
+    @ResponseBody
+    public ResponseEntity<StreamingResponseBody> download(@RequestBody LocationQueryVO locationQueryVO, OutputStream os) throws IOException,ParseException{
         return locationHitoryService.download(locationQueryVO,os);
     }
 

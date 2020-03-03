@@ -2,6 +2,7 @@ package com.you07.vtp.model;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class LocationHistory {
@@ -223,5 +224,13 @@ public class LocationHistory {
 
     public void setClassCode(String classCode) {
         this.classCode = classCode;
+    }
+
+    public String getFormatLocationTime(){
+        if(locationTime != null){
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(locationTime);
+        } else{
+            return "";
+        }
     }
 }

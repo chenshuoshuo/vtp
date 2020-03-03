@@ -26,10 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -148,32 +145,32 @@ public class LocationHitoryService {
     /**
      * 根据分组编号、时间范围
      * 查询分组用户最新位置
-     * @param groupId
+     * @param groupName
      * @param startTime
      * @param endTime
      * @return
      * @throws ParseException
      */
-    public PageInfo<List<LocationHistory>> selectByGroupIds(Integer groupId, String startTime, String endTime, Integer campusId, Integer page, Integer pageSize) throws ParseException {
+    public PageInfo<LocationHistory> selectByGroupIds(String groupName, String startTime, String endTime, Integer campusId, Integer page, Integer pageSize) throws ParseException {
 
         PageHelper.startPage(page,pageSize);
-        List<List<LocationHistory>> list = new ArrayList<>();
+        List<LocationHistory> list = new ArrayList<>();
 
-        if(groupId == -1){
-            List<SsGroup> groupList = groupDao.selectAll();
+        List<SsGroup> groupList = groupDao.queryAll(groupName);
 
-            for (SsGroup group : groupList) {
-                if(group.getSpecialPersonIdList().size() > 0){
-                    String userIds  = group.getSpecialPersonIdList()
-                            .stream()
-                            .collect(Collectors.joining(","));
-                    List<LocationHistory> userLocationList = locationHistoryDao.selectLastLngByUserIds(userIds,getTableName(startTime, endTime),startTime,endTime,campusId);
-                    list.add(userLocationList);
+        for (SsGroup group : groupList) {
+            if(group.getIdString() != null){
+                String userIds = Arrays.asList(group.getIdString().split(","))
+                        .stream()
+                        .map(v ->"'" + v + "'")
+                        .collect(Collectors.joining(","));
+                List<LocationHistory> userLocationList = locationHistoryDao.selectLastLngByUserIds(userIds,getTableName(startTime, endTime),startTime,endTime,campusId);
+                if(userLocationList != null && userLocationList.size() > 0){
+                    list.addAll(userLocationList);
                 }
             }
-
         }
-        return new PageInfo<List<LocationHistory>>(list);
+        return new PageInfo<LocationHistory>(list);
 
     }
     /**
@@ -196,7 +193,7 @@ public class LocationHitoryService {
                         .append(",");
             }
         }
-        String multiPointString = "'MULTIPOINT(" + multiPoint.deleteCharAt(multiPoint.length() - 1) + ")'";
+        String multiPointString = "multipoint(" + multiPoint.deleteCharAt(multiPoint.length() - 1) + ")";
 
         return JSON.parseObject(locationHistoryDao.transformLngLatToPolygon(multiPointString));
     }
@@ -209,7 +206,7 @@ public class LocationHitoryService {
      */
     public List<LocationExcelVO> loadEffectUserWithTrack(LocationQueryVO locationQueryVO) throws ParseException {
 
-        List<LocationHistory> locationHistoryList = locationHistoryDao.selectEffectUserWithTrack(locationQueryVO.getGeojson(),
+        List<LocationHistory> locationHistoryList = locationHistoryDao.selectEffectUserWithTrack(JSON.toJSONString(locationQueryVO.getGeojson()),
                 getTableName(locationQueryVO.getStartTime(), locationQueryVO.getEndTime()), locationQueryVO.getStartTime(), locationQueryVO.getEndTime(), locationQueryVO.getCampusCode());
         List<LocationExcelVO> excelVOList = new ArrayList<>();
         if(locationHistoryList.size() > 0){
@@ -228,7 +225,7 @@ public class LocationHitoryService {
      */
     public ResponseEntity<StreamingResponseBody> download(LocationQueryVO locationQueryVO, OutputStream os) throws IOException,ParseException {
 
-        List<LocationHistory> locationHistoryList = locationHistoryDao.selectEffectUserWithTrack(locationQueryVO.getGeojson(),
+        List<LocationHistory> locationHistoryList = locationHistoryDao.selectEffectUserWithTrack(JSON.toJSONString(locationQueryVO.getGeojson()),
                 getTableName(locationQueryVO.getStartTime(), locationQueryVO.getEndTime()), locationQueryVO.getStartTime(), locationQueryVO.getEndTime(), locationQueryVO.getCampusCode());
 
         StreamingResponseBody body =(outputStream -> {
@@ -256,7 +253,7 @@ public class LocationHitoryService {
         });
 
         return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment;filename=users.xlsx")
+                .header("Content-Disposition", "attachment;filename="+ "疑似受影响人员.xlsx")
                 .body(body);
 
     }

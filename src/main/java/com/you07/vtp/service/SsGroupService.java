@@ -10,7 +10,9 @@ import com.you07.vtp.model.SsPersonDockingParameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -32,21 +34,34 @@ public class SsGroupService {
      * 获取分组列表
      */
     public List<SsGroup> listQuery() {
-        return groupDao.selectAll();
+        return groupDao.queryAll(null);
     }
 
     /**
      * 添加分组
      */
-    public Integer add(SsGroup group){
-        return groupDao.insertSelective(group);
+    public int add(SsGroup group){
+        if(group.getGroupId() == null){
+            group.setGroupId(groupDao.queryNewColumnId());
+        }
+        return groupDao.add(group);
     }
 
     /**
      * 编辑分组
      */
     public Integer update(SsGroup group){
-        return groupDao.updateByPrimaryKeySelective(group);
+        if(group.getIdString() != null){
+            group.setSpecialPersonId(group.getIdString().split(","));
+        }
+        return groupDao.update(group);
+    }
+
+    /**
+     * 根据主键获取
+     */
+    public SsGroup get(Integer groupId){
+        return groupDao.get(groupId);
     }
 
     /**
@@ -54,19 +69,19 @@ public class SsGroupService {
      */
     public SsGroup blindPerson(Integer groupId,String personIds){
         String[] idArray = personIds.split(",");
-        SsGroup group = groupDao.selectByPrimaryKey(groupId);
+        SsGroup group = groupDao.get(groupId);
         if(group != null){
-            group.setSpecialPersonIdList(Arrays.asList(idArray));
+            group.setSpecialPersonId(idArray);
         }
-        groupDao.updateByPrimaryKeySelective(group);
-        return groupDao.selectByPrimaryKey(groupId);
+        groupDao.update(group);
+        return groupDao.get(groupId);
     }
 
     /**
      * 删除分组
      */
     public Integer delete(Integer groupId){
-        return groupDao.deleteByPrimaryKey(groupId);
+        return groupDao.deleteById(groupId);
     }
 
     /**
@@ -75,7 +90,7 @@ public class SsGroupService {
     public Integer bulkDelete(String groupIds){
         String[] idArray = groupIds.split(",");
         for (String id : idArray) {
-            groupDao.deleteByPrimaryKey(Integer.parseInt(id));
+            groupDao.deleteById(Integer.parseInt(id));
         }
         return idArray.length;
     }

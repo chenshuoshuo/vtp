@@ -34,7 +34,9 @@ public class PostGISHandler implements TypeHandler<Geometry> {
     public Geometry getResult(ResultSet rs, String columnName) throws SQLException {
         Geometry resultGeometry = null;
         try {
-            resultGeometry = wKBReader.read(WKBReader.hexToBytes(rs.getObject(columnName).toString()));
+            if(rs.getObject(columnName) != null){
+                resultGeometry = wKBReader.read(WKBReader.hexToBytes(rs.getObject(columnName).toString()));
+            }
         } catch (ParseException e) {
             throw new SQLException(e.getMessage());
         }

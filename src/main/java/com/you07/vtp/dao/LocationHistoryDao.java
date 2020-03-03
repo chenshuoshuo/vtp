@@ -196,7 +196,7 @@ public interface LocationHistoryDao {
             "select * from ${tableName} _location,",
             "(select userid, max(location_time) _last",
             "from ${tableName}",
-            "where userid in (${userids} " ,
+            "where userid in (${userids}) " ,
             "and zone_id = '${campusId}'",
             "and location_time > to_timestamp(#{startTime},'yyyy-mm-dd hh24:mi:ss')",
             "and location_time < to_timestamp(#{endTime},'yyyy-mm-dd hh24:mi:ss')",
@@ -311,7 +311,7 @@ public interface LocationHistoryDao {
             "select * from ${tableName} _location,",
             "(select userid, max(location_time) _last",
             "from ${tableName}",
-            "where ST_Intersects(#{geojson},st_asgeojson(st_point(lng,lat))) is true and zone_id = '${campusId}'" ,
+            "where ST_Intersects(st_geomfromgeojson(#{geojson}),st_point(lng,lat)) is true and zone_id = '${campusId}'" ,
             "and location_time > to_timestamp(#{startTime},'yyyy-mm-dd hh24:mi:ss')",
             "and location_time < to_timestamp(#{endTime},'yyyy-mm-dd hh24:mi:ss')",
             "and lng is not null",
@@ -398,7 +398,7 @@ public interface LocationHistoryDao {
      * 用户轨迹经纬度转面
      */
     @Select({
-            "select ST_ConcaveHull(ST_GeomFromText(#{multiPoint})"
+            "select st_asgeojson(st_convexhull(ST_GeomFromText(#{multiPoint})))"
     })
     String transformLngLatToPolygon(@Param("multiPoint")String multiPoint);
 }

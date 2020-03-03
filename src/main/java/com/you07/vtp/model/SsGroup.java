@@ -1,10 +1,20 @@
 package com.you07.vtp.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.vladmihalcea.hibernate.type.array.StringArrayType;
+import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType;
 import io.swagger.annotations.ApiModel;
+import org.apache.ibatis.type.MappedJdbcTypes;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,18 +25,29 @@ import java.util.Objects;
  **/
 @Table(name = "ss_group")
 public class SsGroup {
+
+    private Integer groupId;
+
+    private Integer dockingId;
+
+    private String groupName;
+
+    private String color;
+
+    private Timestamp updateTime;
+
+    private Integer orderId;
+
+    private String memo;
+
+    private String idString;
+
+    private String personCount;
+
+    private String[] specialPersonId;
+
     @Id
     @Column(name = "group_id")
-    private Integer groupId;
-    private String groupName;
-    private String color;
-    private Timestamp updateTime;
-    private Integer orderId;
-    private String memo;
-    private String personCount;
-    private String[] specialPersonId;
-    private List<String> specialPersonIdList;
-
     public Integer getGroupId() {
         return groupId;
     }
@@ -35,57 +56,16 @@ public class SsGroup {
         this.groupId = groupId;
     }
 
-    public String getGroupName() {
-        return groupName;
+    @Column(name = "id_string")
+    public String getIdString() {
+        return idString;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
+    public void setIdString(String idString) {
+        this.idString = idString;
     }
 
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public Timestamp getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Timestamp updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Integer getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(Integer orderId) {
-        this.orderId = orderId;
-    }
-
-    public String getMemo() {
-        return memo;
-    }
-
-    public void setMemo(String memo) {
-        this.memo = memo;
-    }
-
-    public String getPersonCount() {
-        return personCount;
-    }
-
-    public void setPersonCount(String personCount) {
-        this.personCount = personCount;
-        if(specialPersonIdList.size() > 0){
-            this.personCount = specialPersonIdList.size() + "人";
-        }
-    }
-
+    @Column(name = "special_person_id")
     public String[] getSpecialPersonId() {
         return specialPersonId;
     }
@@ -94,14 +74,81 @@ public class SsGroup {
         this.specialPersonId = specialPersonId;
     }
 
-    public List<String> getSpecialPersonIdList() {
-        return specialPersonIdList;
+    @Column(name = "docking_id")
+    public Integer getDockingId() {
+        return dockingId;
     }
 
-    public void setSpecialPersonIdList(List<String> specialPersonIdList) {
-        this.specialPersonIdList = specialPersonIdList;
-        if(specialPersonId != null){
-            this.specialPersonIdList = Arrays.asList(specialPersonId);
+    public void setDockingId(Integer dockingId) {
+        this.dockingId = dockingId;
+    }
+
+    @Column(name = "group_name")
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    @Column(name = "color")
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    @Column(name = "update_time")
+    public Timestamp getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Timestamp updateTime) {
+        this.updateTime = new Timestamp(new Date().getTime());
+    }
+
+    @Column(name = "order_id")
+    public Integer getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Integer orderId) {
+        this.orderId = orderId;
+    }
+
+    @Column(name = "memo")
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
+
+    @Transient
+    public String getPersonCount() {
+        if(idString != null){
+            String[] array = idString.split(",");
+            this.personCount = array.length + "人";
+        }else {
+            this.personCount = "0人";
+        }
+        return personCount;
+    }
+
+    public void setPersonCount(String personCount) {
+        this.personCount = personCount;
+
+    }
+
+    public String getFormatUpdateTime(){
+        if(updateTime != null){
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(updateTime);
+        } else{
+            return "";
         }
     }
 }

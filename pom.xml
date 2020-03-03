@@ -327,27 +327,48 @@
 			<version>1.1.2-beta4</version>
 		</dependency>
 
+		<!--扩展数据类型-->
+		<dependency>
+			<groupId>com.vladmihalcea</groupId>
+			<artifactId>hibernate-types-52</artifactId>
+			<version>2.3.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-hibernate5</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>5.3.9.Final</version>
+		</dependency>
+
 		<!--空间函数-->
-<!--		<dependency>-->
-<!--			<groupId>org.geotools</groupId>-->
-<!--			<artifactId>gt-geojson</artifactId>-->
-<!--			<version>${geotools.version}</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>org.geotools</groupId>-->
-<!--			<artifactId>gt-epsg-hsql</artifactId>-->
-<!--			<version>${geotools.version}</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>org.geotools</groupId>-->
-<!--			<artifactId>gt-shapefile</artifactId>-->
-<!--			<version>${geotools.version}</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>org.geotools</groupId>-->
-<!--			<artifactId>gt-api</artifactId>-->
-<!--			<version>${geotools.version}</version>-->
-<!--		</dependency>-->
+		<!--geotools-->
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-geojson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-epsg-hsql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-shapefile</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-api</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-geojson</artifactId>
+			<version>19.2</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

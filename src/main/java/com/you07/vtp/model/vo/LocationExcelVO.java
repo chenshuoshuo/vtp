@@ -1,10 +1,6 @@
 package com.you07.vtp.model.vo;
 
-import com.alibaba.excel.annotation.ExcelProperty;
-import com.alibaba.excel.metadata.BaseRowModel;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -12,15 +8,11 @@ import java.util.Date;
  * @Date 2020/3/2 17:28
  * @Version 2.2.2.0
  **/
-public class LocationExcelVO extends BaseRowModel {
+public class LocationExcelVO{
 
-    @ExcelProperty(value = {"学工号"},index = 0)
     private String userId;
-    @ExcelProperty(value = {"姓名"},index = 1)
     private String realName;
-    @ExcelProperty(value = {"组织机构名称"},index = 2)
     private String orgName;
-    @ExcelProperty(value = {"最后经过时间"},index = 3)
     private Date locationTime;
 
     public String getUserId() {
@@ -53,5 +45,13 @@ public class LocationExcelVO extends BaseRowModel {
 
     public void setLocationTime(Date locationTime) {
         this.locationTime = locationTime;
+    }
+
+    public String getFormatLocationTime(){
+        if(locationTime != null){
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(locationTime);
+        } else{
+            return "";
+        }
     }
 }

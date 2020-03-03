@@ -38,14 +38,17 @@ public class SsMarkerService {
      * 添加标注
      */
     public Integer add(SsMarker marker){
-        return makerDao.insertSelective(marker);
+        if(marker.getMarkerId() == null){
+            marker.setMarkerId(makerDao.queryNewColumnId());
+        }
+        return makerDao.add(marker);
     }
 
     /**
      * 编辑分组
      */
     public Integer update(SsMarker marker){
-        return makerDao.updateByPrimaryKeySelective(marker);
+        return makerDao.update(marker);
     }
 
 
@@ -53,7 +56,7 @@ public class SsMarkerService {
      * 删除分组
      */
     public Integer delete(Integer markerId){
-        return makerDao.deleteByPrimaryKey(markerId);
+        return makerDao.deleteById(markerId);
     }
 
     /**
@@ -62,7 +65,7 @@ public class SsMarkerService {
     public Integer bulkDelete(String markerIds){
         String[] idArray = markerIds.split(",");
         for (String id : idArray) {
-            makerDao.deleteByPrimaryKey(Integer.parseInt(id));
+            makerDao.deleteById(Integer.parseInt(id));
         }
         return idArray.length;
     }
