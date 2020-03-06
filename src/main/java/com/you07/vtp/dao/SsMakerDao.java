@@ -15,12 +15,12 @@ public interface SsMakerDao extends BaseDao<SsMarker> {
      * 根据条件获取分组列表
      */
     @Select({"<script>",
-            "select * from ss_marker where 1=1 and campus_code = #{campusCode}" +
-                    "<if test = ' markerName != null and makerName != \"\"'> and marker_name = #{makerName}</if>" +
+            "select * from ss_marker where 1=1 " +
+                    "<if test = ' markerName != null and markerName != \"\"'> and marker_name like \'%${markerName}%\'</if>" +
                     "order by update_time desc" +
                     "</script>"
     })
-    List<SsMarker> queryAll(@Param("campusCode")Integer campusCode,@Param("markerName") String markerName);
+    List<SsMarker> queryAll(@Param("markerName") String markerName);
 
     /**
      * 根据校区获取大楼标注列表

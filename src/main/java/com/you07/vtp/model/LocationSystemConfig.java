@@ -60,7 +60,7 @@ public class LocationSystemConfig {
     @ApiModelProperty(value = "CMIPS-M接口", example = "https://testgis:you07:com/cmips-server")
     private String ipsApi;
     @ApiModelProperty(value = "疫情监控图标",name = "EpidemicMonitoringIcon", dataType = "String", example = "http://xxx.com/xx.png", required = false)
-    private String EpidemicMonitoringIcon;
+    private String epidemicMonitoringIcon;
     @ApiModelProperty(value = "是否开启人员对接参数", name = "dockingOpen", dataType = "boolean", example = "true", required = false)
     private String dockingOpen;
 
@@ -225,11 +225,11 @@ public class LocationSystemConfig {
     }
 
     public String getEpidemicMonitoringIcon() {
-        return EpidemicMonitoringIcon;
+        return epidemicMonitoringIcon;
     }
 
     public void setEpidemicMonitoringIcon(String epidemicMonitoringIcon) {
-        EpidemicMonitoringIcon = epidemicMonitoringIcon;
+        this.epidemicMonitoringIcon = epidemicMonitoringIcon;
     }
 
     public String getDockingOpen() {

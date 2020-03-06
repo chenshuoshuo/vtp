@@ -42,11 +42,10 @@ public class SsGroupService {
      */
     public int add(SsGroup group){
         SsGroup exsitWithEnName = groupDao.exsitWithEnName(group.getGroupEnName());
-        if(exsitWithEnName != null){
-            if(group.getGroupId() == null){
+        if(exsitWithEnName == null){
+            if(group.getGroupId() == null || group.getGroupId().toString().equals("")){
                 group.setGroupId(groupDao.queryNewColumnId());
             }
-
             return groupDao.add(group);
         }else {
             return -1;
@@ -59,14 +58,13 @@ public class SsGroupService {
      */
     public int update(SsGroup group){
         SsGroup exsitWithEnName = groupDao.exsitWithEnName(group.getGroupEnName());
-        if(exsitWithEnName != null && exsitWithEnName.getGroupId() == group.getGroupId()){
+        if(exsitWithEnName != null && !exsitWithEnName.getGroupId().toString().equals(group.getGroupId().toString())){
+            return -1;
+        }else {
             if(group.getIdString() != null){
                 group.setSpecialPersonId(group.getIdString().split(","));
             }
-
             return groupDao.update(group);
-        }else {
-            return -1;
         }
     }
 

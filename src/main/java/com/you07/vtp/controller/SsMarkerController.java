@@ -32,13 +32,12 @@ public class SsMarkerController {
 
     @GetMapping("/page")
     @ResponseBody
-    public String page(@RequestParam(name = "campusCode")Integer campusCode,
-                       @RequestParam(name = "markerName",required = false)String markerName,
+    public MessageBean page(@RequestParam(name = "markerName",required = false)String markerName,
                        @RequestParam(name = "page")Integer page,
                        @RequestParam(name = "pageSize")Integer pageSize) {
 
         MessageBean<PageInfo> messageBean = new MessageBean<PageInfo>(null);
-        PageInfo pageInfo = markerService.queryAll(campusCode,markerName,page,pageSize);
+        PageInfo pageInfo = markerService.queryAll(markerName,page,pageSize);
         if (pageInfo.getList().size() > 0) {
             messageBean.setData(pageInfo);
             messageBean.setStatus(true);
@@ -50,7 +49,7 @@ public class SsMarkerController {
             messageBean.setMessage("没有查询到数据");
         }
 
-        return JSON.toJSONString(messageBean);
+        return messageBean;
     }
 
     @GetMapping("/listQuery")

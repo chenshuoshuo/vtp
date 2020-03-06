@@ -20,10 +20,10 @@ public class SsMarkerService {
     /**
      * 分页获取大楼标注信息
      */
-    public PageInfo<SsMarker> queryAll(Integer campusCode,String markerName, Integer page, Integer pageSize) {
+    public PageInfo<SsMarker> queryAll(String markerName, Integer page, Integer pageSize) {
 
         PageHelper.startPage(page,pageSize);
-        List<SsMarker> list = makerDao.queryAll(campusCode,markerName);
+        List<SsMarker> list = makerDao.queryAll(markerName);
         return new PageInfo<SsMarker>(list);
     }
 

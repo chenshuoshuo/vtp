@@ -46,16 +46,16 @@ public class UploadImageController {
         MessageBean<String> messageBean = new MessageBean<String>(null);
         System.out.println(file.getOriginalFilename());
         //获取根目录
-        File path = new File(ResourceUtils.getURL("classpath:").getPath());
-        if (!path.exists()) {
-            path = new File("");
-        }
-        System.out.println("path:" + path.getAbsolutePath());
+//        File path = new File(ResourceUtils.getURL("classpath:").getPath());
+//        if (!path.exists()) {
+//            path = new File("");
+//        }
+//        System.out.println("path:" + path.getAbsolutePath());
 
         String fileExtension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
         System.out.println(fileExtension);
         String newFileName = UUID.randomUUID() + fileExtension;
-        File uploadFolder = new File(path.getAbsolutePath(), "resources/upload/" + folder + "/");
+        File uploadFolder = new File("./upload/" + folder + "/");
         if (!uploadFolder.exists()) {
             uploadFolder.mkdir();
         }
