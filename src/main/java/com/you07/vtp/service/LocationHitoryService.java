@@ -164,7 +164,7 @@ public class LocationHitoryService {
                         .collect(Collectors.joining(",")));
             }
         }
-        PageHelper.offsetPage(page,pageSize);
+        PageHelper.startPage(page,pageSize);
         List<LocationHistory> userLocationList = locationHistoryDao.selectLastLngByUserIds(userIds.toString(),getTableName(startTime, endTime),startTime,endTime,campusId);
 
         return new PageInfo<LocationHistory>(userLocationList);
@@ -201,20 +201,24 @@ public class LocationHitoryService {
      * @return
      * @throws ParseException
      */
-    public List<LocationExcelVO> loadEffectUserWithTrack(LocationQueryVO locationQueryVO) throws ParseException {
+    public PageInfo<LocationExcelVO> loadEffectUserWithTrack(LocationQueryVO locationQueryVO) throws ParseException {
 
         List<LocationHistory> locationHistoryList = locationHistoryDao.selectEffectUserWithTrack(JSON.toJSONString(locationQueryVO.getGeojson()),
                 getTableName(locationQueryVO.getStartTime(), locationQueryVO.getEndTime()), locationQueryVO.getStartTime(), locationQueryVO.getEndTime(), locationQueryVO.getCampusCode());
         List<LocationExcelVO> excelVOList = new ArrayList<>();
+        List<String> userIds = new ArrayList<>();
         if(locationHistoryList.size() > 0){
             for (LocationHistory history : locationHistoryList) {
-                LocationHistory singleLastLocation = locationHistoryDao.selectOneUserLocation(history.getUserid());
-                if(singleLastLocation != null){
-                    excelVOList.add(transformHistoryToExcel(singleLastLocation));
-                }
+                userIds.add(history.getUserid());
             }
         }
-        return excelVOList;
+        String userIdArray = "'" + userIds.stream().collect(Collectors.joining("','")) + "'";
+        PageHelper.startPage(locationQueryVO.getPage(),locationQueryVO.getPageSize());
+        List<LocationHistory> lastLocationList = locationHistoryDao.selectBulkUserLocation(userIdArray);
+        if(lastLocationList != null){
+            excelVOList.addAll(transformHistoryToExcel(lastLocationList));
+        }
+        return new PageInfo<LocationExcelVO>(excelVOList);
     }
 
     /**
@@ -295,15 +299,17 @@ public class LocationHitoryService {
     /**
      * 转换Location对象为Excel对象
      */
-    private LocationExcelVO transformHistoryToExcel(LocationHistory locationHistory){
-        LocationExcelVO excelVO = new LocationExcelVO();
-
-        excelVO.setLocationTime(locationHistory.getLocationTime());
-        excelVO.setOrgName(locationHistory.getOrgName());
-        excelVO.setRealName(locationHistory.getRealname());
-        excelVO.setUserId(locationHistory.getUserid());
-
-        return excelVO;
+    private  List<LocationExcelVO> transformHistoryToExcel(List<LocationHistory> locationHistoryList){
+        List<LocationExcelVO> excelVOList = new ArrayList<>();
+        locationHistoryList.forEach(v ->{
+            LocationExcelVO excelVO = new LocationExcelVO();
+            excelVO.setLocationTime(v.getLocationTime());
+            excelVO.setOrgName(v.getOrgName());
+            excelVO.setRealName(v.getRealname());
+            excelVO.setUserId(v.getUserid());
+            excelVOList.add(excelVO);
+        });
+        return excelVOList;
     }
 
 

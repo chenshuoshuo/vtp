@@ -45,7 +45,15 @@ public interface LocationHistoryDao {
             "select * from location_latest where userid = #{userid} and lng is not null limit 1"
     })
     LocationHistory selectOneUserLocation(@Param("userid") String userid);
-
+    /**
+     * 多用户查询最新位置
+     * 只获取位置
+     * @return
+     */
+    @Select({
+            "select * from location_latest where userid in (${userids}) and lng is not null order by userid"
+    })
+    List<LocationHistory> selectBulkUserLocation(@Param("userids") String userids);
 
     /**
      * 多用户查询最新位置
@@ -317,7 +325,7 @@ public interface LocationHistoryDao {
             "and lng is not null",
             "group by userid) as _group",
             "where _location.location_time = _group._last",
-            "and _location.userid = _group.userid"
+            "and _location.userid = _group.userid order by _group.userid"
     })
     List<LocationHistory> selectEffectUserWithTrack(@Param("geojson") String geojson,
                                                    @Param("tableName") String tableName,
