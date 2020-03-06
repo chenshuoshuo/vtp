@@ -153,24 +153,21 @@ public class LocationHitoryService {
      */
     public PageInfo<LocationHistory> selectByGroupIds(String groupName, String startTime, String endTime, Integer campusId, Integer page, Integer pageSize) throws ParseException {
 
-        PageHelper.startPage(page,pageSize);
-        List<LocationHistory> list = new ArrayList<>();
-
         List<SsGroup> groupList = groupDao.queryAll(groupName);
 
+        StringBuilder userIds = new StringBuilder();
         for (SsGroup group : groupList) {
             if(group.getIdString() != null){
-                String userIds = Arrays.asList(group.getIdString().split(","))
+                userIds.append(Arrays.asList(group.getIdString().split(","))
                         .stream()
                         .map(v ->"'" + v + "'")
-                        .collect(Collectors.joining(","));
-                List<LocationHistory> userLocationList = locationHistoryDao.selectLastLngByUserIds(userIds,getTableName(startTime, endTime),startTime,endTime,campusId);
-                if(userLocationList != null && userLocationList.size() > 0){
-                    list.addAll(userLocationList);
-                }
+                        .collect(Collectors.joining(",")));
             }
         }
-        return new PageInfo<LocationHistory>(list);
+        PageHelper.offsetPage(page,pageSize);
+        List<LocationHistory> userLocationList = locationHistoryDao.selectLastLngByUserIds(userIds.toString(),getTableName(startTime, endTime),startTime,endTime,campusId);
+
+        return new PageInfo<LocationHistory>(userLocationList);
 
     }
     /**

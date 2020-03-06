@@ -6,10 +6,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.io.FileUtils;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,22 +43,22 @@ public class UploadImageController {
     @ApiOperation("上传图片")
     @PostMapping("/resources/upload")
     @ResponseBody
-    public String addModuleUseRecord(@ApiParam(name = "file", value = "图片文件", required = true) @RequestParam(value = "file", required = true) MultipartFile file,
+    public String addModuleUseRecord(HttpServletRequest request, @ApiParam(name = "file", value = "图片文件", required = true) @RequestParam(value = "file", required = true) MultipartFile file,
                                      @ApiParam(name = "folder", value = "图片存储路径", required = true) @RequestParam(value = "folder", required = true) String folder) throws IOException {
         MessageBean<String> messageBean = new MessageBean<String>(null);
         System.out.println(file.getOriginalFilename());
         //获取根目录
-//        File path = new File(ResourceUtils.getURL("classpath:").getPath());
-//        if (!path.exists()) {
-//            path = new File("");
-//        }
-//        System.out.println("path:" + path.getAbsolutePath());
+        File path = new File(ResourceUtils.getURL("classpath:").getPath());
+        if(!path.exists()) {
+            path = new File("");
+        }
+        System.out.println("path:"+path.getAbsolutePath());
 
         String fileExtension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
         System.out.println(fileExtension);
         String newFileName = UUID.randomUUID() + fileExtension;
-        File uploadFolder = new File("./upload/" + folder + "/");
-        if (!uploadFolder.exists()) {
+        File uploadFolder = new File(path.getAbsolutePath(), "resources/upload/" + folder + "/");
+        if(!uploadFolder.exists()) {
             uploadFolder.mkdir();
         }
 
