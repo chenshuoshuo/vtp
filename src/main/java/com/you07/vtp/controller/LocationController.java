@@ -375,9 +375,9 @@ public class LocationController {
     @PostMapping("/loadEffectUserWithTrack")
     @ResponseBody
     public String loadEffectUserWithTrack(@RequestBody LocationQueryVO locationQueryVO) throws ParseException {
-        MessageBean<PageInfo<LocationExcelVO>> messageListBean = new MessageBean<>();
+        MessageBean<PageInfo<LocationHistory>> messageListBean = new MessageBean<>();
 
-        PageInfo<LocationExcelVO> list = locationHitoryService.loadEffectUserWithTrack(locationQueryVO);
+        PageInfo<LocationHistory> list = locationHitoryService.loadEffectUserWithTrack(locationQueryVO);
 
         if (list.getList().size() > 0) {
             messageListBean.setData(list);

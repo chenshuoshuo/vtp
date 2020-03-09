@@ -166,7 +166,12 @@ public class LocationHitoryService {
         }
         PageHelper.startPage(page,pageSize);
         List<LocationHistory> userLocationList = locationHistoryDao.selectLastLngByUserIds(userIds.toString(),getTableName(startTime, endTime),startTime,endTime,campusId);
-
+        userLocationList.forEach(v ->{
+            SsGroup group = groupDao.existWithUserId(v.getUserid());
+            if(group != null){
+                v.setIcon(group.getIcon());
+            }
+        });
         return new PageInfo<LocationHistory>(userLocationList);
 
     }
@@ -201,11 +206,11 @@ public class LocationHitoryService {
      * @return
      * @throws ParseException
      */
-    public PageInfo<LocationExcelVO> loadEffectUserWithTrack(LocationQueryVO locationQueryVO) throws ParseException {
+    public PageInfo<LocationHistory> loadEffectUserWithTrack(LocationQueryVO locationQueryVO) throws ParseException {
 
         List<LocationHistory> locationHistoryList = locationHistoryDao.selectEffectUserWithTrack(JSON.toJSONString(locationQueryVO.getGeojson()),
                 getTableName(locationQueryVO.getStartTime(), locationQueryVO.getEndTime()), locationQueryVO.getStartTime(), locationQueryVO.getEndTime(), locationQueryVO.getCampusCode());
-        List<LocationExcelVO> excelVOList = new ArrayList<>();
+
         List<String> userIds = new ArrayList<>();
         if(locationHistoryList.size() > 0){
             for (LocationHistory history : locationHistoryList) {
@@ -214,11 +219,10 @@ public class LocationHitoryService {
         }
         String userIdArray = "'" + userIds.stream().collect(Collectors.joining("','")) + "'";
         PageHelper.startPage(locationQueryVO.getPage(),locationQueryVO.getPageSize());
+
         List<LocationHistory> lastLocationList = locationHistoryDao.selectBulkUserLocation(userIdArray);
-        if(lastLocationList != null){
-            excelVOList.addAll(transformHistoryToExcel(lastLocationList));
-        }
-        return new PageInfo<LocationExcelVO>(excelVOList);
+
+        return new PageInfo<LocationHistory>(lastLocationList);
     }
 
     /**
@@ -311,6 +315,7 @@ public class LocationHitoryService {
         });
         return excelVOList;
     }
+
 
 
 }

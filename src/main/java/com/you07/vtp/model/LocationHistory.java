@@ -82,6 +82,11 @@ public class LocationHistory {
      */
     private String detainedTime;
 
+    /**
+     * 分组图标
+     */
+    private String icon;
+
     public String getUserid() {
         return userid;
     }
@@ -224,6 +229,14 @@ public class LocationHistory {
 
     public void setClassCode(String classCode) {
         this.classCode = classCode;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public String getFormatLocationTime(){

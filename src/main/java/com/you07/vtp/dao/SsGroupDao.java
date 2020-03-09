@@ -45,6 +45,9 @@ public interface SsGroupDao extends BaseDao<SsGroup> {
     @Select("select * from ss_group where group_en_name = #{enName}")
     SsGroup exsitWithEnName(@Param("enName") String enName);
 
+    @Select("select * from ss_group where special_person_id && array[#{userId}]")
+    SsGroup existWithUserId(@Param("userId")String userId);
+
 
 
 

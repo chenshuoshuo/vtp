@@ -325,7 +325,7 @@ public interface LocationHistoryDao {
             "and lng is not null",
             "group by userid) as _group",
             "where _location.location_time = _group._last",
-            "and _location.userid = _group.userid order by _group.userid"
+            "and _location.userid = _group.userid "
     })
     List<LocationHistory> selectEffectUserWithTrack(@Param("geojson") String geojson,
                                                    @Param("tableName") String tableName,
@@ -406,7 +406,7 @@ public interface LocationHistoryDao {
      * 用户轨迹经纬度转面
      */
     @Select({
-            "select st_asgeojson(st_convexhull(ST_GeomFromText(#{multiPoint})))"
+            "select st_asgeojson(st_buffer(ST_GeomFromText(#{multiPoint}),10))"
     })
     String transformLngLatToPolygon(@Param("multiPoint")String multiPoint);
 }
