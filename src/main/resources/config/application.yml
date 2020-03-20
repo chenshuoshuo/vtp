@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8089
   servlet:
     context-path: /vtp
   error:
@@ -13,7 +13,7 @@ server:
     max-threads: 200
     min-spare-threads: 10
     max-swallow-size: 1000MB
-  address: 192.168.4.102
+  address: 192.168.4.234
 spring:
   mvc:
     view:
@@ -28,12 +28,12 @@ druid:
   type: com.alibaba.druid.pool.DruidDataSource
   postgresdefault:
     dirver-class-name: org.postgresql.Driver
-#    url: jdbc:postgresql://211.149.159.39:5407/test_vtpl
-#    username: postgres
-#    password: Lqkjcs!@#147123
-    url: jdbc:postgresql://192.168.4.241:5432/vtpl_plus
+    url: jdbc:postgresql://211.149.222.25:5432/nwu.vtpl
     username: postgres
-    password: lqkj007
+    password: lqkj!@#456
+#    url: jdbc:postgresql://192.168.4.241:5432/vtpl_plus
+#    username: postgres
+#    password: lqkj007
 mybatis:
   configuration:
     map-underscore-to-camel-case: true

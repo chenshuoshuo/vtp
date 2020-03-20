@@ -165,13 +165,16 @@ public class LocationHitoryService {
             }
         }
         PageHelper.startPage(page,pageSize);
-        List<LocationHistory> userLocationList = locationHistoryDao.selectLastLngByUserIds(userIds.toString(),getTableName(startTime, endTime),startTime,endTime,campusId);
-        userLocationList.forEach(v ->{
-            SsGroup group = groupDao.existWithUserId(v.getUserid());
-            if(group != null){
-                v.setIcon(group.getIcon());
-            }
-        });
+        List<LocationHistory> userLocationList = new ArrayList<>();
+        if(!"".equals(userIds.toString().trim())){
+            userLocationList = locationHistoryDao.selectLastLngByUserIds(userIds.toString(),getTableName(startTime, endTime),startTime,endTime,campusId);
+            userLocationList.forEach(v ->{
+                SsGroup group = groupDao.existWithUserId(v.getUserid());
+                if(group != null){
+                    v.setIcon(group.getIcon());
+                }
+            });
+        }
         return new PageInfo<LocationHistory>(userLocationList);
 
     }
@@ -185,19 +188,19 @@ public class LocationHitoryService {
      */
     public Object selectUserTrackWithTimeZone(String userId,String startTime, String endTime, Integer campusId) throws ParseException {
 
-        List<LocationHistory> locationHistoryList = locationHistoryDao.selectUserTrackWithTimeZone(userId,getTableName(startTime, endTime), startTime, endTime, campusId);
-        StringBuilder multiPoint = new StringBuilder();
-        if(locationHistoryList.size() > 0){
-            for (LocationHistory history : locationHistoryList) {
-                multiPoint .append(history.getLng())
-                        .append(" ")
-                        .append(history.getLat())
-                        .append(",");
-            }
-        }
-        String multiPointString = "multipoint(" + multiPoint.deleteCharAt(multiPoint.length() - 1) + ")";
+//        List<LocationHistory> locationHistoryList = locationHistoryDao.selectUserTrackWithTimeZone(userId,getTableName(startTime, endTime), startTime, endTime, campusId);
+//        StringBuilder multiPoint = new StringBuilder();
+//        if(locationHistoryList.size() > 0){
+//            for (LocationHistory history : locationHistoryList) {
+//                multiPoint .append(history.getLng())
+//                        .append(" ")
+//                        .append(history.getLat())
+//                        .append(",");
+//            }
+//        }
+//        String multiPointString = "multipoint(" + multiPoint.deleteCharAt(multiPoint.length() - 1) + ")";
 
-        return JSON.parseObject(locationHistoryDao.transformLngLatToPolygon(multiPointString));
+        return JSON.parseObject(locationHistoryDao.queryRangeOfActivities(userId,getTableName(startTime, endTime), startTime, endTime, campusId));
     }
 
     /**

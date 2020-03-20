@@ -133,11 +133,10 @@ public class LocationController {
     @GetMapping("/loadOrgLocation")
     @ResponseBody
     public String loadOrgLocation(@ApiParam(name = "orgCodes", value = "组织机构代码，多个以','分隔", required = true) @RequestParam("orgCodes") String orgCodes,
-                                  @ApiParam(name= "keyWords", value = "关键字,多个关键字以','分隔", required = false) @RequestParam("keyWords") String keyWords,
                                   @ApiParam(name = "startTime", value = "开始时间，格式：'yyyy-MM-dd HH:mm:ss'", required = true) @RequestParam("startTime") String startTime,
-                                  @ApiParam(name = "endTime", value = "结束时间，格式：'yyyy-MM-dd HH:mm:ss'", required = false) @RequestParam(name = "endTime", required = false, defaultValue = "") String endTime,
-                                  @ApiParam(name = "inSchool", value = "校内校外，1校内，2校外", required = false) @RequestParam("inSchool") Integer inSchool,
-                                  @ApiParam(name = "campusId", value = "校区ID", required = false) @RequestParam("campusId") Integer campusId) throws ParseException {
+                                  @ApiParam(name = "endTime", value = "结束时间，格式：'yyyy-MM-dd HH:mm:ss'") @RequestParam(name = "endTime", required = false, defaultValue = "") String endTime,
+                                  @ApiParam(name = "inSchool", value = "校内校外，1校内，2校外") @RequestParam("inSchool") Integer inSchool,
+                                  @ApiParam(name = "campusId", value = "校区ID") @RequestParam("campusId") Integer campusId) throws ParseException {
         MessageListBean<LocationHistory> messageListBean = new MessageListBean<LocationHistory>();
         List<LocationHistory> list = locationHitoryService.selectByOrgCodes(orgCodes, startTime, endTime, inSchool, campusId);
         if (list.size() > 0) {

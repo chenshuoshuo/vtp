@@ -409,4 +409,30 @@ public interface LocationHistoryDao {
             "select st_asgeojson(st_buffer(ST_GeomFromText(#{multiPoint}),10))"
     })
     String transformLngLatToPolygon(@Param("multiPoint")String multiPoint);
+
+    /**
+     * 根据用户ID、查询表名、开始时间、结束时间、校区ID查询活动范围
+     * @param userid 用户ID
+     * @param tableName 查询表名
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @param campusId 校区ID
+     * @return
+     */
+    @Select({
+            "with t1 as (select lng, lat from ${tableName} "
+            + "where userid = #{userid} "
+            + "and location_time > to_timestamp(#{startTime}, 'yyyy-mm-dd hh24:mi:ss' ) "
+            + "and location_time < to_timestamp(#{endTime}, 'yyyy-mm-dd hh24:mi:ss' ) "
+            + "and zone_id = '${campusId}' GROUP BY lng, lat),"
+            + "t2 as(select 'multipoint(' ||  string_agg(lng || ' ' || lat, ', ') || ')' _point_list from t1)"
+            + "select case when array_length(string_to_array(t2._point_list, ', '), 1) > 2 "
+            + "then st_asgeojson(_st_concavehull(st_geomfromtext(t2._point_list))) "
+            + "else st_asgeojson(st_buffer(st_geomfromtext(t2._point_list), 5)) end from t2"
+    })
+    String queryRangeOfActivities(@Param("userid") String userid,
+                                  @Param("tableName") String tableName,
+                                  @Param("startTime") String startTime,
+                                  @Param("endTime") String endTime,
+                                  @Param("campusId") Integer campusId);
 }
