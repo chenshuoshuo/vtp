@@ -3,6 +3,7 @@ package com.you07.vtp.dao;
 import com.you07.vtp.model.LocationHistory;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.SelectProvider;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -166,25 +167,31 @@ public interface LocationHistoryDao {
      * @param campusId
      * @return
      */
-    @Select({
-            "select * from ${tableName} _location,",
-            "(select userid, max(location_time) _last",
-            "from ${tableName}",
-            "where (userid in (${userids}) or org_code in (${org}) or class_code in (${cls}) or nation in (${nations}) or birthplace in (${birthplaces}))" ,
-            "and zone_id = '${campusId}'",
-            "and location_time > to_timestamp(#{startTime},'yyyy-mm-dd hh24:mi:ss')",
-            "and location_time < to_timestamp(#{endTime},'yyyy-mm-dd hh24:mi:ss')",
-            "and lng is not null",
-            "and in_school = #{inSchool}",
-            "group by userid) as _group",
-            "where _location.location_time = _group._last",
-            "and _location.userid = _group.userid"
-    })
+    @SelectProvider(type = LocationHistoryProvider.class, method = "userIdsTimeZoneSQL")
     List<LocationHistory> selectByUseridsTimeZone(@Param("userids") String userids,
                                                   @Param("org") String orgCodes,
                                                   @Param("cls") String classCodes,
                                                   @Param("nations") String nations,
                                                   @Param("birthplaces") String birthplaces,
+                                                  @Param("tableName") String tableName,
+                                                  @Param("startTime") String startTime,
+                                                  @Param("endTime") String endTime,
+                                                  @Param("inSchool") Integer inSchool,
+                                                  @Param("campusId") Integer campusId);
+
+    /**
+     * 根据时间范围查询多用户最新位置
+     * @param userids
+     * @param tableName
+     * @param startTime
+     * @param endTime
+     * @param inSchool
+     * @param campusId
+     * @return
+     */
+    @SelectProvider(type = LocationHistoryProvider.class, method = "userInfoTimeZoneSQL")
+    List<LocationHistory> selectByUserInfoTimeZone(@Param("userids") String userids,
+                                                  @Param("keyWord") String keyWord,
                                                   @Param("tableName") String tableName,
                                                   @Param("startTime") String startTime,
                                                   @Param("endTime") String endTime,

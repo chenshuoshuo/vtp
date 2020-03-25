@@ -13,7 +13,7 @@ server:
     max-threads: 200
     min-spare-threads: 10
     max-swallow-size: 1000MB
-  address: 192.168.4.234
+  address: 127.0.0.1
 spring:
   mvc:
     view:

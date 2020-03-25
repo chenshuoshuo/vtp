@@ -54,9 +54,11 @@ public class LocationHitoryService {
                         form.getInSchool(), form.getCampusId());
 
         } else{
-            if(StringUtils.isBlank(locationHistoryDao.selectTableName(tableName)))
+            if (StringUtils.isBlank(locationHistoryDao.selectTableName(tableName)))
                 return new ArrayList<>();
-            return locationHistoryDao.selectByUseridsTimeZone(addQuot(form.getUserIds()),addQuot(form.getOrgCodes()), addQuot(form.getClassCodes()), addQuot(form.getNation()), addQuot(form.getBirthplace()),
+            /*return locationHistoryDao.selectByUseridsTimeZone(addQuot(form.getUserIds()),addQuot(form.getOrgCodes()), addQuot(form.getClassCodes()), addQuot(form.getNation()), addQuot(form.getBirthplace()),
+                    getTableName(startTime, endTime), startTime, endTime, form.getInSchool(), form.getCampusId());*/
+            return locationHistoryDao.selectByUserInfoTimeZone(addQuot(form.getUserIds()), addQuot(form.getKeyWord()),
                     getTableName(startTime, endTime), startTime, endTime, form.getInSchool(), form.getCampusId());
         }
     }
