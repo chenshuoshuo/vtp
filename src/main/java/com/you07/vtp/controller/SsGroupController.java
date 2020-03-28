@@ -76,6 +76,7 @@ public class SsGroupController {
     public String add(@RequestBody SsGroup ssGroup){
         try {
             MessageBean messageBean = new MessageBean<>(null);
+            ssGroup.setUpdateTime(new Timestamp(new Date().getTime()));
             int add = groupService.add(ssGroup);
 
             if (add > 0) {
@@ -102,6 +103,7 @@ public class SsGroupController {
     public String update(@RequestBody SsGroup ssGroup){
         try {
             MessageBean messageBean = new MessageBean<>(null);
+            ssGroup.setUpdateTime(new Timestamp(new Date().getTime()));
             Integer update = groupService.update(ssGroup);
 
             if (update > 0) {
