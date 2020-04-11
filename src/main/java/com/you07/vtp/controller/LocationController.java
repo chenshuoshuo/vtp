@@ -266,7 +266,7 @@ public class LocationController {
                                  @ApiParam(name = "endTime", value = "结束时间，格式：'yyyy-MM-dd HH:mm:ss'", required = false) @RequestParam(name = "endTime", required = false, defaultValue = "") String endTime,
                                  @ApiParam(name = "campusId", value = "校区ID", required = false) @RequestParam("campusId") Integer campusId
 //                                 @RequestParam Integer page, @RequestParam Integer pageSize
-    ) throws ParseException {
+                                ) throws ParseException {
         try {
             MessageListBean<StudentInfo> messageListBean = new MessageListBean<StudentInfo>();
             List<StudentInfo> studentInfoList = studentInfoService.loadWithClassCodes(orgCodes);
@@ -276,7 +276,6 @@ public class LocationController {
                     studentInfoMap.put(studentInfo.getStudentno(), studentInfo);
                 }
             }
-
             List<LocationHistory> inSchoolList = locationHitoryService.selectByOrgCodes(orgCodes, startTime, endTime, 1, campusId);
             List<LocationHistory> outSchoolList = locationHitoryService.selectByOrgCodes(orgCodes, startTime, endTime, 2, campusId);
 
@@ -285,13 +284,11 @@ public class LocationController {
                     studentInfoMap.remove(locationHistory.getUserid());
                 }
             }
-
             for (LocationHistory locationHistory : outSchoolList) {
                 if (studentInfoMap.containsKey(locationHistory.getUserid())) {
                     studentInfoMap.remove(locationHistory.getUserid());
                 }
             }
-
             if (studentInfoMap.values().size() > 0) {
                 messageListBean.setStatus(true);
                 messageListBean.setCode(200);
@@ -304,10 +301,8 @@ public class LocationController {
                 messageListBean.setCode(10002);
                 messageListBean.setMessage("没有查询到数据");
             }
-
-
             return JSON.toJSONString(messageListBean, SerializerFeature.DisableCircularReferenceDetect);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return "未知异常";
         }
     }
