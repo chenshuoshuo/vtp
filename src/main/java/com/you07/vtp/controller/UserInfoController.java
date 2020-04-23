@@ -369,6 +369,7 @@ public class UserInfoController {
         return objectMessageBean;
     }
 
+
     @ApiOperation("获取选择班级信息JSON数据")
     @GetMapping("/getClassInfoJson")
     public MessageBean getClassInfoJson(@ApiParam(name = "userCode", value = "用户ID", required = true) @RequestParam String userCode) throws SAXException {
@@ -439,6 +440,76 @@ public class UserInfoController {
         return objectMessageBean;
     }
 
+    @ApiOperation("获取选择教师信息JSON数据")
+    @GetMapping("/getTeacherInfoJson")
+    public MessageBean getTeacherInfoJson(@ApiParam(name = "userCode", value = "用户ID", required = true) @RequestParam String userCode){
+        //根据userId得到能够查看的组织结构编码
+        JSONArray result = new JSONArray();
+        try {
+            LocationTrackManager locationTrackManager = locationTrackManagerService.get(userCode);
+            String orgCodes = null;
+            if (null != locationTrackManager) {
+                orgCodes = locationTrackManager.getOrgCodes();
+            }
+            String[] splitOrgCodes = null;
+            if (null != orgCodes) {
+                splitOrgCodes = orgCodes.split(",");
+            }
+            JSONObject objectForCmIps = RestTemplateUtil.getJSONObjectForCmIps("/os/json/teachingStaff");
+            JSONArray jsonArray = objectForCmIps.getJSONArray("data");
+            result.addAll(jsonArray);
+            JSONObject fontStyle = new JSONObject();
+            fontStyle.put("color", "White");
+            //院系、部门
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JSONObject adJsonObj = jsonArray.getJSONObject(i);
+                jsonArray.getJSONObject(i).put("type", 1);
+                jsonArray.getJSONObject(i).put("font", fontStyle);
+                jsonArray.getJSONObject(i).put("icon", "zTree_v3/css/zTreeStyle/img/diy/1_open.png");
+                jsonArray.getJSONObject(i).put("iconSkin", "../img/tree_close.png");
+                JSONArray mjJsonArr = adJsonObj.getJSONArray("children");
+                //学院、科室
+                for (int j = 0; j < mjJsonArr.size(); j++) {
+                    JSONObject mjJsonObj = mjJsonArr.getJSONObject(j);
+                    jsonArray.getJSONObject(i).getJSONArray("children").getJSONObject(j).put("type", 2);
+                    jsonArray.getJSONObject(i).getJSONArray("children").getJSONObject(j).put("font", fontStyle);
+                    JSONArray teacherJsonArr = mjJsonObj.getJSONArray("children");
+                    //人
+                    for (int k = 0, cnt = 0; k < teacherJsonArr.size(); k++) {
+                        JSONObject personObj = teacherJsonArr.getJSONObject(k);
+                        jsonArray.getJSONObject(i).getJSONArray("children").getJSONObject(j).getJSONArray("children").getJSONObject(k).put("type", 3);
+                        jsonArray.getJSONObject(i).getJSONArray("children").getJSONObject(j).getJSONArray("children").getJSONObject(k).put("font", fontStyle);
+                        //String claCode = personObj.getString("code");
+                        /*JSONArray stuJsonArr = claJsonObj.getJSONArray("children");
+
+                        // 判断是否有班级权限
+                        if (Arrays.asList(splitOrgCodes).contains(claCode)) {
+                            for (int m = 0; m < stuJsonArr.size(); m++) {
+                                result.getJSONObject(i).getJSONArray("children").getJSONObject(j).getJSONArray("children").getJSONObject(k).remove("children");
+                            }
+                        } else {
+                            result.getJSONObject(i).getJSONArray("children").getJSONObject(j).getJSONArray("children").remove(k);
+                        }*/
+                    }
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            MessageBean<Object> objectMessageBean = new MessageBean<>();
+            objectMessageBean.setCode(200);
+            objectMessageBean.setStatus(true);
+            objectMessageBean.setData("没有权限查看或无学生");
+            return objectMessageBean;
+        }
+        MessageBean<Object> objectMessageBean = new MessageBean<>();
+        objectMessageBean.setCode(0);
+        objectMessageBean.setStatus(true);
+        objectMessageBean.setData(result);
+        objectMessageBean.setMessage("操作成功");
+        return objectMessageBean;
+    }
+
     /**
      * 根据条件动态生成json文件
      */
@@ -447,5 +518,98 @@ public class UserInfoController {
     public MessageBean getJsonDynamic(@Valid @RequestBody UserLocationForm form) {
         studentInfoService.getJsonDynamic(form);
         return null;
+    }
+
+    @ApiOperation("获取授权树列表信息")
+    @GetMapping("/getAuthorizedJson")
+    @ResponseBody
+    public MessageBean getAuthorizedJson(@ApiParam(name = "userCode", value = "用户ID", required = true) @RequestParam String userCode) {
+        JSONObject result = new JSONObject();
+        //根据userId得到能够查看的组织结构编码
+        LocationTrackManager locationTrackManager = locationTrackManagerService.get(userCode);
+        String orgCodes = null;
+        if (null != locationTrackManager) {
+            orgCodes = locationTrackManager.getOrgCodes();
+        }
+        String[] splitOrgCodes = null;
+        if (null != orgCodes) {
+            splitOrgCodes = orgCodes.split(",");
+        }
+        JSONObject objectForCmIps = RestTemplateUtil.getJSONObjectForCmIps("/os/json/student");
+        JSONArray jsonArray = objectForCmIps.getJSONArray("data");
+        // 组装院系信息
+        JSONArray collegeJsonArray = new JSONArray();
+        // 组装教职工信息
+        JSONArray teacherJsonArray = new JSONArray();
+
+        //院系
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject adJsonObj = jsonArray.getJSONObject(i);
+            JSONArray mjJsonArr = adJsonObj.getJSONArray("children");
+            JSONObject college = new JSONObject();
+            /*构建返回学院信息*/
+            college.put("id", adJsonObj.getString("code"));
+            college.put("label", adJsonObj.getString("name"));
+            JSONArray childJsonArray = new JSONArray();
+            //专业
+            for (int j = 0; j < mjJsonArr.size(); j++) {
+                JSONObject mjJsonObj = mjJsonArr.getJSONObject(j);
+                JSONArray classJsonArr = mjJsonObj.getJSONArray("children");
+
+                //班级
+                for (int k = 0; k < classJsonArr.size(); k++) {
+                    JSONObject claJsonObj = classJsonArr.getJSONObject(k);
+                    String claCode = claJsonObj.getString("code");
+
+                    /*构建返回学院信息(班级信息)*/
+                    JSONObject classJsonObject = new JSONObject();
+                    classJsonObject.put("id", claCode);
+                    classJsonObject.put("label", claJsonObj.getString("name"));
+                    // 判断是否有班级权限
+                    /*if (Arrays.asList(splitOrgCodes).contains(claCode)) {
+                        classJsonObject.put("checked", true);
+                    }*/
+                    childJsonArray.add(classJsonObject);
+                }
+            }
+            college.put("children", childJsonArray);
+            collegeJsonArray.add(college);
+        }
+        result.put("student", collegeJsonArray);
+
+        JSONObject teachingStaffForCmIps = RestTemplateUtil.getJSONObjectForCmIps("/os/json/teachingStaff");
+        JSONArray teachingStaffJsonArray = teachingStaffForCmIps.getJSONArray("data");
+        //一级
+        for (int i = 0; i < teachingStaffJsonArray.size(); i++) {
+            JSONObject adJsonObj = teachingStaffJsonArray.getJSONObject(i);
+            JSONArray mjJsonArr = adJsonObj.getJSONArray("children");
+            /*构建返回一级部门信息*/
+            JSONObject firstLevelDepart = new JSONObject();
+            firstLevelDepart.put("id", adJsonObj.getString("code"));
+            firstLevelDepart.put("label", adJsonObj.getString("name"));
+            JSONArray firstLevelChildArray = new JSONArray();
+            //二级
+            for (int j = 0; j < mjJsonArr.size(); j++) {
+                JSONObject mjJsonObj = mjJsonArr.getJSONObject(j);
+                String claCode = mjJsonObj.getString("code");
+                JSONObject secondLevelDepart = new JSONObject();
+                secondLevelDepart.put("id", mjJsonObj.getString("code"));
+                secondLevelDepart.put("label", mjJsonObj.getString("name"));
+                // 判断是否有班级权限
+                /*if (Arrays.asList(splitOrgCodes).contains(claCode)) {
+                    secondLevelDepart.put("checked", true);
+                }*/
+                firstLevelChildArray.add(secondLevelDepart);
+            }
+            firstLevelDepart.put("children", firstLevelChildArray);
+            teacherJsonArray.add(firstLevelDepart);
+        }
+        result.put("teacher", teacherJsonArray);
+        MessageBean<Object> objectMessageBean = new MessageBean<>();
+        objectMessageBean.setCode(0);
+        objectMessageBean.setStatus(true);
+        objectMessageBean.setData(result);
+        objectMessageBean.setMessage("操作成功");
+        return objectMessageBean;
     }
 }
